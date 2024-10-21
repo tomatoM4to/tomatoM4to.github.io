@@ -1,0 +1,170 @@
+# 인터넷 정의
+TCP/IP 프로토콜 이반 Router, Host, DNS의 거대한 집합체
+
+# IPv4
+* 8비트씩 4부분, 총 32비트로 구성
+* 최대 0~255.0~255.0~255.0~255
+
+## Net ID
+* IP주소 와 서브넷 마스크의 AND연산 값
+    * 네트워크 주소: 191.168.25.10 & 255.255.252.0 =
+    * 브로드캐스트 주소:
+
+## CLASS
+Net ID의 길이에 따라 여러 Class 로 분리
+
+* A Class: NetID 8Bit, HostID 24Bit
+* B Class: NetID 16Bit, HostID 16Bit
+* C Class: NetID 24Bit, HostID 8Bit
+* D Class: 멀티캐스트용
+* E Class: 연구용
+
+## 서브네팅(Subnetting)
+* 할당된 네트워크 주소를 다시 여러개의 작은 네트워크러 나누어 사용하는 기술, <R>NAT와 함께 사용</R>
+* NetID와 HostID를 나누기 위한 비트를 서브넷 마스크(Subnet Mask)라고 함, 이걸 이용해 NetID를 여러개로 분할
+
+## NAT(Network Address Translation), 네트워크 주소 변환
+내부 네트워크의 Private IP주소를 외부 네트워크의 Public IP 주소로 변환, 보통 라우터나 방화벽에서 수행
+
+
+# IPv6
+* 16비트씩 8부분, 총 128비트로 구성, 각 부분을 16진수로 표현, 콜론(:)으로 구분
+* 인증성, 기밀성, 데이터 무결성 지원
+* 주소 부족 문제 해결
+    * 인증성: 사용자 식별, 기밀성: 인가된 사용자만 접근, 데이터 무결성: 인가된 사용자만 수정 가능
+* 패킷 크기에 제한 없음
+* QoS 지원
+* IPv4와 뛰어난 호환성
+
+# Domain Name System(DNS)
+* 문자 -> ip 주소로 변환
+* 도메인 이름은 왼쪽에서 오른쪽으로 갈수록 상위 도메인을 의미
+* www.naver.com
+    * com: 최상위 도메인 (TLD), 상업용 웹사이트
+    * naver: 2단계 도메인 (SLD), 네이버 회사
+    * www: 3단계 도메인, 웹 서비스를 나타냄
+* www.sinagong.co.kr
+    * kr: 최상위 도메인 (TLD), 한국
+    * co: 2단계 도메인, 회사(company)를 의미, go.kr 이라면 한국 정부기관, ac.kr이라면 한국 학술기관
+    * sinagong: 3단계 도메인, 시나공 브랜드
+    * www: 4단계 도메인, 웹 서비스를 나타냄
+
+# OSI 7계층
+
+| 계층 | 이름 | 영어 이름 | PDU(Protocol Data Unit) |
+|:----:|:----:|:---------:|:----------------------:|
+| 7 | 응용 계층 | Application Layer | Message |
+| 6 | 표현 계층 | Presentation Layer | Message |
+| 5 | 세션 계층 | Session Layer | Message |
+| 4 | 전송 계층 | Transport Layer | Segment |
+| 3 | 네트워크 계층 | Network Layer | Packet |
+| 2 | 데이터 링크 계층 | Data Link Layer | Frame |
+| 1 | 물리 계층 | Physical Layer | Bit |
+
+## 1. 물리 계층(Physical Layer)
+* 데이터를 전송하기 위한 물리적 매체를 제공
+
+## 2. 데이터 링크 계층(Data Link Layer)
+* 두개의 인접한 개발 시스템들 간의 데이터 전송을 제공
+* 흐름제어, 프레임 동기화, 오류 제어, 순서 제어
+
+## 3. 네트워크 계층(Network Layer)
+* 네트워크 연결을 설정, 유지, 해제
+* 경로 설정, 데이터 교환 및 중계, 트래픽 제어, 패킷 정보 전송
+
+## 4. 전송 계층(Transport Layer)
+* End system 같의 전송 연결 설정, 데이터 전송, 연결 해제 기능 담당
+* 주소 설정, 다중화(분할 및 재조립), 오류 제어, 흐름 제어 수행
+
+## 5. 세션 계층(Session Layer)
+* 송수신측 간의 관련성을 유지하고 대화 제어 담당
+
+## 6. 표현 계층(Presentation Layer)
+* 응용계층으로부터 받은 데이터를 세션계층에 보내기 전에 통신에 적당한 형태로 변환, 그 반대도 기능
+* 코드 변환, 데이터 암호화, 데이터 압축, 구문 검색, 포맷 변환, 문맥 관리
+
+## 7. 응용 계층(Application Layer)
+* 사용자와 가장 가까운 계층, 사용자가 OSI7계층에 접근할수 있도록 서비스 제공
+* 응용 프로세스 간의 정보 교환, 전자 사서함, 파일 전송, 가상 터미널 등
+
+# TCP/IP 4계층
+
+| 계층 | 이름 | 영어 이름 | PDU(Protocol Data Unit) | Protocol |
+|:----:|:----:|:---------:|:----------------------:|:--------:|
+| 4 | 응용 계층 | Application Layer | Message | TELNET, FTP, SMTP, DNS, HTTP |
+| 3 | 전송 계층 | Transport Layer | Segment | TCP, UDP, RTCP |
+| 2 | 인터넷 계층 | Internet Layer | Packet | IP, ICMP, IGMP, ARP, RARP |
+| 1 | 네트워크 액세스 계층 | Network Interface Layer | Frame | Ethernet, IEEE 802, X.25 |
+
+## 응용 계층 Protocol
+* FTP(File Transfer Protocol): 파일 전송 프로토콜, 21번 포트
+* SMTP(Simple Mail Transfer Protocol): 메일 전송 프로토콜, 25번 포트
+* DNS: 도메인 네임을 IP 주소로 매핑, 53번 포트
+* TELNET: 원격 로그인 프로토콜 가상 터미널 기능도 수행, 23번 포트
+* SNMP(Simple Nework Management Protocol): 네트워크 관리 프로토콜, 161번 포트
+* HTTP: www, 80번 포트, 80번 포트
+
+그밖의 웰 노운 포트들
+* FTP: 21
+* SSH: 22
+* Telnet: 23
+* SMTP: 25
+* DNS: 53
+* HTTP: 80
+* POP3: 110, Post office protocol로 이메일 관련
+* NNTP: 119, Network News Transfer Protocol로 뉴스 그룹 관련
+* IMAP: 143, Internet Message Access Protocol로 이메일 관련
+* SNMP: 161
+* HTTPS: 443
+
+## 전송 계층 Protocol
+* TCP(Transmission Control Protocol): 연결 지향적, 패킷의 분실, 손상, 지연이나 순서 보장
+* UDP(User Datagram Protocol): 비연결 지향적, 신뢰성이 낮지만 빠른 전송
+* RTCP: 패킷의 전송 품질 제어
+
+
+### 3way Handshake
+1. 클라이언트가 서버에게 연결 요청 패킷을 보냄(SYN)
+2. 서버가 클라이언트에게 요청을 수락했다는 응답 패킷을 보냄(SYN+ACK)
+3. 클라이언트가 서버에게 수락했다는 패킷을 보냄(ACK)
+
+### 4way Handshake
+1. 클라이언트가 서버에게 연결을 종료하겠다는 패킷을 보냄(FIN)
+2. 서버가 클라이언트에게 연결 종료 요청을 수락했다는 패킷을 보냄(ACK)
+3. 서버가 클라이언트에게 연결 종료 요청을 보냄(FIN)
+4. 클라이언트가 서버에게 연결 종료 요청을 수락했다는 패킷을 보냄(ACK)
+
+
+## 인터넷 계층 Protocol
+* IP(Internet Protocol): 패킷의 경로 설정, 데이터 교환 및 중계, 트래픽 제어, 신뢰성 보장 어려움
+* ICMP(Internet Control Message Protocol): 통신중에 발생하는 어루 처리, 전송 경로 변경 등 제어 메시지 관리
+* IGMP(Internet Group Management Protocol): 멀티캐스트 그룹 관리
+* ARP(Address Resolution Protocol): IP주소를 MAC주소로 변환
+* RARP(Reverse Address Resolution Protocol): MAC주소를 IP주소로 변환
+
+## 네트워크 액세스 계층 Protocol
+* Ethernet: LAN에서 사용되는 프로토콜
+* IEEE 802
+* X.25: 공중 데이터망에서 사용되는 프로토콜
+
+
+
+# 경로제어
+* IGP: AS 내부 경로 제어
+    * RIP: 밸만 포드 알고리즘 사용, 라우팅 테이블 업데이트 주기 30초, 가장 널리 사용, 거리 벡터 라우팅 프로토콜 이라고도 함
+    * OSPF: 링크 상태 알고리즘 사용, 대규모 네트워크에서 사용, 다익스트라 알고리즘 사용, 링크 상태 라우팅 프로토콜 이라고도 함
+* EGP: AS 간 경로 제어
+* BGP: EGP 단점 보안
+
+# 트래픽 제어
+전송되는 패킷의 흐름 또는 그 양을 조절
+
+* 흐름제어: 송신측과 수신측의 데이터 처리 속도 차이를 조절
+    * Stop-and-Wait: 송신측이 패킷을 보내고 수신측이 확인 응답을 보내면 송신측이 다음 패킷을 보내는 방식
+    * Sliding Window: 송신측이 여러개의 패킷(Window Size만큼)을 보내고 수신측이 확인 응답을 보내면 송신측이 다음 패킷을 보내는 방식
+
+* 폭주제어: 송수친 측 사이의 패킷 수를 제어
+    * 느린 시작(Slow start): 처음에는 Window Size를 1로 설정하고 Window Size를 2배씩 증가시키다가 패킷 손실이 발생하면 Window Size를 1로 줄이고 다시 증가시키는 방식
+    * 혼잡 회피(Congestion Avoidance): Window Size를 1씩 증가시키는 방식
+
+

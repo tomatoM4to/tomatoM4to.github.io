@@ -87,7 +87,29 @@ Main memory가 있어 좀 햇갈릴 수 있습니다. 이렇게 생각하면 됩
 ## Graph Model
 먼저 Graph Model입니다. 자료구조 시간에 배웠던 그 Graph입니다. 먼저 Graph는 Node와 Edge로 이루어져 있습니다. 이때 Node는 Process, Resource를 의미하고 Edge는 Process가 Resource를 요청하는 것을 의미합니다.
 
+해당 그림을 보시면 R2에서 P1으로 가는 화살표가 있습니다. 이는 P1이 R2를 할당받은 상태라는 뜻입니다. 반대로 P1이 R1으로 가는 화살표는 P1이 R1을 요청한 상태라는 뜻입니다.
 
+![deadlock graph model](./img/deadlock/graph-model.png)
+
+해당 그림은 위의 테이블을 그림으로 표현한 것입니다. 순서와 함께 생각해보면, R2에서 P1이 가는 화살표가 1번, R1에서 P2로 가는 화살표가 2번, P1에서 R1으로 가는 화살표가 3번입니다. 여기까지는 아직 Deadlock이 아닙니다. 하지만 P2이 R2를 요청하는 4번 화살표가 생길시 Deadlock이 발생합니다. 즉 Process와 Resource 끼리 Graph Model을 통해 표현할시 Cycle이 생기면 Deadlock이 발생한다고 할 수 있습니다.
+
+## State Transition Model
+이번엔 다른 예제와 함께 살펴보겠습니다. 예제는 다음과 같습니다.
+
+* 2개의 Process와 A type의 자원이 2개 존재(Ra, Ra)
+* Process는 한번에 하나만 요청/반납 가능
+
+TODO: 이후 작성
+
+
+## Deadlock 발생 필요 요건
+이제 결론적으로 Deadlock이 발생하기 위한 필요 요건을 알아보겠습니다. 필요요건 이라 하면, 아래에서 소개할 4가지의 요건을 모두 만족해야만 Deadlock이 발생한다는 뜻입니다. 또한 이러한 4가지의 요건은 2가지로 또 나눌수 있습니다.
+
+### Deadlock이 발생하기 위한 자원의 특성
+Deadlock이 발생하기 위해선 자원들은 Exclusive use of resources, Non-preemptible resources 특성을 가져야 합니다. 복습하자만 한번에 한 Process만 사용 가능하면서, 중간에 빼앗기면 안돼는 자원이라는 뜻입니다.
+
+### Deadlock이 발생하기 위한 프로세스의 특성
+Hold and wait, Circular wait 특성을 가져야 합니다. Hold and wait(Partial allocation)는 말 그대로, 현재 어느 Resource는 잡고 있으면서 다른 Resource를 요청하는 상태입니다. Circular wait는 이전 모델에서 봤던대로 Cycle이 생기는 상태입니다.
 
 
 

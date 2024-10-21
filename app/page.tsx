@@ -16,6 +16,7 @@ export default function Home() {
                 <Link href="/network/1-Introduction">network</Link>
                 <Link href="/ai/1-AI-overview">ai</Link>
                 <Link href="/database/1-Introduction">database</Link>
+                <Link href="/oop/1-Introduction">OOP</Link>
             </div>
         </div>
     );
