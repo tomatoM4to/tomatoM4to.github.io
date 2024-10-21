@@ -1,0 +1,188 @@
+가장 중요한 파트고 사실 이전에 배운것들은 거의 사용하지 않음, 실무에선 사실상 5장 내용만 함
+
+# 프로그래밍 VS Databae Programming
+SQL을 사용안다라는 하나의 차이지만 100%다른 차이가 있음
+
+그렇다면 지금까지 우리가 배운 SQL은 DB proramminng이 아니냐? DB programming이 맞다. 핮만 여기서 말하고자 하는것은 응용프로그램 상에서 실행이 돼고 일반인들도 사용 가능하겠금 하는것이다.
+
+보통 Python 같은 언어에서 SQL을 사용한다 해서 Embeded Programming 라고 하기도 하다.
+
+사실 Python 상에서 SQL을 조작하는것이 대부분적인 개발자의 방식이다.
+
+## DB Programming 방법
+1. SQL 쓰기
+2. Oracle은 SQL에 for문 if문을 사용 가능하겟금 해주는 SQL의 확장판인 PL/SQL을 사용, 다른 DBMS에서도 전부 이런것들이 반드시 있음
+3. 일바언어로 만들어진 응용 프로그럄에서 데이터베이스 관리, 검색
+4, 4GL 사용, DB만 주로 처리하는 전용 프로그램인데, 90년대 웹 이전 시대에 많이썼지 지금은 거의 사장
+
+## 방법
+이 이외의 DB 프로그래밍은 거의 없음
+
+* 유닉스: 요즘 거의 사장
+* 하드웨어 계층: 겁나 큰 컴퓨터 서버 예기임, 요즘  일반 CPU, 클라우드가 너무 좋앚서 거의 사장
+
+***
+
+# PL/SQL
+이름ㅇ서 알수 있듯 일반 프로그래밍 언어처럼 절차식 언어다. 우리가 지금까지 작성한 SQL은 Non Procedure 식 언어였다.
+
+절차식 언어는 컴파일을 하든 인터프리터가 해석을 하든 하여튼 이것도 해석이 필요하다 일단
+
+작성은 일반적인 GUI 시스템에서 작성하면 됀다. 그리고 해당 GUI 프로그램이 컴파일해서 오라클에게 준다 오라클 DBMS는 기본적으로 Procedural 기능이 없다. GUI 상에서 실행하는 질의다.
+
+## 프로시저
+GUI 프로그램에서 확인 가능한 객체이기도 하다. 사실 pl/SQL만 책 한권이 나온다.
+
+일반적인 언어에서 함수와 프로시저의 차이를 이해해야 한다.
+
+함수는 먼갈 받아 처리해 return 하는거라면, 프로시저는 return이 없다. 그냥 쓰는거지 자바, 파이썬에는 없고 C에만 있다 한다. 없다 뿐이지 구분은 한닥 한다?
+
+함수든 프로시저든 결국 코드 제사용성을 위한 방법이다.
+
+이제 Oracle로 넘어가면 Oracle은 db다. DB는 프로시저나 함수를 DB에 Table 형태로 저장해 필요하다면 뽑아서 쓸 수 있다. 이를 Stored function, Stored Procudured 라 한다. 그래서 프로시저나 함수를 저장하면 GUI에 기록이 됀것을 볼 수 있다. 저장만 한다 해서 쓸 수 있는건 아니고 사용하려면 나중에 불러야 한다.
+
+이러한 PSQL을 쓰거나 배우는 궁극적인 이유는 바로 ㅍ로시저나 함수를 저장했다 나중에 사용하는거다.
+
+
+## 문법
+
+없으면 만들고 있으면 대체
+```sql
+CREATE OR REPLACE PROCEDURE InsertBook (  -- 프로시저 정의
+  ...
+) AS BEGIN
+INSERT INTO Book(bookid, bookname, publisher, price) VALUES(...)
+END;  -- BEGIN엔 ; 없어도 END엔 있음
+```
+
+
+프로시저 실행, 참고로 위 예제는 저장 프로시전데, return값이 없음
+```sql
+EXEC InsertBook(...);  -- ExEC도 PL/SQL 전용이라 실행이 안됀다고? 뭔소리지
+SELECT * FROM Book;
+```
+
+
+PL/SQL 제어문, 이정도만 알아도..
+
+제어무을 사용하는 프로시저
+```sql
+너무 많아서 특정 부분만 작성
+SELECT ount(*) INTO mycount FROM Book;
+```
+INTO: mycount라는 local변수에다가 바인딩함
+
+
+RETURN
+```sql
+averageval OUT NUMBER
+```
+
+DECLARE BEGIN END: PROceDURE이 없으니 프로시저가 아니다, c언어로 따지면 main() 함수다. 컴파일에서 저장돼는것도 아니고 그냥 실행이 됀닥 한다.
+
+```sql
+SET SERVEROUTPUT ON;  -- print 를 하기 위한 선언부
+DECLARE
+  val number;  -- local 변수 선언부
+BEGIN
+  procedure1(val);  -- SQL이 아니여서 EXEC도 필요없음
+  DBMS_OUTPUT.Put-LIne('val: ' || val);  -- print문임, ||은 or이 아닐 prin에서 쓰는 + 같은거, 참고로 print 하는 화면은 GUI 화면 상이라고 한다.
+END;
+```
+
+저장이 안돼면 별로 안쓰려나..?
+
+***
+
+# 커서(cursor)
+먼저 알아야할것
+
+* 비절차식: SQL: 결과가 집합(테이블)임, 컨트롤 할숙 엇ㅂ음
+* 절차식: PL/SQL: 줄단위
+
+그리고 절차식으로 나온 결과인 줄단위 결과를 한줄한줄 처리하기 위한 개념이 cursor이다.
+
+한줄한줄씩 가리킨다 라는 개념
+
+예제
+```SQL
+CReATE OR REPLACE PROCEDURE Interest  --파라미터가 없어 괄호 생략
+AS
+  val NUMBERiC;  --NUMBER의 또다른거
+  price NUMERIC;
+  CURSOR InterestCursor Is SELECt saleprice FROM Orders;  --속성이 하나인 테이블이 return 됄텐데 그중 첫번째 튜플을 가르키는 InterestCursor을 정의
+BEGIN
+  val := 0.0  --변수 초기화임, parscal 스타일이라고 한다.. 왜냐면 = 이게 SQL에선 비교문이라서
+  OPEN InterestCursor;  --해당 커서를 실해함, 이제 Orders 테이블에서 saleprice를 읽고 첫번째 튜플을 가르킴, 실제로 테이블이 넘어오고 어딘가에 저장이 돼 가르킨다 한다.
+
+  LOOP
+    FETCH InterestCursor INTO Price;  --첫번째 튜플을 읽고 Price에 바인딩, 근데 만약 값이 하나가 아니라 튜플이라면? 따로 튜플을 저장하는 타입이 있음, FETCH를 할때마다 알아서 다음 튜플로 넘어간다 한다.
+    EXIT WHEN InterestCursor%NOTFOUND  --커서가 쭉 돌다가 없다면, NOTFOUND를 리턴한다 고 한다. 이걸 체크하고 loop 종료
+
+    IF Price >= THeN
+      val := val + Price * 0.1
+    ELSE
+      val := val * price *  0.05
+    END IF;
+  END LOOP;
+  CLOSE InterestCursor;  --반드시 커서를 종료해야함
+  DBMS_OUTPUT_PUT_LINE('afdlfdf);
+END;
+```
+
+
+PL/SQL --> oracle --> hdd,ssd
+
+pL/SQL < oracle, 결과로 테이블이옴, cursor라는 놈은 해당 테이블이 첫번째 튜플을 가리킴, 그리고 다시 다음줄로 감
+
+
+***
+
+# 사용자 정의 함수
+
+return 쓰는거 빼면 거의 비슷함, 이건 컴파일? 예기는 없고 그냥 실행하면 function 공간에 저장됀다 함
+```SQL
+CREATE OR REPLACE FUNCTION fn (
+  val number
+) RETURN INT
+IS
+  val2 nNUMBER;
+BEGIN
+  val2 := 10000
+  RETURN val2;
+END;
+```
+
+
+쓰는법, 특징은 프로시저처럼 EXEC가 필요 없이 바로 쓸수 있음, 사실상 내장함수(sum, avg) 같은것의 확장이기 때문에, 굉장히 유용함
+```sql
+SELECTf(price) FROM Orders;
+```
+
+***
+
+# trigger
+제약조건을 확장하는것, INSERT, DELETE, UPDATE문이 실행될때 자동으로 실행되는 프로시저임, INSERT, DELETE, UPDATE문은 굉장히 중요한 거니..
+
+그리고 해당 SQL 실행저, 실행 후 에 실행할지 결정도 가능
+
+생성, 이것도 실행하면 TRIGGER 테이블에 들어감, 아래 예제는 백업테이블에 로깅하는것, 먼저 실행돼게 할수 있음 DBMS가 알아서 해줌, AFTER훨씬 많이 씀
+```sql
+CREATE OR REPLACE TRIGGER after;
+```
+
+```sql
+AFTER INSERT Book FOR eaCH ROW  --INSERT가 됀 이후에 실행
+DECLARE
+  val
+BEGIN
+INSERT INTO book_log VAlUE(:new.book_id, ...);
+print("백업 완료")
+END;
+```
+
+봐야할건 :new. 와 :old?임 현재 들어온 값이 :new이고 이전값이 :old임 위 예제론 INSert INTO Book VALUES(14, 'aa', 'asd', 10);
+에서 14가 돼겠지, UPdaTE 할때 많이 씀
+
+
+당연한거긴 하는데.. 자바든 파이썬이든 INSERT 하면 실행 됨
