@@ -1,3 +1,5 @@
+import Link from "next/link"
+
 function Count({
     count
 }: {
@@ -12,12 +14,12 @@ function Count({
 
 
 export function Button({
-    icon, title, count
+    icon, title, count, href
 }: {
-    icon: React.ReactNode, title: string, count: number
+    icon: React.ReactNode, title: string, count: number, href: string
 }) {
     return (
-        <button className="
+        <Link href={href} className="
             px-2
             py-1
             mb-1
@@ -38,6 +40,6 @@ export function Button({
             {
                 count !== -1 && <Count count={count} />
             }
-        </button>
+        </Link>
     )
 }
