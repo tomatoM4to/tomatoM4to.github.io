@@ -10,6 +10,8 @@ import { notFound } from 'next/navigation';
 import remarkGfm from "remark-gfm";
 import { postPage, post } from '@/components/responsiveConfig';
 import 'github-markdown-css/github-markdown-light.css'
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 
 async function getContent(subject: string, post: string) {
     let filePath = path.join(process.cwd(), 'public', subject, `${decodeURI(post)}.mdx`);
@@ -19,7 +21,8 @@ async function getContent(subject: string, post: string) {
         source,
         options: {
             mdxOptions: {
-                remarkPlugins: [remarkGfm]
+                remarkPlugins: [remarkGfm, remarkMath],
+                rehypePlugins: [[rehypeKatex, { output: 'mathml' }]]
             }
         },
         components: {
