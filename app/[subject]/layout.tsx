@@ -4,6 +4,21 @@ import { notFound } from 'next/navigation';
 import { SideList } from '@/components/sidebar/sideList';
 import { SideMenu } from '@/components/sideMenu/menu';
 
+function sortedFileList(res: string[]) {
+    let newRes = res
+        .map(res => res.split("-"))
+        .map(res => {
+            return {
+                order: parseInt(res[0]),
+                name: res.join("-"),
+            }
+        })
+        .sort((a, b) => a.order - b.order)
+        .map(res => res.name);
+    return newRes;
+}
+
+
 export async function generateStaticParams() {
     let params = [];
     let root = path.join(process.cwd(), 'public');
@@ -26,7 +41,7 @@ export default async function Layout({
 }) {
     const filePath = path.join(process.cwd(), 'public', params.subject);
     try {
-        let res = await fs.readdir(filePath);
+        let res: string[] = sortedFileList(await fs.readdir(filePath));
         return (
             <div className="flex">
                 <SideMenu res={res} params={params} />
