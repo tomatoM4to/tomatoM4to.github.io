@@ -50,7 +50,7 @@ export default function Home() {
                     <BookLayout title="컴퓨터 과학">
                         <Book href="/os/1-Computer-System-Overview" icon={<IoHardwareChipOutline size={80} />} title="OS" />
                         <Book href="/network/1-Introduction" icon={<GiMeshNetwork size={80} />} title="Network" />
-                        <Book href="/ai/1-AI-overview" icon={<FaHeadSideVirus size={80} />} title="AI" />
+                        <Book href="/ai/1-Basis-math" icon={<FaHeadSideVirus size={80} />} title="AI" />
                         <Book href="/database/1-Introduction" icon={<GoDatabase size={80} />} title="Database" />
                     </BookLayout>
                 </div>
