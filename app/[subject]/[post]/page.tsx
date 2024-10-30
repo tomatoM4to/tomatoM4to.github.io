@@ -1,9 +1,9 @@
 import { compileMDX } from 'next-mdx-remote/rsc';
 import fs from 'fs/promises';
 import path from 'path';
-import { heads } from '@/components/mdx/heads';
+// import { heads } from '@/components/mdx/heads';
 import { lists } from '@/components/mdx/list';
-import { table } from '@/components/mdx/table';
+// import { table } from '@/components/mdx/table';
 import { highlights } from '@/components/mdx/highlights';
 import { code } from '@/components/mdx/code';
 import { notFound } from 'next/navigation';
@@ -12,6 +12,7 @@ import { postPage, post } from '@/components/responsiveConfig';
 import 'github-markdown-css/github-markdown-light.css'
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 
 async function getContent(subject: string, post: string) {
     let filePath = path.join(process.cwd(), 'public', subject, `${decodeURI(post)}.mdx`);
