@@ -1,0 +1,69 @@
+# Network Layer: Control Plane
+Network Layer에는 두가지 기능이 있다.
+* forwarding: 라우터의 입력 포트에서 출력 포트로 패킷을 이동시키는 것
+* routing: 출발지에서 목적지까지의 경로 결정
+
+## conrol plane
+* routing 담당
+
+### 접근법
+* Per-router control (traditional)
+  * 각각의 라우터에 있는 control plane 들이 서로 상호작용 하며 동립적인 routing algorithm을 통해 router가 path를 결정
+* logically centralized control (software defined netwrk)
+  * Remote controller가 전체 forwarding table을계산하고 각 router에 설치, router 내부의 control agent가 remote controller와 상호작용해서 해당 과정 진행
+
+***
+
+# Routing Protocols
+* 목표: src에서 dest 까지의 좋은 path를 결정하는것
+  * path: 패킷이 src-dest 까지 갈 때 지나가는 router들의 순서
+
+**link const**
+* cont가 있는 방향 그래프
+* 연결이 없다면 INF(infinate)로 설정
+* cost는 network operator에 의해 설정됨
+
+
+## 분류
+* 글로벌: 모든 라우투가 네트워크 topology와 link cost를 알고 있는 경우, link state 알고리즘 사용
+* 분산형: 라우터가 물리적인 이웃의 정보만 받고 조금씩 업데이트, distance vector algorithm 사용
+* 정적 알고리즘: 경로벼경 X
+* 공적 아고리즘: 추가적으로 link cost를 업데이트
+
+
+## link state
+* 다익스트라 사용: 한 노드에서 최소비용을 계산하기 위해 전체노드에 대한 경로를 계산
+* 모든 노드가 전체 topology와 link cost를 알고 있음, link state broadcast에 의해 알게 된다.
+
+나포함 총 11개의 노드가 있다면 10번 돌려야함
+
+비싸고, 메모리도 많이 든다, 그러니 한 조직에서만 쓴다다는것
+
+# 표현
+Cx, y = 무한대
+* 만약 x에서 y로 가는 다이랙트 길이 없다면 무한대로 표현함
+
+D(v): 가장 짧은 비용
+
+스탭마다 가장 짧은애 선택
+
+| Step | N' | D(v), P(v) | D(w), P(w) | D(x), P(x) | D(y), P(y) | D(z), P(z) |
+|------|----|------------|------------|------------|------------|------------|
+|  0   |  u |    2, u    |    5, u    |    1, u    |     무한    |     무한    |
+|  1   | ux |    2, u    |    4, x    |            |     2, x   |     무한    |
+|  2   |uxy |    2, u    |    3, y    |            |            |     4, y   |
+|  3   |uxyv|            |    3. y    |            |            |     4, y   |
+|  4   |uxyvw|            |            |            |            |     4, y   |
+|  5   |uxyvwz|            |            |            |            |            |
+
+
+
+***
+
+# 시간 복잡도
+알고리즘 복잡도 자체는 n^2만 예기함, nLogn 까지 줄일순 있음
+
+
+## Distance Vector
+* 벨만포드 사용
+* let D = min(이웃 노드로 가는 비용 + 이웃에서목적지로 가는 비용):비교해서 최소값 선택
