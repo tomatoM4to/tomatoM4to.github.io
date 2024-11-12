@@ -10,16 +10,22 @@ import remarkGfm from "remark-gfm";
 import 'github-markdown-css/github-markdown-light.css'
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import { ReactElement } from 'react';
 
+export interface SubjectInfo {
+    enSubject: string,
+    enPost: string,
+    subject: string
+}
 
-export async function getSubjectInfoList() {
-    let res = [];
-    let subjectList = await fs.readdir(path.join(process.cwd(), 'public'));
+export async function getSubjectInfoList(): Promise<SubjectInfo[]> {
+    let res: SubjectInfo[] = [];
+    let subjectList: string[] = await fs.readdir(path.join(process.cwd(), 'public'));
     for (let subject of subjectList) {
         let postList: Post[] = await getSortedPostList(subject);
 
         res.push({
-            enSubject: encodeURIComponent(subject),
+            enSubject: subject,
             enPost: postList[0].originalName,
             subject,
         })
@@ -27,16 +33,20 @@ export async function getSubjectInfoList() {
     return res;
 }
 
-export async function getSubjectParams() {
-    let subjectList = await fs.readdir(path.join(process.cwd(), 'public'));
-    return subjectList.map(subject => {
+export interface SubjectParams {
+    subject: string
+}
+
+export async function getSubjectParams(): Promise<SubjectParams[]> {
+    let subjectList: string[] = await fs.readdir(path.join(process.cwd(), 'public'));
+    return subjectList.map((subject: string) => {
         return {
             subject: subject
         }
     })
 }
 
-export type Post = {
+export interface Post {
     isOutLine: boolean,
     firstOrder: number,
     secondOrder: number,
@@ -89,14 +99,19 @@ export async function getSortedPostList(subject: string): Promise<Post[]> {
     return newPostList;
 }
 
-export async function getPostParams() {
-    let res = [];
-    let subjectList = await getSubjectParams();
+export interface PostParams {
+    subject: string,
+    post: string
+}
+
+export async function getPostParams(): Promise<PostParams[]> {
+    let res: PostParams[] = [];
+    let subjectList: SubjectParams[] = await getSubjectParams();
     for (let s of subjectList) {
-        let postListPath = path.join(process.cwd(), 'public', decodeURIComponent(s.subject));
-        let postList = await fs.readdir(postListPath);
-        for (let p of postList) {
-            let post = p.replace('.mdx', '');
+        let postListPath: string = path.join(process.cwd(), 'public', s.subject);
+        let postList: string[] = await fs.readdir(postListPath);
+        for (let p of postList as string[]) {
+            let post: string = p.replace('.mdx', '');
             res.push({
                 subject: s.subject,
                 post: post
@@ -106,11 +121,15 @@ export async function getPostParams() {
     return res;
 }
 
-export async function getPost(subject: string, post: string) {
-    let postPath = path.join(process.cwd(), 'public', decodeURIComponent(subject), `${decodeURIComponent(post)}.mdx`);
-    let source = await fs.readFile(postPath, 'utf8');
+interface CompileMDXResult {
+    content: ReactElement;
+}
 
-    let { content } = await compileMDX({
+export async function getPost(subject: string, post: string): Promise<ReactElement> {
+    let postPath: string = path.join(process.cwd(), 'public', subject, `${post}.mdx`);
+    let source: string = await fs.readFile(postPath, 'utf8');
+
+    let { content }: CompileMDXResult = await compileMDX({
         source,
         options: {
             mdxOptions: {

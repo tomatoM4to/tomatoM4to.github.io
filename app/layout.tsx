@@ -14,7 +14,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-    metadataBase: new URL('https://tomatom4to.github.io'), // 실제 도메인으로 변경해주세요
+    metadataBase: new URL('https://tomatom4to.github.io'),
     title: {
         default: "tomatom4to's Computer Science Blog",
         template: "%s | tomatom4to's CS Blog"
