@@ -5,7 +5,7 @@ export function MenuButton({
     setIsOpen
 }: {
     isOpen: boolean,
-    setIsOpen: Function
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
     const tailwind = `w-6 h-0.5 bg-black rounded transform transition-transform duration-300 ease-in-out`;
     return (

@@ -3,6 +3,27 @@ import Link from 'next/link';
 import { sideList } from "@/components/responsiveConfig";
 import { Post } from "../utils";
 
+export function ListLink({
+    post,
+    params,
+    className,
+    onClick
+}: {
+    post: Post,
+    params: { subject: string },
+    className?: string,
+    onClick?: () => void
+}) {
+    return (
+        <Link
+            href={`/${params.subject}/${post.originalName}`}
+            className={`${className} px-2 py-1 mb-1 hover:bg-gray-300 transition-colors rounded-lg`}
+            onClick={onClick}>
+            {post.order}. {post.title}
+        </Link>
+    )
+}
+
 
 export function SideList({
     res,
@@ -19,15 +40,11 @@ export function SideList({
                     res.map((post: Post) => {
                         if (post.isOutLine) {
                             return (
-                                <Link key={post.order} href={`/${params.subject}/${post.originalName}`} className="ml-3">
-                                    {post.order}. {post.title}
-                                </Link>
+                                <ListLink key={post.order} post={post} params={params} className="pl-4" />
                             )
                         }
                         return (
-                            <Link key={post.order} href={`/${params.subject}/${post.originalName}`}>
-                                {post.order}. {post.title}
-                            </Link>
+                            <ListLink key={post.order} post={post} params={params} />
                         )
                     })
                 }

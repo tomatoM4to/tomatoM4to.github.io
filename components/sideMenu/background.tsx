@@ -7,7 +7,7 @@ export function Background({
     setIsOpen
 }: {
     isOpen: boolean,
-    setIsOpen: Function
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
     useEffect(() => {
         if (isOpen) {

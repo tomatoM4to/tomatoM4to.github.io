@@ -1,8 +1,6 @@
 'use client';
 
 import { MiniTitle } from "@/components/miniTitle";
-import Link from 'next/link';
-import path from 'path';
 import { Button } from "@/components/button";
 import { VscCode } from "react-icons/vsc";
 import { VscSourceControl } from "react-icons/vsc";
@@ -10,6 +8,7 @@ import { VscSparkle } from "react-icons/vsc";
 import { VscTerminalLinux } from "react-icons/vsc";
 import { VscGithubInverted } from "react-icons/vsc";
 import { Post } from "../utils";
+import { ListLink } from "../sidebar/sideList";
 
 function PostList({
     res,
@@ -18,7 +17,7 @@ function PostList({
 }: {
     res: Post[],
     params: { subject: string },
-    setIsOpen: Function
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }) {
     return (
         <div className="pb-5 flex flex-col overflow-y-auto overscroll-contain">
@@ -26,15 +25,11 @@ function PostList({
                 res.map((post, idx) => {
                     if (post.isOutLine) {
                         return (
-                            <Link key={post.order} href={`/${params.subject}/${post.originalName}`} onClick={() => setIsOpen(false)}>
-                                {post.order}. {post.title}
-                            </Link>
+                            <ListLink key={post.order} post={post} params={params} className="pl-4" onClick={() => setIsOpen(false)} />
                         )
                     }
                     return (
-                        <Link key={post.order} href={`/${params.subject}/${post.originalName}`} className="ml-3" onClick={() => setIsOpen(false)}>
-                            {post.order}. {post.title}
-                        </Link>
+                        <ListLink key={post.order} post={post} params={params} onClick={() => setIsOpen(false)} />
                     )
                 })
             }
@@ -49,7 +44,7 @@ export function MenuList({
     params
 }: {
     isOpen: boolean,
-    setIsOpen: Function,
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>,
     res?: Post[],
     params?: { subject: string }
 }) {
