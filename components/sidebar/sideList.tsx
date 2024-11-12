@@ -1,13 +1,14 @@
 import { MiniTitle } from "@/components/miniTitle";
 import Link from 'next/link';
-import path from 'path';
 import { sideList } from "@/components/responsiveConfig";
+import { Post } from "../utils";
+
 
 export function SideList({
     res,
     params
 }: {
-    res: string[],
+    res: Post[],
     params: { subject: string }
 }) {
     return (
@@ -15,24 +16,20 @@ export function SideList({
             <MiniTitle title="포스팅" />
             <div className="h-full flex flex-col overflow-y-scroll overscroll-contain">
                 {
-                    res && res.map(file => {
-                        let { name } = path.parse(file);
-                        return name;
-                    })
-                        .map((file, idx) => {
-                            let newFileList = file.split('-');
-                            newFileList.shift();
+                    res.map((post: Post) => {
+                        if (post.isOutLine) {
                             return (
-                                newFileList.length !== 0 &&
-                                <Link
-                                    href={`/${params.subject}/${file}`}
-                                    key={idx}
-                                    className="px-2 py-1 mb-1 hover:bg-gray-300 transition-colors rounded-lg"
-                                >
-                                    {idx + 1}. {newFileList.join(' ')}
+                                <Link key={post.order} href={`/${encodeURIComponent(params.subject)}/${encodeURIComponent(post.originalName)}`} className="ml-3">
+                                    {post.order}. {post.title}
                                 </Link>
                             )
-                        })
+                        }
+                        return (
+                            <Link key={post.order} href={`/${encodeURIComponent(params.subject)}/${encodeURIComponent(post.originalName)}`}>
+                                {post.order}. {post.title}
+                            </Link>
+                        )
+                    })
                 }
             </div>
         </div>

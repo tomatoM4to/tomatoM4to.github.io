@@ -5,6 +5,7 @@ import { useState } from "react"
 import { MenuList } from "./menuList";
 import { sideMenu } from "@/components/responsiveConfig";
 import { Background } from "./background";
+import { Post } from "@/components/utils";
 
 /*
 Background -> z-index: 5
@@ -15,7 +16,7 @@ export function SideMenu({
     res,
     params
 }: {
-    res?: string[],
+    res?: Post[],
     params?: { subject: string }
 }) {
     const [isOpen, setIsOpen] = useState(false);

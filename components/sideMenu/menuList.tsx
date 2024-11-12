@@ -9,38 +9,34 @@ import { VscSourceControl } from "react-icons/vsc";
 import { VscSparkle } from "react-icons/vsc";
 import { VscTerminalLinux } from "react-icons/vsc";
 import { VscGithubInverted } from "react-icons/vsc";
+import { Post } from "../utils";
 
 function PostList({
     res,
     params,
     setIsOpen
 }: {
-    res: string[],
+    res: Post[],
     params: { subject: string },
     setIsOpen: Function
 }) {
     return (
         <div className="pb-5 flex flex-col overflow-y-auto overscroll-contain">
             {
-                res && res.map(file => {
-                    let { name } = path.parse(file);
-                    return name;
-                })
-                    .map((file, idx) => {
-                        let newFileList = file.split('-');
-                        newFileList.shift();
+                res.map((post, idx) => {
+                    if (post.isOutLine) {
                         return (
-                            newFileList.length !== 0 &&
-                            <Link
-                                href={`/${params.subject}/${file}`}
-                                key={idx}
-                                className="px-2 py-1 mb-1 hover:bg-gray-300 transition-colors rounded-lg"
-                                onClick={() => setIsOpen(false)}
-                            >
-                                {idx + 1}. {newFileList.join(' ')}
+                            <Link key={post.order} href={`/${encodeURIComponent(params.subject)}/${encodeURIComponent(post.originalName)}`} onClick={() => setIsOpen(false)}>
+                                {post.order}. {post.title}
                             </Link>
                         )
-                    })
+                    }
+                    return (
+                        <Link key={post.order} href={`/${encodeURIComponent(params.subject)}/${encodeURIComponent(post.originalName)}`} className="ml-3" onClick={() => setIsOpen(false)}>
+                            {post.order}. {post.title}
+                        </Link>
+                    )
+                })
             }
         </div>
     )
@@ -54,7 +50,7 @@ export function MenuList({
 }: {
     isOpen: boolean,
     setIsOpen: Function,
-    res?: string[],
+    res?: Post[],
     params?: { subject: string }
 }) {
     return (
