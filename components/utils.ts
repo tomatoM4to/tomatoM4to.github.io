@@ -20,7 +20,7 @@ export async function getSubjectInfoList() {
 
         res.push({
             enSubject: encodeURIComponent(subject),
-            enPost: encodeURIComponent(postList[0].originalName),
+            enPost: postList[0].originalName,
             subject,
         })
     }
@@ -31,7 +31,7 @@ export async function getSubjectParams() {
     let subjectList = await fs.readdir(path.join(process.cwd(), 'public'));
     return subjectList.map(subject => {
         return {
-            subject: encodeURIComponent(subject)
+            subject: subject
         }
     })
 }
@@ -99,7 +99,7 @@ export async function getPostParams() {
             let post = p.replace('.mdx', '');
             res.push({
                 subject: s.subject,
-                post: encodeURIComponent(post)
+                post: post
             })
         }
     }

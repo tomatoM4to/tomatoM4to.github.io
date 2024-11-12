@@ -19,13 +19,13 @@ export function SideList({
                     res.map((post: Post) => {
                         if (post.isOutLine) {
                             return (
-                                <Link key={post.order} href={`/${encodeURIComponent(params.subject)}/${encodeURIComponent(post.originalName)}`} className="ml-3">
+                                <Link key={post.order} href={`/${params.subject}/${post.originalName}`} className="ml-3">
                                     {post.order}. {post.title}
                                 </Link>
                             )
                         }
                         return (
-                            <Link key={post.order} href={`/${encodeURIComponent(params.subject)}/${encodeURIComponent(post.originalName)}`}>
+                            <Link key={post.order} href={`/${params.subject}/${post.originalName}`}>
                                 {post.order}. {post.title}
                             </Link>
                         )

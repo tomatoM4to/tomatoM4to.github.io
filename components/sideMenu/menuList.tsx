@@ -26,13 +26,13 @@ function PostList({
                 res.map((post, idx) => {
                     if (post.isOutLine) {
                         return (
-                            <Link key={post.order} href={`/${encodeURIComponent(params.subject)}/${encodeURIComponent(post.originalName)}`} onClick={() => setIsOpen(false)}>
+                            <Link key={post.order} href={`/${params.subject}/${post.originalName}`} onClick={() => setIsOpen(false)}>
                                 {post.order}. {post.title}
                             </Link>
                         )
                     }
                     return (
-                        <Link key={post.order} href={`/${encodeURIComponent(params.subject)}/${encodeURIComponent(post.originalName)}`} className="ml-3" onClick={() => setIsOpen(false)}>
+                        <Link key={post.order} href={`/${params.subject}/${post.originalName}`} className="ml-3" onClick={() => setIsOpen(false)}>
                             {post.order}. {post.title}
                         </Link>
                     )
