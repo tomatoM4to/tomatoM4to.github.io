@@ -12,6 +12,21 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
 
+export async function getSubjectInfoList() {
+    let res = [];
+    let subjectList = await fs.readdir(path.join(process.cwd(), 'public'));
+    for (let subject of subjectList) {
+        let postList: Post[] = await getSortedPostList(subject);
+
+        res.push({
+            enSubject: encodeURIComponent(subject),
+            enPost: encodeURIComponent(postList[0].originalName),
+            subject,
+        })
+    }
+    return res;
+}
+
 export async function getSubjectParams() {
     let subjectList = await fs.readdir(path.join(process.cwd(), 'public'));
     return subjectList.map(subject => {

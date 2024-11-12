@@ -8,6 +8,7 @@ import { GoDatabase } from "react-icons/go";
 import { post } from '@/components/responsiveConfig';
 
 import { Inter } from 'next/font/google'
+import { getSubjectInfoList } from "@/components/utils";
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -40,7 +41,8 @@ function BookLayout({
     );
 }
 
-export default function Home() {
+export default async function Home() {
+    let info = await getSubjectInfoList();
     return (
         <div className="mt-32 flex w-full">
             <SideMenu />
@@ -48,10 +50,20 @@ export default function Home() {
             <div className="flex-1 flex justify-center">
                 <div className={`${post} ${inter.className} flex flex-col gap-52`}>
                     <BookLayout title="컴퓨터 과학">
-                        <Book href="/os/1-Computer-System-Overview" icon={<IoHardwareChipOutline size={80} />} title="OS" />
-                        <Book href="/network/1-Introduction" icon={<GiMeshNetwork size={80} />} title="Network" />
-                        <Book href={`/ai/${encodeURIComponent('[1]-Basis-math')}`} icon={<FaHeadSideVirus size={80} />} title="AI" />
-                        <Book href={`/database/${encodeURIComponent('[1]-Introduction')}`} icon={<GoDatabase size={80} />} title="Database" />
+                        {
+                            info.map((s) => {
+                                if (s.subject !== 'embedded' && s.subject !== 'network-knu' && s.subject !== 'example') {
+                                    return (
+                                        <Book
+                                            key={s.enSubject}
+                                            href={`/${s.enSubject}/${s.enPost}`}
+                                            title={s.subject}
+                                            icon={<GiMeshNetwork size={80} />}
+                                        />
+                                    )
+                                }
+                            })
+                        }
                     </BookLayout>
                 </div>
             </div>
