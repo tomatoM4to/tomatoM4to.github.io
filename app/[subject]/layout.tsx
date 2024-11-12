@@ -1,10 +1,10 @@
 import { notFound } from 'next/navigation';
 import { SideList } from '@/components/sidebar/sideList';
 import { SideMenu } from '@/components/sideMenu/menu';
-import { getPostParams, getSortedPostList, PostParams, Post } from '@/components/utils';
+import { getSubjectParams, SubjectParams, getSortedPostList, Post } from '@/components/utils';
 
-export async function generateStaticParams(): Promise<PostParams[]> {
-    return await getPostParams();
+export async function generateStaticParams(): Promise<SubjectParams[]> {
+    return await getSubjectParams();
 }
 
 export default async function Layout({

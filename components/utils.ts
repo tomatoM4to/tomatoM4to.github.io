@@ -109,6 +109,7 @@ export async function getPostParams(): Promise<PostParams[]> {
     let subjectList: SubjectParams[] = await getSubjectParams();
     for (let s of subjectList) {
         let postListPath: string = path.join(process.cwd(), 'public', s.subject);
+        postListPath = decodeURIComponent(postListPath);
         let postList: string[] = await fs.readdir(postListPath);
         for (let p of postList as string[]) {
             let post: string = p.replace('.mdx', '');
@@ -127,6 +128,7 @@ interface CompileMDXResult {
 
 export async function getPost(subject: string, post: string): Promise<ReactElement> {
     let postPath: string = path.join(process.cwd(), 'public', subject, `${post}.mdx`);
+    postPath = decodeURIComponent(postPath);
     let source: string = await fs.readFile(postPath, 'utf8');
 
     let { content }: CompileMDXResult = await compileMDX({
