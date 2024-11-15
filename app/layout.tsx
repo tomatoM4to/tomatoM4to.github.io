@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Nav } from "@/components/nav/nav";
 import { Jua } from "next/font/google";
-// import { Sidebar } from "@/components/sidebar/sidebar";
 
 const jua = Jua({ subsets: ["latin"], weight: ["400"] });
 
@@ -61,7 +60,6 @@ export default function RootLayout({
         <html lang="ko">
             <body className={`${jua.className} min-h-screen`}>
                 <div className="grid grid-cols-[24rem_1fr] auto-rows-auto">
-                    {/* <Sidebar /> */}
                     <Nav />
                     <main className="col-span-2">
                         {children}

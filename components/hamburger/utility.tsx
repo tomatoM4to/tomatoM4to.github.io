@@ -2,22 +2,11 @@ import Link from "next/link";
 import { VscGithubInverted } from "react-icons/vsc";
 import { GrLanguage } from "react-icons/gr";
 import { BsFillMoonStarsFill } from "react-icons/bs";
-
-function Search() {
-    return (
-        <input
-            type="text"
-            className="w-36 h-7 rounded-full border-2 border-black pl-2"
-            placeholder="search"
-        />
-    )
-}
+import { FaSearch } from "react-icons/fa";
 
 export function UtilityButtons() {
     return (
-        <div className="hidden lg:flex items-center">
-            <Search />
-            <div className="bg-slate-300 h-10 w-0.5 ml-2"></div>
+        <div className="h-14 flex items-center border-b-2">
             <Link
                 href="https://github.com/tomatoM4to/tomatoM4to.github.io"
                 className="p-2 rounded-full hover:bg-gray-300 transition-colors duration-300"
@@ -25,20 +14,14 @@ export function UtilityButtons() {
                 <VscGithubInverted className="text-2xl cursor-pointer" />
             </Link>
             <button className="p-2 rounded-full hover:bg-gray-300 transition-colors duration-300">
-                <GrLanguage className="text-2xl cursor-pointer" />
+                <GrLanguage className="text-xl cursor-pointer" />
             </button>
             <button className="p-2 rounded-full hover:bg-gray-300 transition-colors duration-300">
-                <BsFillMoonStarsFill className="text-2xl cursor-pointer" />
+                <BsFillMoonStarsFill className="text-xl cursor-pointer" />
+            </button>
+            <button className="p-2 rounded-full hover:bg-gray-300 transition-colors duration-300">
+                <FaSearch className="text-xl cursor-pointer" />
             </button>
         </div>
-    )
-}
-
-export function Nav() {
-    return (
-        <nav className={`bg-white w-full h-14 flex items-center justify-between pl-5 pr-5 mb-20 border-b-2 border-b-slate-300 text-2xl fixed`}>
-            <Link href="/">tomatoM4to&apos;s blog</Link>
-            <UtilityButtons />
-        </nav>
     )
 }

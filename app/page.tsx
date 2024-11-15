@@ -1,20 +1,11 @@
-import { mainPage } from "@/components/responsiveConfig";
-import { SideMenu } from "@/components/sideMenu/menu";
 import { Book } from "@/components/book";
 import { GiMeshNetwork } from "react-icons/gi";
-// import { IoHardwareChipOutline } from "react-icons/io5";
-// import { FaHeadSideVirus } from "react-icons/fa";
-// import { GoDatabase } from "react-icons/go";
 import { post } from '@/components/responsiveConfig';
 
 import { Inter } from 'next/font/google'
 import { getSubjectInfoList, SubjectInfo } from "@/components/utils";
 
 const inter = Inter({ subsets: ['latin'] })
-
-function Dummy() {
-    return <div className={`${mainPage}`}></div>;
-}
 
 function BookLayout({
     children,
@@ -45,8 +36,6 @@ export default async function Home() {
     let info: SubjectInfo[] = await getSubjectInfoList();
     return (
         <div className="mt-32 flex w-full">
-            <SideMenu />
-            {/* <Dummy /> */}
             <div className="flex-1 flex justify-center">
                 <div className={`${post} ${inter.className} flex flex-col gap-52`}>
                     <BookLayout title="컴퓨터 과학">

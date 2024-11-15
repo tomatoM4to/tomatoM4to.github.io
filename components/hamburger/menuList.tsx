@@ -1,14 +1,8 @@
 'use client';
 
-import { MiniTitle } from "@/components/miniTitle";
-import { Button } from "@/components/button";
-import { VscCode } from "react-icons/vsc";
-import { VscSourceControl } from "react-icons/vsc";
-import { VscSparkle } from "react-icons/vsc";
-import { VscTerminalLinux } from "react-icons/vsc";
-import { VscGithubInverted } from "react-icons/vsc";
 import { Post } from "../utils";
 import { ListLink } from "../sidebar/sideList";
+import { UtilityButtons } from "@/components/hamburger/utility";
 
 function PostList({
     res,
@@ -45,8 +39,8 @@ export function MenuList({
 }: {
     isOpen: boolean,
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>,
-    res?: Post[],
-    params?: { subject: string }
+    res: Post[],
+    params: { subject: string }
 }) {
     return (
         <div
@@ -69,26 +63,9 @@ export function MenuList({
                 `}
             style={{ zIndex: 10 }}
         >
-            <MiniTitle title="메인메뉴" className="mt-12" />
-            <div className="flex flex-col border-b-2 border-gray-300">
-                <Button href="/" icon={<VscSparkle />} title="소개" count={-1} />
-                <Button href="/" icon={<VscSourceControl />} title="컴퓨터 과학" count={0} />
-                <Button href="/" icon={<VscCode />} title="데브" count={0} />
-                <Button href="/" icon={<VscTerminalLinux />} title="리눅스/도커" count={0} />
-                <Button href="/" icon={<VscGithubInverted />} title="깃헙" count={0} />
-            </div>
+            <UtilityButtons />
 
-            {
-                res && params && (
-                    <MiniTitle title="목차" className="mt-2" />
-                )
-            }
-
-            {
-                res && params && (
-                    <PostList res={res} params={params} setIsOpen={setIsOpen} />
-                )
-            }
+            <PostList res={res} params={params} setIsOpen={setIsOpen} />
         </div>
     )
 }

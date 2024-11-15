@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { SideList } from '@/components/sidebar/sideList';
-import { SideMenu } from '@/components/sideMenu/menu';
+import { Hamburger } from '@/components/hamburger/hamburger';
 import { getSubjectParams, SubjectParams, getSortedPostList, Post } from '@/components/utils';
 
 export async function generateStaticParams(): Promise<SubjectParams[]> {
@@ -18,7 +18,7 @@ export default async function Layout({
         let res: Post[] = await getSortedPostList(params.subject);
         return (
             <div className="flex">
-                <SideMenu res={res} params={params} />
+                <Hamburger res={res} params={params} />
                 <SideList res={res} params={params} />
                 {children}
             </div>

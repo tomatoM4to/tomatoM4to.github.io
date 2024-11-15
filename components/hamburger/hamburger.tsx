@@ -1,6 +1,13 @@
 'use client';
 
-export function MenuButton({
+import { useState } from "react"
+import { MenuList } from "./menuList";
+import { hamburger } from "@/components/responsiveConfig";
+import { Background } from "./background";
+import { Post } from "@/components/utils";
+
+
+function Template({
     isOpen,
     setIsOpen
 }: {
@@ -21,8 +28,8 @@ export function MenuButton({
             h-10
             rounded-lg
             fixed
-            right-3
-            top-3
+            right-2
+            top-2
             active:outline-none
             p-2
             hover:bg-gray-200
@@ -40,4 +47,26 @@ export function MenuButton({
             ></span>
         </button>
     );
+}
+
+/*
+Background -> z-index: 5
+MenuList -> z-index: 10
+Template -> z-index: 15
+*/
+export function Hamburger({
+    res,
+    params
+}: {
+    res: Post[],
+    params: { subject: string }
+}) {
+    const [isOpen, setIsOpen] = useState(false);
+    return (
+        <div className={`${hamburger}`}>
+            <Template isOpen={isOpen} setIsOpen={setIsOpen} />
+            <MenuList isOpen={isOpen} setIsOpen={setIsOpen} res={res} params={params} />
+            <Background isOpen={isOpen} setIsOpen={setIsOpen} />
+        </ div>
+    )
 }
