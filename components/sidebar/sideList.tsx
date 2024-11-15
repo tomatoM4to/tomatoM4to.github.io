@@ -32,22 +32,21 @@ export function SideList({
     params: { subject: string }
 }) {
     return (
-        <div className={`${sideList} flex-col h-screen border-r-2 border-gray-300 mt-14 p-3 fixed`}>
-            {/* <MiniTitle title="포스팅" /> */}
-            <div className="h-full mb-14 flex flex-col overflow-y-auto overscroll-contain">
-                {
-                    res.map((post: Post) => {
-                        if (post.isOutLine) {
-                            return (
-                                <ListLink key={post.order} post={post} params={params} className="pl-4" />
-                            )
-                        }
+        <div
+            className={`${sideList} flex-col h-screen border-r-2 border-gray-300 mt-14 p-1 pl-5 fixed overflow-y-auto overscroll-contain`}
+        >
+            {
+                res.map((post: Post) => {
+                    if (post.isOutLine) {
                         return (
-                            <ListLink key={post.order} post={post} params={params} />
+                            <ListLink key={post.order} post={post} params={params} className="pl-4" />
                         )
-                    })
-                }
-            </div>
+                    }
+                    return (
+                        <ListLink key={post.order} post={post} params={params} />
+                    )
+                })
+            }
         </div>
     )
 }

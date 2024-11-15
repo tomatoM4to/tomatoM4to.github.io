@@ -2,9 +2,112 @@
 @tailwind components;
 @tailwind utilities;
 
-.markdown-body {
-    color: #24292e;
-    background-color: #ffffff;
+/*
+
+BROWSER SCROLLBAR KITS
+
+*/
+
+:root {
+    --scrollbar-thumb: #808080;
+    --scrollbar-thumb-hover: #666666;
+}
+
+/* CHROME & SAFARI */
+*::-webkit-scrollbar {
+    width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 8px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+    border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb:active {
+    background: var(--scrollbar-thumb-hover);
+    border-radius: 10px;
+}
+
+/* MOZILLA FIREFOX */
+*::-moz-scrollbar {
+    width: 8px;
+}
+
+*::-moz-scrollbar-track {
+    background-color: transparent;
+}
+
+*::-moz-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 8px;
+}
+
+*::-moz-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+    border-radius: 10px;
+}
+
+*::-moz-scrollbar-thumb:active {
+    background: var(--scrollbar-thumb-hover);
+    border-radius: 10px;
+}
+
+
+/* MICROSOFT INTERNET EXPLORER */
+*::-ms-scrollbar {
+    width: 8px;
+}
+
+*::-ms-scrollbar-track {
+    background-color: transparent;
+}
+
+*::-ms-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 8px;
+}
+
+*::-ms-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+    border-radius: 10px;
+}
+
+*::-ms-scrollbar-thumb:active {
+    background: var(--scrollbar-thumb-hover);
+    border-radius: 10px;
+}
+
+/* OPERA */
+*::-o-scrollbar {
+    width: 8px;
+}
+
+*::-o-scrollbar-track {
+    background-color: transparent;
+}
+
+*::-o-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 8px;
+}
+
+*::-o-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+    border-radius: 10px;
+}
+
+*::-o-scrollbar-thumb:active {
+    background: var(--scrollbar-thumb-hover);
+    border-radius: 10px;
 }
 
 .book-container {
