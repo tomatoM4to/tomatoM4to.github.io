@@ -6,7 +6,7 @@ import { FaSearch } from "react-icons/fa";
 
 export function UtilityButtons() {
     return (
-        <div className="h-14 flex items-center border-b-2">
+        <nav className="h-14 flex items-center border-b-2">
             <Link
                 href="https://github.com/tomatoM4to/tomatoM4to.github.io"
                 className="p-2 rounded-full hover:bg-gray-300 transition-colors duration-300"
@@ -22,6 +22,6 @@ export function UtilityButtons() {
             <button className="p-2 rounded-full hover:bg-gray-300 transition-colors duration-300">
                 <FaSearch className="text-xl cursor-pointer" />
             </button>
-        </div>
+        </nav>
     )
 }

@@ -63,10 +63,10 @@ export function Hamburger({
 }) {
     const [isOpen, setIsOpen] = useState(false);
     return (
-        <div className={`${hamburger}`}>
+        <aside className={`${hamburger}`}>
             <Template isOpen={isOpen} setIsOpen={setIsOpen} />
             <MenuList isOpen={isOpen} setIsOpen={setIsOpen} res={res} params={params} />
             <Background isOpen={isOpen} setIsOpen={setIsOpen} />
-        </ div>
+        </ aside>
     )
 }
