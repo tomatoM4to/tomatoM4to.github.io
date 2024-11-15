@@ -1,4 +1,3 @@
-import { MiniTitle } from "@/components/miniTitle";
 import Link from 'next/link';
 import { sideList } from "@/components/responsiveConfig";
 import { Post } from "../utils";
@@ -33,9 +32,9 @@ export function SideList({
     params: { subject: string }
 }) {
     return (
-        <div className={`${sideList} flex-col mt-52 p-7 pb-60 fixed h-screen`}>
-            <MiniTitle title="포스팅" />
-            <div className="h-full flex flex-col overflow-y-scroll overscroll-contain">
+        <div className={`${sideList} flex-col h-screen border-r-2 border-gray-300 mt-14 p-3 fixed`}>
+            {/* <MiniTitle title="포스팅" /> */}
+            <div className="h-full mb-14 flex flex-col overflow-y-auto overscroll-contain">
                 {
                     res.map((post: Post) => {
                         if (post.isOutLine) {

@@ -46,7 +46,7 @@ export default async function Home() {
     return (
         <div className="mt-32 flex w-full">
             <SideMenu />
-            <Dummy />
+            {/* <Dummy /> */}
             <div className="flex-1 flex justify-center">
                 <div className={`${post} ${inter.className} flex flex-col gap-52`}>
                     <BookLayout title="컴퓨터 과학">
