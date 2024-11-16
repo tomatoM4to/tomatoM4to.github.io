@@ -1,0 +1,52 @@
+# Example
+이전까지 계산법을 살펴 보았습니다. 예제 입니다.
+
+* 계산 흐름: $a → b → c → out$
+
+이때 $\frac{\partial out}{\partial a}$ 을 구해보겠 습니다.
+
+backword()를 통해 $a ← b ← c ← out$ 을 계산하면 실제 $\frac{\partial out}{\partial a}$ 값이 `a.grad`에 채워집니다.
+
+
+```python
+import torch
+
+a = torch.ones(2, 2, requires_grad=True)
+print(a.data) # tensor([[1., 1.], [1., 1.]])
+print(a.grad) # None
+print(a.grad_fn) # None
+# 아직까지 아무런 연산이 없고 초기화된 상태기 때문
+
+b = a + 2
+print(b) # tensor([[3., 3.], [3., 3.]]), grad_fn=<AddBackward0>)
+
+c = b ** 2
+print(c) # tensor([[9., 9.], [9., 9.]], grad_fn=<PowBackward0>)
+
+out = c.sum()
+print(out) # tensor(36., grad_fn=<SumBackward0>)
+
+
+out.backward()
+
+
+print(a.data)
+print(a.grad) # tensor([[6., 6.], [6., 6.]])
+print(a.grad_fn) # None
+# 텐서 a는 a 자체를 직접적으로 계산한게 없고 그저 a의 값을 활용했을 뿐이기 때문에 grad_fn은 None 입니다.
+
+print(b.data)
+print(b.grad) # None
+print(b.grad_fn) # <AddBackward0 object at 0x7f7f3c1b3b50>
+
+print(c.data)
+print(c.grad) # None
+print(c.grad_fn) # <PowBackward0 object at 0x7f7f3c1b3b50>
+
+print(out.data)
+print(out.grad) # None
+print(out.grad_fn) # <SumBackward0 object at 0x7f7f3c1b3b50>
+```
+
+```
+
