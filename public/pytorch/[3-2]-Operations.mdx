@@ -1,0 +1,133 @@
+# 텐서의 연산
+텐서에 대한 수학 연산, 삼각함수, 비트 연산, 비교 연산, 집계 등을 알아보겠습니다. 일반적인 파이썬 main 모듈을 사용하는것과 크게 다르지 않고 매우 직관적으로 사용할 수 있습니다.
+
+## 절대값, 올림, 내림, clamp
+clmap 는 못들어 보셨을수도 있튼덴데요, 번역하면 쪼여버리다 로 해석되며 이는 주어진 범위로 값을 제한하는 역할을 합니다.
+
+```python
+import torch
+
+x = torch.tensor([-0.2, 0.5, 0.6])
+
+print(torch.abs(x)) # 절대값, 0.2, 0.5, 0.6
+print(torch.add(x, 10)) # 더하기, 9.8, 10.5, 10.6
+print(torch.ceil(x)) # 올림, -0.0, 1.0, 1.0
+print(torch.floor(x)) # 내림, -1.0, 0.0, 0.0
+print(torch.clamp(x, 0.3, 0.5)) # 0.3과 0.5 사이의 값으로 제한, 0.3, 0.5, 0.5
+```
+
+## 최대, 최소, 평균, 표준편차, prod, unique
+
+```python
+import torch
+
+x = torch.tensor([1, 2, 3, 1, 2, 2])
+print(torch.max(x)) # 최대값, 3
+print(torch.min(x)) # 최소값, 1
+print(torch.mean(x)) # 평균
+print(torch.std(x)) # 표준편차
+print(torch.prod(x)) # 곱
+print(torch.unique(x)) # 중복 제거 [1, 2, 2] 는 중복이기 때문에 제거됨
+```
+
+max 와 min은 dim 인자를 줄 경우 argmax 와 argmin도 함께 리턴합니다.
+
+```python
+import torch
+
+x = torch.tensor([[1, 2, 3], [4, 5, 6]])
+print(torch.max(x, dim=0)) # 최대값, 최대값의 인덱스
+print(torch.min(x, dim=1)) # 최소값, 최소값의 인덱스
+```
+
+dim = 0 일 경우 행을 기준으로 최대값을 찾고, dim = 1 일 경우 열을 기준으로 최소값을 찾습니다. 리턴되는 indices=tensor 의 경우 인덱스가 행을 기준으로 되는지 열을 기준으로 되는지에 따라서 달라집니다.
+
+dim=0일 경우 세로로 0, 1, 2
+
+dim=1일 경우 가로로 0, 1, 2
+
+## 더하기, 빼기
+더하기와 빼기는 간단합니다. 굳이 add나 sub을 사용하지 않아도 됩니다. 더한 결과를 다른 텐서에 저장하고 싶다면 out 인자를 사용하면 됩니다.
+
+```python
+import torch
+
+x = torch.tensor([1, 2, 3])
+y = torch.tensor([4, 5, 6])
+z = torch.empty(3)
+
+print(x + y) #  5, 7, 9
+print(x - y) # -3, -3, -3
+
+print(torch.add(x, y)) # 5, 7, 9
+
+print(torch.add(x, 10)) # 더하기, 11, 12, 13
+print(torch.sub(x, 10)) # 빼기, -9, -8, -7
+
+torch.add(x, y, out=z)
+print(z) # 5, 7, 9
+```
+
+## in-place 방식
+텐서 연산 뒤에 _ 가 붙는 형식입니다. 이는 값을 변경하고 복사하는 의미입니다.
+
+```python
+import torch
+
+x = torch.tensor([1, 2, 3])
+y = torch.tensor([4, 5, 6])
+
+x.add_(y) # x의 값에 y를 더한 값을 x에 저장하는 의미
+print(x) # 5, 7, 9
+print(y) # 4, 5, 6
+```
+
+즉 내부적으로 그냥 리턴하는것이 아니라 리턴값이 x의 값이 되도록 하는 연산 입니다. 복잡하다 생각하시면 이런 형태를 생각하시면 됩니다. 둘다 똑같은 동작을 하게 됩니다.
+
+```python
+import torch
+
+x = torch.tensor([1, 2, 3])
+y = torch.tensor([4, 5, 6])
+
+torch.add(x, y, out=x) # x의 값에 y를 더한 값을 x에 저장하는 의미
+
+print(x) # 5, 7, 9
+print(y) # 4, 5, 6
+```
+
+
+## 곱셈, 나눗셈
+곱셈과 나눗셈도 더하기와 빼기와 같은 방식으로 사용할 수 있습니다.
+
+```python
+import torch
+
+x = torch.tensor([1, 2, 3])
+y = torch.tensor([4, 5, 6])
+
+print(x * y) # 4, 10, 18
+print(torch.mul(x, y)) # 4, 10, 18
+
+print(x / y) # 0.25, 0.4, 0.5
+print(torch.div(x, y)) # 0.25, 0.4, 0.5
+```
+
+
+## 내적(dot product), 행렬 분해?
+TODO: 행렬 분해가 뭔지 알아보기
+
+```python
+import torch
+
+x = torch.tensor([1, 2, 3])
+y = torch.tensor([4, 5, 6])
+
+print(torch.matmul(x, y)) # 내적, 32
+
+z = torch.mm(x, y) # matmul을 줄여서 사용할 수 있음
+
+print(z) # 32
+
+print(torch.svd(x)) # singular value decomposition?
+```

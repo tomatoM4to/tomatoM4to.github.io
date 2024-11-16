@@ -1,0 +1,92 @@
+# Autograd
+텐서에 대해 살펴보았습니다. 이제 자동미분인 Autograd 기능에 대해 살펴보겠 습니다.
+
+`torch.autograd`는 PyTorch에서 제공되는 핵심 패키지입니다. 이는 텐서의 모든 연산에 대해 자동 미분을 제공합니다. 이는 실행-기반-정의(define-by-run) 프레임워크로, 코드를 어떻게 작성하여 실행하느냐에 따라 역전파가 정의된다는 뜻입니다. backprop를 위해 역전파 시킬수 있도록 미분값을 자동으로 계산해주는 기능입니다.
+
+`requires_grad` 속성을 `True`로 설정하면 해당 텐서에서 이뤄진 모든 연산을 추적(track)하기 시작합니다. 반대로 `False`로 설정하면 추적 하지 않습니다, `detach()` 메서드를 사용하여 연산 추적을 중단하고 연산 기록으로부터 분리 시킬수 있습니다. `requires_grad` 는 기본적으로 `False`로 설정되어 있습니다.
+
+기본적인 코드는 아래와 같습니다.
+
+```python
+import torch
+
+x = torch.ones(3, 3)
+x = x * 3
+print(x.requires_grad) # False
+```
+
+먼저 `requires_grad` 속성을 `True`로 설정해 보겠습니다. in_place 연산을 사용하겠습니다. 이 상태에서 연산을 해보겠습니다.
+
+```python
+import torch
+
+x = torch.ones(3, 3)
+x.requires_grad_(True)
+
+y = (x * 3).sum()
+print(y)
+print(y.grad_fn)
+```
+
+이때 print(y) 부분의 출력문을 보면 sume된 결과 뒤 grad_fn이라는 부분이 있습니다. 이는 Sum 이라는 연산 한것을 기록에 남기는 겁니다. 나중에 역전파를 할때 이 기록을 사용합니다.
+
+## 역전파
+```python
+import torch
+
+x = torch.ones(3, 3, requires_grad=True)
+y = x + 5
+z = y * y
+out = z.mean()
+
+print(z, out)
+```
+
+grad_fn이 각각 MulBackward0 과 Mean 이라는 연산을 기록한것을 알 수 있습니다.
+
+계산이 완료된 후 `backward()`을 호출하여 자동으로 역전파 계산기 가능하고, `grad` 속성에 누적됩니다.
+
+```python
+import torch
+
+x = torch.ones(3, 3, requires_grad=True)
+y = x + 5
+z = y * y
+out = z.mean()
+
+print(z, out)
+
+out.backward()
+```
+
+이때 `grad` 속성을 출력하면 data가 거쳐온 layer에 대한 미분값이 저장되어 있습니다.
+
+TODO: 코드 필요
+
+```python
+import torch
+
+x = torch.ones(3, 3, requires_grad=True)
+y = x + 5
+print(x.grad)
+```
+
+신경망도 따지고 보면 이렇게 구성되어 있으므로 마지막에 `backward()`를 호출하면 역전파를 계산할 수 있습니다? `norm()` 메서드를 사용하여 텐서의 크기를 구할 수 있습니다?
+
+```python
+import torch
+
+x = torch.randn(3, 3, requires_grad=True)
+y = x * 2
+while y.data.norm() < 1000:
+    y = y * 2
+print(y)
+
+v = torch.tensor([0.1, 1.0, 0.0001], dtype=torch.float)
+y.backward(v)
+
+print(x.grad)
+```
+
+이런식으로 v를 기준으로 역전파를 계산할 수 있습니다. 디테일하게 계산할 수 있습니다.
+
