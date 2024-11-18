@@ -11,6 +11,7 @@ import 'github-markdown-css/github-markdown-light.css'
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import { ReactElement } from 'react';
+import rehypeStarryNight from 'rehype-starry-night';
 
 export interface SubjectInfo {
     enSubject: string,
@@ -136,7 +137,10 @@ export async function getPost(subject: string, post: string): Promise<ReactEleme
         options: {
             mdxOptions: {
                 remarkPlugins: [remarkGfm, remarkMath],
-                rehypePlugins: [[rehypeKatex, { output: 'mathml' }]]
+                rehypePlugins: [
+                    [rehypeKatex, { output: 'mathml' }],
+                    rehypeStarryNight
+                ]
             }
         },
         components: {
