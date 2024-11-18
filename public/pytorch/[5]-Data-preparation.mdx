@@ -1,0 +1,114 @@
+# PyTorch로 데이터 준비하기
+
+학습을 시키고자 할때 데이터를 준비 해야하는데, 이번 포스트에서는 데이터를 준비하는 방법에 대해 알아보겠습니다. 데이터 준비는 데이터를 불러오고, 전처리하는 과정을 포함합니다. 이번 포스트에서는 PyTorch에서 데이터를 준비하는 방법에 대해 알아보겠습니다.
+
+일단 Pytorch에선 `torch.utils.data.Dataset`과 `torch.utils.data.DataLoader`를 사용하여 데이터를 준비합니다. `Dataset`은 데이터셋을 의미하고, `DataLoader`는 데이터셋을 불러오는 역할을 합니다.
+
+`Dataset` 에는 MNIST, FashionMNIST, CIFAR10 등 공개적으로 많이 사용되는 다양한 데이터 셋을 포함합니다.
+* Vision Dataset: https://pytorch.org/vision/stable/datasets.html
+* Text Dataset: https://pytorch.org/text/stable/datasets.html
+* Audio Dataset: https://pytorch.org/audio/stable/datasets.html
+
+`Dataset`과 `DataLoader`를 통해 `batch_size`, `train` 여부, `transform` 등을 인자로 넣어 데이터를 어떻게 load 할 것인지 정해줄 수 있습니다.
+
+## torchvision
+torchvision은 파이토치에서 제공하는 데이터셋들이 모여있는 패키지 입니다. `transforms` 메소드를 통해 데이터 전처리를 할 수 있습니다. 만약 `transforms`에서 제공하는 클래스 이외는 일반적으로 클래스를 따로 만들어 전처리 단계를 진행 합니다.
+
+
+`DataLoader`의 인자로 들어강 `transform`을 미리 정의할 수 있고, `Compose`를 통해 리스트 안에 순서대로 전처리 진행합니다.
+
+```python
+from torch.utils.data import DataLoader, Dataset
+import torchvision.transforms as transforms
+from torchvision import datasets
+
+mnist_transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize(mean=(0.5,), std=(1.0,))
+])
+
+trainset = datasets.MNIST(root='./data', train=True, download=True, transform=mnist_transform)
+```
+
+`ToTensor()`를 사용한 이유는 `torchvision`이 **PIL Image** 형태로만 입력을 받기 때문에 데이터 처리를 위해서 Tensor 형으로 변환이 필요하기 때문입니다.
+
+그리고 모델에서 학습용도, 테스트 용도로 데이터를 나누어 사용할 수 있습니다, root 인자는 데이터를 저장할 경로를 의미합니다. train이 True냐 False 냐 에 따라 학습용 데이터셋과 테스트용 데이터셋을 나눌수 있습니다. transform은 위에서 정의한 전처리를 적용합니다.
+
+```python
+from torch.utils.data import DataLoader, Dataset
+import torchvision.transforms as transforms
+from torchvision import datasets
+
+mnist_transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize(mean=(0.5,), std=(1.0,))
+])
+
+trainset = datasets.MNIST(root='./data', train=True, download=True, transform=mnist_transform)
+
+trainset_test = datasets.MNIST(root='./data', train=False, download=True, transform=mnist_transform)
+```
+
+**OUTPUT**
+```python
+```
+
+이로서 딥러닝의 Hello world 같은 데이터 셋을 불러오는 방법에 대해 알아보았습니다.
+
+## DataLoader
+`DataLoader`는 데이터 전체를 보관했다가 실제 모델 학습을 할 때 `batch_size` 크기만큼 데이터를 가져오는 역할을 합니다. `shuffle`은 데이터를 섞어서 가져올지 말지를 정하는 인자입니다. `num_workers`는 데이터를 불러올 때 몇개의 프로세스를 사용할지를 정하는 인자입니다? 해당 예제에선 2개의 프로세스를 사용하여 데이터를 불러옵니다.
+
+TODO: num_workers에 대한 확신이 없음
+
+```python
+train_loader = DataLoader(trainset, batch_size=64, shuffle=True, num_workers=2)
+test_loader = DataLoader(trainset_test, batch_size=64, shuffle=False, num_workers=2)
+```
+
+필요한 data_loader를 불러 왔습니다. 이제 한번 이 데이터를 확인해 보겠습니다. data_loader은 실제로 `iteration` 타입으로 되어 있기 때문에 `iter`를 사용하여 데이터를 확인할 수 있습니다.
+
+```python
+data_iter = iter(train_loader)
+images, lables = data_iter.next()
+print(images.shape)
+print(lables.shape)
+```
+
+**OUTPUT**
+```shell
+(torch.Size([64, 1, 28, 28])
+torch.Size([64])
+```
+`(torch.Size([64, 1, 28, 28])` 의 의미는 28x28 흑백(1이면 흑백입니다) 이미지를 64개씩 불러왔다는 의미입니다. 64개인 이유는 `batch_size` 가 64이기 여섭니다. torch.Size([64])`는 64개의 라벨을 불러왔다는 의미입니다?
+
+TODO: 마지막 문장은 확실하지 않음
+
+마지막으로 해당 차원을 `squeeze`를 통해 축소하고 이미지를 확인해 보겠습니다.
+
+```python
+torch_image = torch.squeeze(images[0])
+print(torch_image.shape)
+```
+
+
+***
+
+# 시각화
+눈으로도 확인을 해봐야 더 확실히 알수 있으니 시각화 작업까지 해보겠습니다.
+
+```python
+import matplotlib.pyplot as plt
+
+figure = plt.figure(figsize=(12, 8))
+cols, rows = 4, 2
+for i in range(1, cols + rows + 1):
+    sample_idx = torch.randint(len(trainset), size(1,)).item()
+    img, label = trainset[sample_idx]
+    figure.add_subplot(rows, cols, i)
+    plt.title(label)
+    plt.axis("off")
+    plt.imshow(img.squeeze(), cmap="gray")
+plt.show()
+```
+
+TODO: 실제 출력 값 확인 필요, 흑백 숫자 이미지 여야 함
