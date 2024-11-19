@@ -1,0 +1,93 @@
+https://dryjelly.tistory.com/138
+
+# 소개
+이전에 공부했던 Q-network를 Frozen Lake에 적용해 보겠습니다. 하지만 여러분들도 알다 싶이 Frozen Lake는 굉장히 쉬운 문제입니다. 이 문제를 해결하기 위해 NN을 적용한다는것은 마치 사과를 깎기 위해 팔뚝만한 중식도를 사용하는것과 같습니다. 그저 이해를 돕기 위한 코드란 점을 감안해 주세요.
+
+코드응 pytorch 를 사용합니다.
+
+
+전체 코드
+```python
+import gymnasium as gym
+import numpy as np
+import torch
+import matplotlib.pyplot as plt
+
+env = gym.make('FrozenLake-v1')
+
+# Input and output size based on the Env
+input_size = env.observation_space.n
+output_size = env.action_space.n
+learning_rate = 0.1
+
+# 텐서플로우의 placeholder와 Variable을 PyTorch 텐서로 변환
+# PyTorch에서는 모델 가중치를 직접 정의할 수 있습니다
+W = torch.FloatTensor(input_size, output_size).uniform_(0, 0.01)
+W.requires_grad = True  # 학습을 위해 gradient 계산 활성화
+
+# 최적화 함수 정의 (텐서플로우의 GradientDescentOptimizer에 해당)
+optimizer = torch.optim.SGD([W], lr=learning_rate)
+
+# Set Q-learning related parameters
+dis = .99
+num_episodes = 2000
+
+# Create lists to contain total rewards and steps per episode
+rList = []
+
+def one_hot(x):
+    return np.identity(16)[x].reshape(1, -1)
+
+# PyTorch에서는 세션을 실행할 필요가 없습니다
+for i in range(num_episodes):
+    # Reset environment and get first new observation
+    s = env.reset()[0]
+    e = 1. / ((i / 50) + 10)
+    rAll = 0
+    done = False
+    local_loss = []
+
+    # The Q-Network training
+    while not done:
+        # state를 PyTorch 텐서로 변환
+        X = torch.FloatTensor(one_hot(s))
+
+        # Q 값 예측
+        Qpred = torch.matmul(X, W)
+
+        # epsilon-greedy로 행동 선택
+        if np.random.rand(1) < e:
+            a = env.action_space.sample()
+        else:
+            a = torch.argmax(Qpred).item()
+
+        # Get new state and reward from environment
+        s1, reward, done, _, _ = env.step(a)
+
+        # Q 값 업데이트
+        Qs = Qpred.clone().detach()  # gradient 계산 방지를 위한 분리
+
+        if done:
+            Qs[0, a] = reward
+        else:
+            # 다음 상태의 Q 값 계산
+            X1 = torch.FloatTensor(one_hot(s1))
+            Qs1 = torch.matmul(X1, W)
+            Qs[0, a] = reward + dis * torch.max(Qs1).item()
+
+        # 손실 계산 및 역전파
+        optimizer.zero_grad()  # gradient 초기화
+        Q = torch.matmul(X, W)
+        loss = torch.sum((Qs - Q) ** 2)
+        loss.backward()  # 역전파
+        optimizer.step()  # 가중치 업데이트
+
+        rAll += reward
+        s = s1
+    rList.append(rAll)
+
+print("Percent of successful episodes: " +
+str(sum(rList) / num_episodes) + "%")
+plt.bar(range(len(rList)), rList, color="blue")
+plt.show()
+```
