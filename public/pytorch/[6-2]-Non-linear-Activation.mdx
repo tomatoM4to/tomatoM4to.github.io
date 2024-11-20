@@ -1,1 +1,21 @@
 # 비선형 활성화 함수(Non-linear Activation Function)
+여기선 Activations Function을 알아봅시다. 어떤 식으로 게산돼는지, 어떤 특징이 있는지 알아봅시다.
+
+## softmax
+
+```python
+with torch.no_grad():
+    flatten = input_image.view(1, 28 * 28)
+    lin = nn.Linear(784, 10)(flatten)
+    softmax = F.softmax(lin, dim=1)
+
+print(softmax)
+print(np.sum(softmax.numpy())) # 1.0
+```
+
+리니어 통과한 것에 대한 softmax의 결과가 나오게 됩니다.
+
+## ReLU
+```python
+inputs = torch.randn()
+```

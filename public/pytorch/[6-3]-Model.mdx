@@ -1,6 +1,79 @@
-지금까지 여러 레이어 같은것들을 배운것들은 전부 신경망을 구성하기 위해 배웃것입니다.
+# Neural Network Model
+NN을 설명하는 섹션인데 NN이란 예기가 마지막에 와서야 나왔네요.
+
+지금까지 여러 레이어 같은것들을 배운것들은 전부 신경망을 구성하기 위해 배운것이죠, 이제 본격적으로 Pytorch를 이용해 신경망을 어떤식으로 구성할수 있는지 해보겠습니다.
 
 TODO: 신경망 종류 이미지
 
-여러 종류가 있지만, 결국엔 어떻게 신명망을 구성 할건지는 짜기 나름입니다.
+눈으로 볼수있는 단순한 레이어만 살펴봤지만 신경망은 여러개 있고 어떻게 만드느냐에 따라 다양한 모델이 나올수 있습니다.
 
+***
+
+# 모델 정의
+Pytorch에선 NN을 구성할때 반드시 `nn.Module`을 상속받아야 합니다. 그리고 `__init__`과 `forward`를 반드시 구현해야 합니다. 커스텀 NN또한 마찬가지 입니다.
+
+* `__init__()`: 모델에서 사용딜 모듈과 활성화 함수 등을 정의합니다.
+* `forward()`: 모델에서 실행되어야 하는 연산을 정의합니다.
+
+
+```python
+import torch.nn as nn
+
+class Net(nn.Module):
+    def __init__(self):
+        super(Net, self).__init__()
+        # 여기에 레이어를 정의합니다.
+
+    def forward(self, x):
+        # 여기에 forward를 정의합니다.
+```
+
+TODO: 다른 주제보단 나중에 이 책에서 NN을 만드는게 생성되면 거기 링크로
+
+`Net` 이름까지는 자유롭게 정의할수 있지만 나머진 필수로 구현해야 합니다. Pytorch의 기능이니 그냥 외우시는게 좋습니다. NN을 좀더 깊이 이해하고자 한다면 다른 주제를 찾아보시는게 좋습니다.
+
+## Example
+```python
+import torch.nn as nn
+
+class Net(nn.Module):
+    def __init__(self, inputs):
+        super(Net, self).__init__()
+        self.layer = nn.Linear(inputs, 1)
+        self.activation = nn.ReLU()
+
+    def forward(self, x):
+        x = self.layer(x) # layer 통과
+        x = self.activation(x) # activation 통과
+        return x
+
+model = Net(1)
+print(list(model.children())) # [Linear(in_features=1, out_features=1, bias=True), ReLU()]
+print(list(model.modules()))
+```
+마지막 두번째 print 문을 통해 `Net` 클래스에 정의된 레이어들이 출력됩니다.
+
+## `nn.Sequential` 을 이용한 신경망 정의
+위 코드를 보면 `forward()` 에서 연산을 하기 위해 layer를 여러개 불러와 복잡한 연산을 수행하게 됩니다. 하지만 이렇게 되면 코드가 복잡해져서 디버깅이 어려워집니다. 이럴때 `nn.Sequential`을 통해 가독성 높게 코드를 작성할수 있습니다.
+
+```python
+import torch.nn as nn
+
+class Net(nn.Module):
+    def __init__(self, inputs):
+        super(Net, self).__init__()
+        self.layer = nn.Sequential(
+            nn.Linear(inputs, inputs),
+            nn.ReLU()
+            nn.Linear(inputs, 1)
+            nn.ReLU()
+        )
+
+    def forward(self, x):
+        return self.layer(x)
+```
+
+## 사전 학습된 모델 사용
+https://pytorch.org/vision/stable/models.html
+
+기존에 학습된 모델을 사용하고 싶다면 위 링크를 참고하시면 됩니다. 여러 모델들이 있으니 찾아보시면 됩니다.
