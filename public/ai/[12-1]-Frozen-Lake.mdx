@@ -11,83 +11,102 @@ https://dryjelly.tistory.com/138
 import gymnasium as gym
 import numpy as np
 import torch
+import torch.nn as nn
+import torch.optim as optim
 import matplotlib.pyplot as plt
 
-env = gym.make('FrozenLake-v1')
+class QNetwork(nn.Module):
+    def __init__(self, input_size, output_size):
+        super(QNetwork, self).__init__()
+        self.layer1 = nn.Linear(input_size, output_size)
+        # self.layer2 = nn.Linear(input_size, output_size)
 
-# Input and output size based on the Env
-input_size = env.observation_space.n
-output_size = env.action_space.n
-learning_rate = 0.1
+    def forward(self, x):
+        return self.layer1(x)
 
-# 텐서플로우의 placeholder와 Variable을 PyTorch 텐서로 변환
-# PyTorch에서는 모델 가중치를 직접 정의할 수 있습니다
-W = torch.FloatTensor(input_size, output_size).uniform_(0, 0.01)
-W.requires_grad = True  # 학습을 위해 gradient 계산 활성화
+class DQNAgent:
+    def __init__(self, input_size, output_size, learning_rate=0.1, gamma=0.99):
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.q_network = QNetwork(input_size, output_size).to(self.device)
+        self.optimizer = optim.SGD(self.q_network.parameters(), lr=learning_rate)
+        self.gamma = gamma
 
-# 최적화 함수 정의 (텐서플로우의 GradientDescentOptimizer에 해당)
-optimizer = torch.optim.SGD([W], lr=learning_rate)
+    def get_action(self, state, epsilon):
+        with torch.no_grad():
+            state_tensor = torch.FloatTensor(state).to(self.device)
+            q_values = self.q_network(state_tensor)
 
-# Set Q-learning related parameters
-dis = .99
-num_episodes = 2000
+            if np.random.random() < epsilon:
+                return np.random.randint(q_values.size(-1))
+            return q_values.argmax().item()
 
-# Create lists to contain total rewards and steps per episode
-rList = []
+    def train_step(self, state, action, reward, next_state, done):
+        state_tensor = torch.FloatTensor(state).to(self.device)
+        next_state_tensor = torch.FloatTensor(next_state).to(self.device)
 
-def one_hot(x):
-    return np.identity(16)[x].reshape(1, -1)
+        # 현재 Q 값 계산
+        current_q_values = self.q_network(state_tensor)
 
-# PyTorch에서는 세션을 실행할 필요가 없습니다
-for i in range(num_episodes):
-    # Reset environment and get first new observation
-    s = env.reset()[0]
-    e = 1. / ((i / 50) + 10)
-    rAll = 0
-    done = False
-    local_loss = []
+        # 타겟 Q 값 계산
+        with torch.no_grad():
+            next_q_values = self.q_network(next_state_tensor)
+            max_next_q = next_q_values.max(1)[0]
+            target = reward + (1 - done) * self.gamma * max_next_q
 
-    # The Q-Network training
-    while not done:
-        # state를 PyTorch 텐서로 변환
-        X = torch.FloatTensor(one_hot(s))
+        # Q 값 업데이트를 위한 마스크 생성
+        mask = torch.zeros_like(current_q_values)
+        mask[:, action] = 1
 
-        # Q 값 예측
-        Qpred = torch.matmul(X, W)
+        # 손실 계산 및 최적화
+        self.optimizer.zero_grad()
+        q_value = current_q_values.masked_select(mask.bool())
+        loss = nn.MSELoss()(q_value, target)
+        loss.backward()
+        self.optimizer.step()
 
-        # epsilon-greedy로 행동 선택
-        if np.random.rand(1) < e:
-            a = env.action_space.sample()
-        else:
-            a = torch.argmax(Qpred).item()
+        return loss.item()
 
-        # Get new state and reward from environment
-        s1, reward, done, _, _ = env.step(a)
+def one_hot(x, n_classes=16):
+    return np.identity(n_classes)[x:x+1]
 
-        # Q 값 업데이트
-        Qs = Qpred.clone().detach()  # gradient 계산 방지를 위한 분리
+def train():
+    env = gym.make('FrozenLake-v1')
+    input_size = env.observation_space.n
+    output_size = env.action_space.n
+    num_episodes = 500
+    print(f"input_size: {input_size}, output_size: {output_size}")
+    agent = DQNAgent(input_size, output_size)
+    rewards_history = []
 
-        if done:
-            Qs[0, a] = reward
-        else:
-            # 다음 상태의 Q 값 계산
-            X1 = torch.FloatTensor(one_hot(s1))
-            Qs1 = torch.matmul(X1, W)
-            Qs[0, a] = reward + dis * torch.max(Qs1).item()
+    for episode in range(num_episodes):
+        state = env.reset()[0]
+        state = one_hot(state)
 
-        # 손실 계산 및 역전파
-        optimizer.zero_grad()  # gradient 초기화
-        Q = torch.matmul(X, W)
-        loss = torch.sum((Qs - Q) ** 2)
-        loss.backward()  # 역전파
-        optimizer.step()  # 가중치 업데이트
+        epsilon = 1.0 / ((episode / 50) + 10)
+        episode_reward = 0
+        done = False
 
-        rAll += reward
-        s = s1
-    rList.append(rAll)
+        while not done:
+            action = agent.get_action(state, epsilon)
+            next_state, reward, done, _, _ = env.step(action)
+            next_state = one_hot(next_state)
 
-print("Percent of successful episodes: " +
-str(sum(rList) / num_episodes) + "%")
-plt.bar(range(len(rList)), rList, color="blue")
-plt.show()
+            loss = agent.train_step(state, action, reward, next_state, done)
+            episode_reward += reward
+            state = next_state
+
+        rewards_history.append(episode_reward)
+
+    return rewards_history
+
+if __name__ == "__main__":
+    rewards_history = train()
+    success_rate = sum(rewards_history) / len(rewards_history) * 100
+    print(f"Success rate: {success_rate:.2f}%")
+
+    plt.bar(range(len(rewards_history)), rewards_history, color="blue")
+    plt.xlabel("Episode")
+    plt.ylabel("Reward")
+    plt.title("Rewards per Episode")
+    plt.show()
 ```
