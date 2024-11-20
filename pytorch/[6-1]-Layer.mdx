@@ -7,12 +7,12 @@
 
 이번 장에선 Layer에 대해 알아보겠습니다.
 
-***
-
-# `torch.nn` 패키지
+## `torch.nn` 패키지
 neural network 줄여서 nn이라고 부릅니다. `torch.nn`은 신경망을 구성하는데 필요한 모든 구성요소를 제공합니다. `torch.nn`은 주로 가중치(wrights), 편향(bias)값들이 내부에서 자동으로 생성되는 레이어들을 사용할 때 사용 합니다.(weight 값들을 직접 선언하지는 않습니다.)
 
-## Linear Layer
+***
+
+# Linear Layer
 https://velog.io/@seoyeonmmn/PyTorch-Tutorial-01.-Linear-Layer-nn.Module
 
 ```python
@@ -30,7 +30,9 @@ print(output)
 print(output.size()) # 128, 30
 ```
 
-## Conv2d Layer
+***
+
+# Conv2d Layer
 Convolution의 개념을 이해해야 stride 나 pading 같은것들이 이해가 될테지만 지금은 pytorch 에서 각 Layer들이 어떻게 사용되는지만 알아보겠습니다.
 
 ```python
@@ -96,5 +98,4 @@ TODO: Pooling Layer 시각화
 
 TODO: 시각화
 
-## Non-linear Activation Function
 
