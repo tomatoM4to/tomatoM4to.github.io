@@ -3,7 +3,6 @@ https://tutorials.pytorch.kr/intermediate/reinforcement_q_learning.html
 import gymnasium as gym
 import math
 import random
-import matplotlib
 import matplotlib.pyplot as plt
 from collections import namedtuple, deque
 from itertools import count
@@ -14,11 +13,6 @@ import torch.optim as optim
 import torch.nn.functional as F
 
 env = gym.make("CartPole-v1")
-
-# matplotlib 설정
-is_ipython = 'inline' in matplotlib.get_backend()
-if is_ipython:
-    from IPython import display
 
 plt.ion()
 
@@ -108,34 +102,6 @@ def select_action(state):
         return torch.tensor([[env.action_space.sample()]], device=device, dtype=torch.long)
 
 
-episode_durations = []
-
-
-def plot_durations(show_result=False):
-    plt.figure(1)
-    durations_t = torch.tensor(episode_durations, dtype=torch.float)
-    if show_result:
-        plt.title('Result')
-    else:
-        plt.clf()
-        plt.title('Training...')
-    plt.xlabel('Episode')
-    plt.ylabel('Duration')
-    plt.plot(durations_t.numpy())
-    # 100개의 에피소드 평균을 가져 와서 도표 그리기
-    if len(durations_t) >= 100:
-        means = durations_t.unfold(0, 100, 1).mean(1).view(-1)
-        means = torch.cat((torch.zeros(99), means))
-        plt.plot(means.numpy())
-
-    plt.pause(0.001)  # 도표가 업데이트되도록 잠시 멈춤
-    if is_ipython:
-        if not show_result:
-            display.display(plt.gcf())
-            display.clear_output(wait=True)
-        else:
-            display.display(plt.gcf())
-
 def optimize_model():
     if len(memory) < BATCH_SIZE:
         return
@@ -185,13 +151,18 @@ if torch.cuda.is_available():
 else:
     num_episodes = 50
 
+
+rewards_history = []
+
 for i_episode in range(num_episodes):
     # 환경과 상태 초기화
     state, info = env.reset()
     state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
+    episode_reward = 0
     for t in count():
         action = select_action(state)
         observation, reward, terminated, truncated, _ = env.step(action.item())
+        episode_reward += reward
         reward = torch.tensor([reward], device=device)
         done = terminated or truncated
 
@@ -218,12 +189,18 @@ for i_episode in range(num_episodes):
         target_net.load_state_dict(target_net_state_dict)
 
         if done:
-            episode_durations.append(t + 1)
-            plot_durations()
             break
+    if i_episode % 50 == 0:
+        print(f"Episode {i_episode}, Reward: {episode_reward}")
+    rewards_history.append(episode_reward)
 
 print('Complete')
-plot_durations(show_result=True)
-plt.ioff()
-plt.show()
+plt.plot(range(len(rewards_history)), rewards_history, color="blue")
+plt.xlabel("Episode")
+plt.ylabel("Reward")
+plt.title("Rewards per Episode")
+plt.savefig("dqn-reward-history.png")
+
 ```
+
+![dqn-reward-history](./img/dqn-reward-history.png)
