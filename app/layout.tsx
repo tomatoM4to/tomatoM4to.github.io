@@ -1,9 +1,17 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Nav } from "@/components/nav/nav";
-import { Jua } from "next/font/google";
+import { Noto_Sans, Playball } from 'next/font/google';
 
-const jua = Jua({ subsets: ["latin"], weight: ["400"] });
+const notoSans = Noto_Sans({
+    subsets: ['latin'],
+    weight: ['400', '700'], // Adjust weights as needed
+});
+
+const sixCaps = Playball({
+    subsets: ['latin'],
+    weight: '400',
+});
 
 export const viewport: Viewport = {
     width: 'device-width',
@@ -58,9 +66,9 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="ko">
-            <body className={`${jua.className} min-h-screen`}>
+            <body className={`${notoSans.className} min-h-screen`}>
                 <div className="grid grid-cols-[24rem_1fr] auto-rows-auto">
-                    <Nav />
+                    <Nav className={sixCaps.className} />
                     <main className="col-span-2">
                         {children}
                     </main>

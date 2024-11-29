@@ -1,11 +1,7 @@
 import { Book } from "@/components/book";
 import { GiMeshNetwork } from "react-icons/gi";
 import { post } from '@/components/responsiveConfig';
-
-import { Inter } from 'next/font/google'
 import { getSubjectInfoList, SubjectInfo } from "@/components/utils";
-
-const inter = Inter({ subsets: ['latin'] })
 
 function BookLayout({
     children,
@@ -37,8 +33,8 @@ export default async function Home() {
     return (
         <div className="mt-32 flex w-full">
             <div className="flex-1 flex justify-center">
-                <div className={`${post} ${inter.className} flex flex-col gap-52`}>
-                    <BookLayout title="컴퓨터 과학">
+                <div className={`${post} flex flex-col gap-52`}>
+                    <BookLayout title="">
                         {
                             info.map((s) => {
                                 if (s.subject !== 'embedded' && s.subject !== 'network-knu' && s.subject !== 'example') {
