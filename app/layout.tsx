@@ -5,7 +5,7 @@ import { Noto_Sans, Playball } from 'next/font/google';
 
 const notoSans = Noto_Sans({
     subsets: ['latin'],
-    weight: ['400', '700'], // Adjust weights as needed
+    weight: ['400', '700'],
 });
 
 const sixCaps = Playball({
