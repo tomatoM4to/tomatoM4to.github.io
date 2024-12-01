@@ -13,10 +13,10 @@ export async function generateStaticParams(): Promise<PostParams[]> {
 export default async function Page({
     params
 }: {
-    params: { subject: string; post: string }
+    params: { theme: string; post: string }
 }) {
     try {
-        let content = await getPost(params.subject, params.post);
+        let content = await getPost(params.theme, params.post);
         return (
             <div className={`${postPage} mt-32 mb-32 flex-1 flex flex-col items-center overflow-x-hidden`}>
                 <div className={`${post} markdown-body`}>

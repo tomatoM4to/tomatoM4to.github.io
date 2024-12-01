@@ -10,7 +10,7 @@ function PostList({
     setIsOpen
 }: {
     res: Post[],
-    params: { subject: string },
+    params: { theme: string },
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }) {
     return (
@@ -40,7 +40,7 @@ export function MenuList({
     isOpen: boolean,
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>,
     res: Post[],
-    params: { subject: string }
+    params: { theme: string }
 }) {
     return (
         <div

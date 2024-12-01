@@ -9,13 +9,13 @@ export function ListLink({
     onClick
 }: {
     post: Post,
-    params: { subject: string },
+    params: { theme: string },
     className?: string,
     onClick?: () => void
 }) {
     return (
         <Link
-            href={`/${params.subject}/${post.originalName}`}
+            href={`/${params.theme}/${post.originalName}`}
             className={`${className} px-2 py-1 mb-1 hover:bg-gray-300 transition-colors rounded-lg`}
             onClick={onClick}>
             {post.order}. {post.title}
@@ -29,7 +29,7 @@ export function SideList({
     params
 }: {
     res: Post[],
-    params: { subject: string }
+    params: { theme: string }
 }) {
     return (
         <aside

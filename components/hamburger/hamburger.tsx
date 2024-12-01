@@ -59,7 +59,7 @@ export function Hamburger({
     params
 }: {
     res: Post[],
-    params: { subject: string }
+    params: { theme: string }
 }) {
     const [isOpen, setIsOpen] = useState(false);
     return (

@@ -13,36 +13,21 @@ import rehypeKatex from 'rehype-katex';
 import { ReactElement } from 'react';
 import rehypeStarryNight from 'rehype-starry-night';
 
-export interface SubjectInfo {
-    enSubject: string,
+export interface ThemeInfo {
+    enTheme: string,
     enPost: string,
-    subject: string
+    theme: string
 }
 
-export async function getSubjectInfoList(): Promise<SubjectInfo[]> {
-    let res: SubjectInfo[] = [];
-    let subjectList: string[] = await fs.readdir(path.join(process.cwd(), 'public'));
-    for (let subject of subjectList) {
-        let postList: Post[] = await getSortedPostList(subject);
-
-        res.push({
-            enSubject: subject,
-            enPost: postList[0].originalName,
-            subject,
-        })
-    }
-    return res;
+export interface ThemeParams {
+    theme: string
 }
 
-export interface SubjectParams {
-    subject: string
-}
-
-export async function getSubjectParams(): Promise<SubjectParams[]> {
-    let subjectList: string[] = await fs.readdir(path.join(process.cwd(), 'public'));
-    return subjectList.map((subject: string) => {
+export async function getThemeParams(): Promise<ThemeParams[]> {
+    let themeList: string[] = await fs.readdir(path.join(process.cwd(), 'public'));
+    return themeList.map((theme: string) => {
         return {
-            subject: subject
+            theme: theme
         }
     })
 }
@@ -56,8 +41,8 @@ export interface Post {
     originalName: string
 }
 
-export async function getSortedPostList(subject: string): Promise<Post[]> {
-    let postList: string[] = await fs.readdir(path.join(process.cwd(), 'public', subject));
+export async function getSortedPostList(theme: string): Promise<Post[]> {
+    let postList: string[] = await fs.readdir(path.join(process.cwd(), 'public', theme));
 
     let newPostList: Post[] = postList
         .filter((post: string) => post !== 'img')
@@ -101,21 +86,21 @@ export async function getSortedPostList(subject: string): Promise<Post[]> {
 }
 
 export interface PostParams {
-    subject: string,
+    theme: string,
     post: string
 }
 
 export async function getPostParams(): Promise<PostParams[]> {
     let res: PostParams[] = [];
-    let subjectList: SubjectParams[] = await getSubjectParams();
-    for (let s of subjectList) {
-        let postListPath: string = path.join(process.cwd(), 'public', s.subject);
+    let themeList: ThemeParams[] = await getThemeParams();
+    for (let s of themeList) {
+        let postListPath: string = path.join(process.cwd(), 'public', s.theme);
         postListPath = decodeURIComponent(postListPath);
         let postList: string[] = await fs.readdir(postListPath);
         for (let p of postList as string[]) {
             let post: string = p.replace('.mdx', '');
             res.push({
-                subject: s.subject,
+                theme: s.theme,
                 post: post
             })
         }
@@ -127,8 +112,8 @@ interface CompileMDXResult {
     content: ReactElement;
 }
 
-export async function getPost(subject: string, post: string): Promise<ReactElement> {
-    let postPath: string = path.join(process.cwd(), 'public', subject, `${post}.mdx`);
+export async function getPost(theme: string, post: string): Promise<ReactElement> {
+    let postPath: string = path.join(process.cwd(), 'public', theme, `${post}.mdx`);
     postPath = decodeURIComponent(postPath);
     let source: string = await fs.readFile(postPath, 'utf8');
 
