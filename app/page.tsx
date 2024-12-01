@@ -6,7 +6,8 @@ import {
     linux,
     git,
     algorithm,
-    computerStructure
+    computerStructure,
+    dev
 } from "@/components/theme/data";
 import { Layout, Theme } from "@/components/theme/main";
 
@@ -21,6 +22,7 @@ export default async function Home() {
             <Theme theme={git} />
             <Theme theme={algorithm} />
             <Theme theme={computerStructure} />
+            <Theme theme={dev} />
         </Layout>
     );
 }

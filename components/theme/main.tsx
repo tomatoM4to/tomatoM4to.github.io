@@ -24,7 +24,7 @@ function SubTheme({
 }) {
     return (
         <div className="p-5">
-            <Link href="./os/[1]-Computer-System-Overview" className="flex items-center group">
+            <Link href={subTheme.link} className="flex items-center group">
                 <h2 className={`${themeH2} text-blue-600 hover:underline`}>{subTheme.header}</h2>
                 <FaLink size={20} className="ml-1 text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-100" />
             </Link>
