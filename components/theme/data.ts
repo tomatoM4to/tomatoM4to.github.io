@@ -98,9 +98,9 @@ export const network: ThemeType = {
             link: "./network/[1]-Introduction",
         },
         {
-            header: "Nginx",
+            header: "Socket Programming",
             explanation:
-                "높은 성능과 안정성을 자랑하는 웹 서버인 Nginx의 기본 사용법과 설정 방법을 배웁니다. 리버스 프록시 설정, 로드 밸런싱 구성, SSL 인증서 적용 등 실제 웹 서버 운영에 필요한 다양한 기능을 실습합니다.",
+                "소켓 프로그래밍을 통해 네트워크 통신을 구현하는 방법을 학습합니다. TCP와 UDP 소켓을 생성하고 통신하는 방법을 익히며, 클라이언트-서버 모델을 구현하고 네트워크 프로그램을 개발합니다.",
             list: [""],
             link: "/",
         },
@@ -273,6 +273,13 @@ export const computerStructure: ThemeType = {
 export const dev: ThemeType = {
     header: "Web Development",
     subTheme: [
+        {
+            header: "Nginx",
+            explanation:
+                "높은 성능과 안정성을 자랑하는 웹 서버인 Nginx의 기본 사용법과 설정 방법을 배웁니다. 리버스 프록시 설정, 로드 밸런싱 구성, SSL 인증서 적용 등 실제 웹 서버 운영에 필요한 다양한 기능을 실습합니다.",
+            list: [""],
+            link: "/",
+        },
         {
             header: "Just Auth",
             explanation:
