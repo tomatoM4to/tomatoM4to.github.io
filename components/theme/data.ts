@@ -109,7 +109,7 @@ export const network: ThemeType = {
             explanation:
                 "Nginx를 활용하여 나만의 웹 서버를 직접 구축하고 운영해봅니다. 도메인 설정, 보안 강화, 성능 최적화 등 실무에서 사용하는 다양한 서버 설정과 관리 방법을 익힙니다.",
             list: [""],
-            link: "/",
+            link: "./personal-web-server/[1]-Introduction",
         },
     ],
 };
