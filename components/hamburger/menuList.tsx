@@ -45,6 +45,7 @@ export function MenuList({
     return (
         <div
             className={`
+                bg-slate-100
                 fixed
                 top-0
                 right-0
@@ -53,7 +54,6 @@ export function MenuList({
                 px-5
                 h-full
                 w-7/12
-                bg-white
                 shadow-lg
                 transform
                 transition-transform
