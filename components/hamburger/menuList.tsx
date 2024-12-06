@@ -45,7 +45,7 @@ export function MenuList({
     return (
         <div
             className={`
-                bg-slate-100
+                bg-slate-50
                 fixed
                 top-0
                 right-0

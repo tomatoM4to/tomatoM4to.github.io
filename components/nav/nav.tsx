@@ -36,7 +36,7 @@ export function UtilityButtons() {
 
 export function Nav({ className }: { className: string }) {
     return (
-        <nav className={`${className} bg-slate-100 w-full h-14 flex items-center justify-between pl-5 pr-5 mb-20 border-b-2 border-b-slate-300 text-2xl fixed`}>
+        <nav className={`${className} bg-slate-50 w-full h-14 flex items-center justify-between pl-5 pr-5 mb-20 border-b-2 border-b-slate-300 text-2xl fixed`}>
             <Link href="/">tomatoM4to&apos;s blog</Link>
             <UtilityButtons />
         </nav>
