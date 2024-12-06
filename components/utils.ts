@@ -1,13 +1,13 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { compileMDX } from 'next-mdx-remote/rsc';
-// import { heads } from '@/components/mdx/heads';
-import { lists } from '@/components/mdx/list';
-// import { table } from '@/components/mdx/table';
-import { highlights } from '@/components/mdx/highlights';
-import { code } from '@/components/mdx/code';
+import {
+    heads,
+    lists,
+    highlights,
+    code
+} from '@/components/mdx';
 import remarkGfm from "remark-gfm";
-import 'github-markdown-css/github-markdown-light.css'
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import { ReactElement } from 'react';
@@ -129,7 +129,7 @@ export async function getPost(theme: string, post: string): Promise<ReactElement
             }
         },
         components: {
-            // ...heads,
+            ...heads,
             ...lists,
             // ...table,
             ...highlights,

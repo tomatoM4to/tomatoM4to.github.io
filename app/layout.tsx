@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import "./globals.css";
 import { Nav } from "@/components/nav/nav";
-import { Noto_Sans, Playball } from 'next/font/google';
+import { Inter, Playball } from 'next/font/google';
+import "./globals.css";
+import "./markdown.css";
 
-const notoSans = Noto_Sans({
+const inter = Inter({
     subsets: ['latin'],
     weight: ['400', '700'],
 });
@@ -66,7 +67,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="ko">
-            <body className={`${notoSans.className} min-h-screen`}>
+            <body className={`${inter.className} min-h-screen`}>
                 <div className="grid grid-cols-[24rem_1fr] auto-rows-auto">
                     <Nav className={sixCaps.className} />
                     <main className="col-span-2">

@@ -1,8 +1,7 @@
 import { notFound } from 'next/navigation';
 import { postPage, post } from '@/components/responsiveConfig';
-import 'github-markdown-css/github-markdown-light.css'
-import 'katex/dist/katex.min.css';
 import { getPostParams, getPost, PostParams } from '@/components/utils';
+import 'katex/dist/katex.min.css';
 
 export async function generateStaticParams(): Promise<PostParams[]> {
     return await getPostParams();
