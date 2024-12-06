@@ -67,7 +67,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="ko">
-            <body className={`${inter.className} min-h-screen`}>
+            <body className={`${inter.className} min-h-screen text-blue-950`}>
                 <div className="grid grid-cols-[24rem_1fr] auto-rows-auto">
                     <Nav className={sixCaps.className} />
                     <main className="col-span-2">

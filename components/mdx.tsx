@@ -80,17 +80,17 @@ export const heads = {
 
 export const highlights = {
     R: ({ children }: { children: React.ReactNode }) => (
-        <span className="text-red-500 font-semibold hover:text-red-700 transition-colors duration-200">
+        <span className="text-rose-500 font-bold hover:text-red-700 transition-colors duration-200">
             {children}
         </span>
     ),
     G: ({ children }: { children: React.ReactNode }) => (
-        <span className="text-green-500 font-semibold hover:text-green-700 transition-colors duration-200">
+        <span className="text-emerald-500 text- font-bold hover:text-green-700 transition-colors duration-200">
             {children}
         </span>
     ),
     B: ({ children }: { children: React.ReactNode }) => (
-        <span className="text-blue-500 font-semibold hover:text-blue-700 transition-colors duration-200">
+        <span className="text-sky-500 font-bold hover:text-blue-700 transition-colors duration-200">
             {children}
         </span>
     ),
@@ -98,12 +98,6 @@ export const highlights = {
         <span className="underline decoration-dotted decoration-blue-400 hover:decoration-solid hover:decoration-blue-600 transition-all duration-200">
             {children}
         </span>
-    ),
-    hr: (props: any) => (
-        <hr
-            {...props}
-            className="border-t-4 border-gradient-to-r from-gray-300 via-gray-400 to-gray-300 mt-8 mb-8"
-        />
     ),
 };
 
