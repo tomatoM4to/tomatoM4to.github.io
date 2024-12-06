@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Nav } from "@/components/nav/nav";
 import { Inter, Playball } from 'next/font/google';
 import "./globals.css";
+import "highlight.js/styles/github-dark-dimmed.css";
 
 const inter = Inter({
     subsets: ['latin'],

@@ -11,7 +11,7 @@ import remarkGfm from "remark-gfm";
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import { ReactElement } from 'react';
-import rehypeStarryNight from 'rehype-starry-night';
+import rehypeHighlight from 'rehype-highlight';
 
 export interface ThemeInfo {
     enTheme: string,
@@ -124,7 +124,7 @@ export async function getPost(theme: string, post: string): Promise<ReactElement
                 remarkPlugins: [remarkGfm, remarkMath],
                 rehypePlugins: [
                     [rehypeKatex, { output: 'mathml' }],
-                    rehypeStarryNight
+                    rehypeHighlight
                 ]
             }
         },

@@ -6,7 +6,7 @@ export const code = {
         return (
             <code
                 {...props}
-                className={`overflow-x-auto bg-gray-200 px-1 rounded-md ${props.className || ''}`}
+                className={`overflow-x-auto bg-slate-300 px-1 rounded-md ${props.className || ''}`}
             >
                 {props.children}
             </code>
@@ -17,7 +17,7 @@ export const code = {
         return (
             <pre
                 {...props}
-                className={`overflow-x-auto bg-gray-200 p-2 rounded-lg ${props.className || ''}`}
+                className={`overflow-x-auto bg-gray-200 rounded-lg ${props.className || ''}`}
             >
                 {props.children}
             </pre>
