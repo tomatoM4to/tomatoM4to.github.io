@@ -8,6 +8,6 @@ export const hamburger = `lg:hidden`;
 
 export const themeGridLayout = `w-11/12 grid-cols-1 md:grid-cols-2 xl:w-3/4 2xl:grid-cols-3 2xl:w-2/3`;
 
-export const themeH1 = `text-xl font-bold lg:text-2xl`;
+export const themeH1 = `text-xl md:text:2xl font-bold lg:text-3xl`;
 
 export const themeH2 = `text-lg font-bold lg:text-xl`;
