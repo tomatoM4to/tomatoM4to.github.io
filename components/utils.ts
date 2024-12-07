@@ -24,7 +24,7 @@ export interface ThemeParams {
 }
 
 export async function getThemeParams(): Promise<ThemeParams[]> {
-    let themeList: string[] = await fs.readdir(path.join(process.cwd(), 'public'));
+    let themeList: string[] = await fs.readdir(path.join(process.cwd(), 'public', 'kr'));
     return themeList.map((theme: string) => {
         return {
             theme: theme
@@ -42,7 +42,7 @@ export interface Post {
 }
 
 export async function getSortedPostList(theme: string): Promise<Post[]> {
-    let postList: string[] = await fs.readdir(path.join(process.cwd(), 'public', theme));
+    let postList: string[] = await fs.readdir(path.join(process.cwd(), 'public', 'kr', theme));
 
     let newPostList: Post[] = postList
         .filter((post: string) => post !== 'img')
@@ -94,7 +94,7 @@ export async function getPostParams(): Promise<PostParams[]> {
     let res: PostParams[] = [];
     let themeList: ThemeParams[] = await getThemeParams();
     for (let s of themeList) {
-        let postListPath: string = path.join(process.cwd(), 'public', s.theme);
+        let postListPath: string = path.join(process.cwd(), 'public', 'kr', s.theme);
         postListPath = decodeURIComponent(postListPath);
         let postList: string[] = await fs.readdir(postListPath);
         for (let p of postList as string[]) {
@@ -113,7 +113,7 @@ interface CompileMDXResult {
 }
 
 export async function getPost(theme: string, post: string): Promise<ReactElement> {
-    let postPath: string = path.join(process.cwd(), 'public', theme, `${post}.mdx`);
+    let postPath: string = path.join(process.cwd(), 'public', 'kr', theme, `${post}.mdx`);
     postPath = decodeURIComponent(postPath);
     let source: string = await fs.readFile(postPath, 'utf8');
 
