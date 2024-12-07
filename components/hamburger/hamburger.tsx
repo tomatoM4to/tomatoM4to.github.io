@@ -4,7 +4,7 @@ import { useState } from "react"
 import { MenuList } from "./menuList";
 import { hamburger } from "@/components/responsiveConfig";
 import { Background } from "./background";
-import { Post } from "@/components/utils";
+import { PostWrapper } from "@/components/utils";
 
 
 function Template({
@@ -58,7 +58,7 @@ export function Hamburger({
     res,
     params
 }: {
-    res: Post[],
+    res: PostWrapper[],
     params: { theme: string }
 }) {
     const [isOpen, setIsOpen] = useState(false);

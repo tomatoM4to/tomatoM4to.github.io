@@ -32,16 +32,23 @@ export async function getThemeParams(): Promise<ThemeParams[]> {
     })
 }
 
+export interface PostWrapper {
+    title: string,
+    originalName: string,
+    order: number,
+    contentList: Post[]
+}
+
 export interface Post {
-    isOutLine: boolean,
+    isTitle: boolean,
     firstOrder: number,
     secondOrder: number,
     order: string,
     title: string,
-    originalName: string
+    originalName: string,
 }
 
-export async function getSortedPostList(theme: string): Promise<Post[]> {
+export async function getSortedPostList(theme: string, wrapper: boolean = false): Promise<PostWrapper[] | Post[]> {
     let postList: string[] = await fs.readdir(path.join(process.cwd(), 'public', 'kr', theme));
 
     let newPostList: Post[] = postList
@@ -57,21 +64,21 @@ export async function getSortedPostList(theme: string): Promise<Post[]> {
 
             if (secondOrder !== -1) {
                 return {
-                    isOutLine: true,
+                    isTitle: false,
                     firstOrder,
                     secondOrder,
                     order: `${firstOrder}-${secondOrder}`,
                     title,
-                    originalName: post.replace(".mdx", "")
+                    originalName: post.replace(".mdx", ""),
                 };
             }
             return {
-                isOutLine: false,
+                isTitle: true,
                 firstOrder,
                 secondOrder,
                 order: `${firstOrder}`,
                 title,
-                originalName: post.replace(".mdx", "")
+                originalName: post.replace(".mdx", ""),
             };
         })
         .sort((a: Post, b: Post) => {
@@ -82,7 +89,27 @@ export async function getSortedPostList(theme: string): Promise<Post[]> {
             // secondOrder
             return a.secondOrder - b.secondOrder;
         })
-    return newPostList;
+    if (!wrapper) return newPostList;
+
+    let postWrapper: PostWrapper[] = [];
+    for (let post of newPostList) {
+        if (post.isTitle) {
+            postWrapper.push({
+                title: post.title,
+                originalName: post.originalName,
+                order: post.firstOrder,
+                contentList: []
+            })
+        } else {
+            postWrapper[postWrapper.length - 1].contentList.push(post);
+        }
+    }
+
+    return postWrapper;
+}
+
+export function isPostWrapperArray(res: (Post | PostWrapper)[]): res is PostWrapper[] {
+    return res.every((item) => 'contentList' in item && Array.isArray(item.contentList));
 }
 
 export interface PostParams {

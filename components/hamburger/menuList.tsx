@@ -1,35 +1,9 @@
 'use client';
 
-import { Post } from "../utils";
-import { ListLink } from "../sidebar/sideList";
+import { PostWrapper } from "../utils";
 import { UtilityButtons } from "@/components/hamburger/utility";
-
-function PostList({
-    res,
-    params,
-    setIsOpen
-}: {
-    res: Post[],
-    params: { theme: string },
-    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-}) {
-    return (
-        <div className="pb-5 flex flex-col overflow-y-auto overscroll-contain">
-            {
-                res.map((post, idx) => {
-                    if (post.isOutLine) {
-                        return (
-                            <ListLink key={post.order} post={post} params={params} className="pl-4" onClick={() => setIsOpen(false)} />
-                        )
-                    }
-                    return (
-                        <ListLink key={post.order} post={post} params={params} onClick={() => setIsOpen(false)} />
-                    )
-                })
-            }
-        </div>
-    )
-}
+import Link from "next/link";
+import { Accordion, AccordionWrapper } from '@/components/sidebar/accordion';
 
 export function MenuList({
     isOpen,
@@ -39,7 +13,7 @@ export function MenuList({
 }: {
     isOpen: boolean,
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>,
-    res: Post[],
+    res: PostWrapper[],
     params: { theme: string }
 }) {
     return (
@@ -60,12 +34,35 @@ export function MenuList({
                 duration-300
                 ease-in-out
                 ${isOpen ? 'translate-x-0' : 'translate-x-full'}
+                overflow-y-auto
                 `}
             style={{ zIndex: 10 }}
         >
             <UtilityButtons />
 
-            <PostList res={res} params={params} setIsOpen={setIsOpen} />
+            {
+                res.map((postWrapper, index) => {
+                    if (postWrapper.contentList.length === 0) {
+                        return (
+                            <Link
+                                key={index}
+                                href={`./${postWrapper.originalName}`}
+                                className='flex items-center px-1 py-2 rounded-lg hover:bg-slate-300'
+                                onClick={() => setIsOpen(false)}>
+                                <div className='w-2 h-2 bg-blue-950 rounded-full mr-3' /> {postWrapper.title}
+                            </Link>
+                        );
+                    }
+                    return (
+                        <AccordionWrapper postWrapper={postWrapper} key={index}>
+                            <Accordion
+                                contentList={postWrapper.contentList}
+                                setIsOpen={setIsOpen}
+                            />
+                        </AccordionWrapper>
+                    );
+                })
+            }
         </div>
     )
 }
