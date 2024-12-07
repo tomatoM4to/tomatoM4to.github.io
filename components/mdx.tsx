@@ -28,49 +28,91 @@ export const code = {
 
 export const heads = {
     h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-        <h1
-            {...props}
-            className="text-4xl font-extrabold my-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"
+        <h1 {...props}
+            className="
+                text-3xl
+                md:text-4xl
+                font-extrabold
+                my-6
+                text-transparent
+                bg-clip-text
+                bg-gradient-to-r
+                from-blue-500
+                via-purple-500
+                to-pink-500"
         >
             {props.children}
         </h1>
     ),
     h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-        <h2
-            {...props}
-            className="text-3xl font-bold my-5 text-purple-700 hover:text-purple-900 transition-colors duration-200"
+        <h2 {...props}
+            className="
+                text-2xl
+                md:text-3xl
+                font-bold
+                my-5
+                text-purple-600
+                hover:text-purple-800
+                transition-colors
+                duration-200"
         >
             {props.children}
         </h2>
     ),
     h3: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-        <h3
-            {...props}
-            className="text-2xl font-bold my-4 text-gray-800"
+        <h3 {...props}
+            className="
+                text-xl
+                md:text-2xl
+                font-bold
+                my-4
+                text-green-600
+                hover:text-green-800
+                transition-colors
+                duration-200"
         >
             {props.children}
         </h3>
     ),
     h4: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-        <h4
-            {...props}
-            className="text-xl font-semibold my-3 text-blue-600 hover:text-blue-800 transition-colors duration-200"
+        <h4 {...props}
+            className="
+                text-lg
+                md:text-xl
+                font-semibold
+                my-3
+                text-blue-600
+                hover:text-blue-800
+                transition-colors
+                duration-200"
         >
             {props.children}
         </h4>
     ),
     h5: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-        <h5
-            {...props}
-            className="text-lg font-medium my-2 text-green-600 hover:text-green-800 transition-colors duration-200"
+        <h5 {...props}
+            className="
+                text-lg
+                font-medium
+                my-2
+                text-green-600
+                hover:text-green-800
+                transition-colors
+                duration-200"
         >
             {props.children}
         </h5>
     ),
     h6: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-        <h6
-            {...props}
-            className="text-base font-medium my-2 text-gray-700 hover:text-gray-900 transition-colors duration-200"
+        <h6 {...props}
+            className="
+                text-base
+                font-medium
+                my-2
+                text-gray-700
+                hover:text-gray-900
+                transition-colors
+                duration-200"
         >
             {props.children}
         </h6>
