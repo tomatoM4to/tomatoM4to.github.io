@@ -78,11 +78,6 @@ table tbody tr:nth-of-type(even) {
     /* 약간 더 대비되는 색 */
 }
 
-/* 마지막 행 스타일 */
-table tbody tr:last-of-type {
-    border-bottom: 2px solid #8b5cf6;
-}
-
 /* Hover 효과 */
 table tbody tr:hover {
     background: linear-gradient(to right, #e0f2fe, #ede9fe, #fce7f3);
