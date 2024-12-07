@@ -9,11 +9,12 @@ export async function generateStaticParams(): Promise<PostParams[]> {
 
 
 
-export default async function Page({
-    params
-}: {
-    params: { theme: string; post: string }
-}) {
+export default async function Page(
+    props: {
+        params: Promise<{ theme: string; post: string }>
+    }
+) {
+    const params = await props.params;
     try {
         let content = await getPost(params.theme, params.post);
         return (

@@ -7,13 +7,15 @@ export async function generateStaticParams(): Promise<ThemeParams[]> {
     return await getThemeParams();
 }
 
-export default async function Layout({
-    children,
-    params
-}: {
-    children: React.ReactNode,
-    params: { theme: string }
-}) {
+export default async function Layout(
+    props: {
+        children: React.ReactNode,
+        params: Promise<{ theme: string }>
+    }
+) {
+    const params = await props.params;
+    const { children } = props;
+
     try {
         let res: Post[] = await getSortedPostList(params.theme);
         return (
