@@ -113,7 +113,7 @@ interface CompileMDXResult {
 }
 
 export async function getPost(theme: string, post: string): Promise<ReactElement<any>> {
-    let postPath: string = path.join(process.cwd(), 'public', 'kr', theme, `${post}.mdx`);
+    let postPath: string = path.join(process.cwd(), 'public', 'kr', theme, post);
     postPath = decodeURIComponent(postPath);
     let source: string = await fs.readFile(postPath, 'utf8');
 
