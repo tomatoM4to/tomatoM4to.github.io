@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { sideList } from "@/components/responsiveConfig";
-import { Post, PostWrapper } from "../utils";
+import { ResponsiveConfig } from "@/components/tailwindConfig";
+import { PostWrapper } from "../utils";
 import { Accordion, AccordionWrapper } from './accordion';
 
 export function SideList({
@@ -12,7 +12,20 @@ export function SideList({
 }) {
     return (
         <aside
-            className={`${sideList} flex-col h-screen border-r-2 border-gray-300 mt-14 p-1 pl-5 fixed overflow-y-auto overscroll-contain`}
+            className={`
+                ${ResponsiveConfig.sideList}
+                flex-col
+                h-screen
+                border-r-2
+                border-gray-300
+                p-1
+                pl-5
+                pt-14
+                fixed
+                overflow-y-auto
+                overscroll-contain
+                z-auto
+                `}
         >
             {
                 res.map((postWrapper, index) => {

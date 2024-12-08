@@ -24,13 +24,12 @@ export function AccordionWrapper({
                     <span className="w-2 h-2 bg-blue-950 rounded-full mr-3" />
                     {postWrapper.title}
                 </div>
-                <IoIosArrowForward className={`transition-transform duration-300 ${isOpen ? "rotate-90" : "rotate-0"}`} />
+                <IoIosArrowForward className={`${isOpen ? "rotate-90" : "rotate-0"}`} />
             </button>
-            <div
-                className={`overflow-hidden transition-all duration-300 ${isOpen ? "max-h-screen" : "max-h-0"
-                    }`}
-            >
-                <div className="p-2">{children}</div>
+            <div className={`overflow-hidden ${isOpen ? "max-h-screen" : "max-h-0"}`}>
+                <div className="p-2">
+                    {children}
+                </div>
             </div>
         </div>
     );

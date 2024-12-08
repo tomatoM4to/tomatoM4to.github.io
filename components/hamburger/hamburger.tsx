@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from "react"
-import { MenuList } from "./menuList";
-import { hamburger } from "@/components/responsiveConfig";
+import { RightList } from "./rightList";
+import { ResponsiveConfig, ZIndexConfig } from "@/components/tailwindConfig";
 import { Background } from "./background";
 import { PostWrapper } from "@/components/utils";
 
 
-function Template({
+function HamburgerBtn({
     isOpen,
     setIsOpen
 }: {
@@ -18,7 +18,7 @@ function Template({
     return (
         <button
             onClick={() => setIsOpen(!isOpen)}
-            className="
+            className={`
             flex
             flex-col
             gap-1
@@ -33,8 +33,9 @@ function Template({
             active:outline-none
             p-2
             hover:bg-gray-200
-            transition-all"
-            style={{ zIndex: 15 }}
+            transition-all
+            z-
+            ${ZIndexConfig.hamburgerBtn}`}
         >
             <span
                 className={`${tailwind} ${isOpen ? "rotate-45 translate-y-1.5" : ""}`}
@@ -49,11 +50,7 @@ function Template({
     );
 }
 
-/*
-Background -> z-index: 5
-MenuList -> z-index: 10
-Template -> z-index: 15
-*/
+
 export function Hamburger({
     res,
     params
@@ -63,9 +60,9 @@ export function Hamburger({
 }) {
     const [isOpen, setIsOpen] = useState(false);
     return (
-        <aside className={`${hamburger}`}>
-            <Template isOpen={isOpen} setIsOpen={setIsOpen} />
-            <MenuList isOpen={isOpen} setIsOpen={setIsOpen} res={res} params={params} />
+        <aside className={`${ResponsiveConfig.hamburger}`}>
+            <HamburgerBtn isOpen={isOpen} setIsOpen={setIsOpen} />
+            <RightList isOpen={isOpen} setIsOpen={setIsOpen} res={res} />
             <Background isOpen={isOpen} setIsOpen={setIsOpen} />
         </ aside>
     )

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from "react"
+import { ZIndexConfig } from "@/components/tailwindConfig";
 
 export function Background({
     isOpen,
@@ -31,8 +32,8 @@ export function Background({
         top-0
         transition-opacity
         duration-300
-        ${isOpen ? 'opacity-70' : 'opacity-0 pointer-events-none'}`}
-            style={{ zIndex: 5 }}
+        ${isOpen ? 'opacity-70' : 'opacity-0 pointer-events-none'}
+        ${ZIndexConfig.hamburgerBackground}`}
             onClick={() => setIsOpen(false)}
         >
         </div>

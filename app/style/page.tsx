@@ -1,13 +1,13 @@
 import { notFound } from 'next/navigation';
-import { postPage, post } from '@/components/responsiveConfig';
+import { ResponsiveConfig } from '@/components/tailwindConfig';
 import { getPost } from '@/components/utils';
 
 export default async function Page() {
     try {
         let content = await getPost('../..', 'README.md');
         return (
-            <div className={`${postPage} mt-32 mb-32 flex-1 flex flex-col items-center overflow-x-hidden`}>
-                <div className={`${post} markdown-body`}>
+            <div className={`${ResponsiveConfig.postPage} mt-32 mb-32 flex-1 flex flex-col items-center overflow-x-hidden`}>
+                <div className={`${ResponsiveConfig.post} markdown-body`}>
                     {content}
                 </div>
             </div>

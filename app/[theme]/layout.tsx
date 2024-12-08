@@ -20,8 +20,10 @@ export default async function Layout(
         let res: Post[] | PostWrapper[] = await getSortedPostList(params.theme, true);
         return (
             <div className="flex">
-                {res.length > 0 && isPostWrapperArray(res) && <Hamburger res={res} params={params} />}
-                {res.length > 0 && isPostWrapperArray(res) && <SideList res={res} params={params} />}
+                {res.length > 0 && isPostWrapperArray(res) &&
+                    <Hamburger res={res} params={params} />}
+                {res.length > 0 && isPostWrapperArray(res) &&
+                    <SideList res={res} params={params} />}
                 {children}
             </div>
         );

@@ -4,17 +4,16 @@ import { PostWrapper } from "../utils";
 import { UtilityButtons } from "@/components/hamburger/utility";
 import Link from "next/link";
 import { Accordion, AccordionWrapper } from '@/components/sidebar/accordion';
+import { ZIndexConfig } from "@/components/tailwindConfig";
 
-export function MenuList({
+export function RightList({
     isOpen,
     setIsOpen,
     res,
-    params
 }: {
     isOpen: boolean,
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>,
     res: PostWrapper[],
-    params: { theme: string }
 }) {
     return (
         <div
@@ -35,8 +34,7 @@ export function MenuList({
                 ease-in-out
                 ${isOpen ? 'translate-x-0' : 'translate-x-full'}
                 overflow-y-auto
-                `}
-            style={{ zIndex: 10 }}
+                ${ZIndexConfig.rightList}`}
         >
             <UtilityButtons />
 
