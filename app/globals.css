@@ -37,6 +37,16 @@
     top: -2.1rem;
 }
 
+ul li::marker {
+    color: #2563eb;
+    font-weight: bold;
+}
+
+ol li::marker {
+    color: #2563eb;
+    font-weight: bold;
+}
+
 table {
     border-collapse: collapse;
     /* margin: 20px 0; */
