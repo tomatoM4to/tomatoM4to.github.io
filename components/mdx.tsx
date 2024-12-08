@@ -156,3 +156,12 @@ export const lists = {
     ),
 };
 
+export const table = {
+    table: (props: any) => (
+        <div {...props} className=" overflow-x-auto mb-8">
+            <table>
+                {props.children}
+            </table>
+        </div>
+    )
+}

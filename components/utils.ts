@@ -5,7 +5,8 @@ import {
     heads,
     lists,
     highlights,
-    code
+    code,
+    table
 } from '@/components/mdx';
 import remarkGfm from "remark-gfm";
 import remarkMath from 'remark-math';
@@ -158,7 +159,7 @@ export async function getPost(theme: string, post: string): Promise<ReactElement
         components: {
             ...heads,
             ...lists,
-            // ...table,
+            ...table,
             ...highlights,
             ...code
         }
