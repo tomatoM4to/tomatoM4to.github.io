@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     alternates: {
         canonical: 'https://tomatom4to.github.io',
     },
-    viewport: "width=device-width, initial-scale=1.0, user-scalable=no",
+    viewport: "width=device-width, initial-scale=1.0",
 };
 
 export default function RootLayout({

@@ -12,7 +12,7 @@
     word-wrap: break-word;
 }
 
-p {
+.markdown-body p {
     margin-bottom: 1rem;
 }
 
@@ -42,14 +42,12 @@ table {
     margin: 20px 0;
     font-size: 16px;
     text-align: left;
-    width: 70%;
-    border-radius: 12px;
-    overflow: hidden;
+    /* width: 70%; */
+    /* border-radius: 12px; */
+    overflow-x: auto;
     background-color: #ffffff;
-    /* 테이블 배경색 */
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
     border: 1px solid #e5e7eb;
-    /* 연한 테두리 추가 */
 }
 
 /* 헤더에 그라데이션 효과 */
@@ -57,7 +55,7 @@ table thead tr {
     background: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899);
     color: transparent;
     font-weight: bold;
-    font-size: 18px;
+    /* font-size: 18px; */
     -webkit-background-clip: text;
     background-clip: text;
     border-bottom: 2px solid #ec4899;
@@ -65,7 +63,7 @@ table thead tr {
 
 table th,
 table td {
-    padding: 12px 15px;
+    padding: 10px 15px;
 }
 
 table tbody tr {
@@ -75,10 +73,8 @@ table tbody tr {
 /* 짝수 행 배경색 */
 table tbody tr:nth-of-type(even) {
     background-color: #f9fafb;
-    /* 약간 더 대비되는 색 */
 }
 
-/* Hover 효과 */
 table tbody tr:hover {
     background: linear-gradient(to right, #e0f2fe, #ede9fe, #fce7f3);
     transition: background-color 0.3s ease;
