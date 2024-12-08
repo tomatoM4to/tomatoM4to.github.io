@@ -1,0 +1,52 @@
+# Securing email
+## 기밀성(confidentiality)
+다른사람이 봐도 모르게 보내고 싶다, 대칭키 사용, 대칭키는 수신자의 public key로 암호
+
+대칭키는 기껏해야 2~6bit, 공개키로 암호화하면 엄청 오래걸림? 숫자가 1000bit 까지 감 그래서 효율을 위해 대칭키로암호화
+
+긴 암호는 대칭키로암호화하고 대칭키는 공갸키로 암호화
+
+message integrity에는 해시 알고리즘이 필요
+
+***
+
+# TCP
+UDP는 필요하면 Application에서 추가함, UDP는 그냥 보내는거니.. 없어지든 말든
+
+TCP 에선 암호화와 인증 매커니즘 제공
+
+TLS는 Transport와 Application 사이에 존재, 소켓에 보안 기능을 두겠다?
+
+http로 접속해도 https로 돼는 이유임, 왜지..?
+
+제공하는 기능
+* confidentiality:대칭키 사용
+* integrity
+* authentication
+
+사실 이번 챕터에선 하루종일이예기
+
+Secure Socket Layer 라고 SSL이라 불렸던 기술?이 있었는데 심각한 결함이 있어서 TLS 사용
+
+# SSL의 주요 단점
+2015년 사라지기 전까지 사용
+
+1. SSL 2.0 취약점: 해시 메커니즘에 대한 충돌 같은? 무결성 검사가 불충분
+2. SSL 3.0 취약점
+
+사실 컴퓨터 능력이 좋아져서 복호화 돼기 때문에 생긴 문제임
+
+호환성 문제가 컸음
+
+# TLS 개선점
+TLS 쓰는 브라우저는 호환성 문제가 없음
+
+2018년 1.3버전이 최신
+
+***
+
+# Transport layer security: what's needed
+
+마스터키가 있다 시크릿키를 만들어내고..
+
+518page
