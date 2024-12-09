@@ -24,8 +24,8 @@ function SubTheme({
 }) {
     return (
         <div className="p-5">
-            <Link href={subTheme.link} className="flex items-center group">
-                <h2 className={`${ResponsiveConfig.themeH2} text-blue-600 hover:underline`}>{subTheme.header}</h2>
+            <Link href={subTheme.link} className=" inline-flex items-center group text-blue-600 hover:underline">
+                <h2 className={`${ResponsiveConfig.themeH2}`}>{subTheme.header}</h2>
                 <FaLink size={20} className="ml-1 text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-100" />
             </Link>
             <p>{subTheme.explanation}</p>
@@ -37,8 +37,8 @@ function SubTheme({
                     ))
                 }
             </ul>
-            <Link href={subTheme.link}>
-                <p className=" text-blue-600 hover:underline">read more</p>
+            <Link href={subTheme.link} className=" text-blue-600 hover:underline">
+                read more
             </Link>
         </div>
     )
