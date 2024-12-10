@@ -1,3 +1,147 @@
+참조자료: https://youtu.be/JwfQ8ouhAzA?si=yjL8L500mocD_9kT
+
+# 이상현상
+잘못된, DB 설계로 인해 발생하는 비정상적인 동작이라 이해하면 된다.
+
+예제로 사용할 테이블은 다음과 같다.
+
+다음과 같이 테이블을 만들었다고 가정해 보겠다. 해당 테이블은 IT 회사의 임직원 정보와 부서 정보를 하나의 Table에 담고 있다.
+
+**EMPLOYEE_DEPARTMENT**
+| <U>empl_id</U> | empl_name | birth_date | position | salary | dept_id | dept_name | dept_leader_id|
+|----------------|-----------|------------|----------|--------|---------|-----------|---------------|
+
+각 테이블의 attribute는 다음과 같다.
+* empl_id: 사원번호, PK
+* empl_name: 사원이름
+* birth_date: 생년월일
+* position: 직책
+* salary: 급여
+* dept_id: 부서번호
+* dept_name: 부서이름
+* dept_leader_id: 부서장 사원번호
+
+## Insertion Anomaly
+삽입 이상에 생기는 문제는 NULL 값 문제, 데이터 중복 문제 등이 있다.
+
+해당 테이블에 이러한 Tuple이 Insert 되었다고 가정해보자.
+
+| empl_id | empl_name | birth_date | position | salary | dept_id | dept_name | dept_leader_id|
+|---------|-----------|------------|----------|--------|---------|-----------|---------------|
+| 1       | MESSI     | 1990-01-01 | Manager  | 5000   | 1001    | Backend   | 1             |
+| 2       | RONALDO   | 1990-01-01 | Manager  | 5000   | 1001    | Backend   | 1             |
+
+MESSI 와 RONALDO는 같은 부서에 속해 있다. 이러한 경우 부서 정보가 중복되어 저장되는 문제가 발생한다.
+
+이이때 dept_id, dept_name, dept_leader_id 에서 중복된 데이터가 발생한다. 지금은 2명이지만 만약 1억명, 10억명이 된다면 이러한 중복 데이터는 큰 공간 낭비를 초래할 것이다.
+
+그리고 또하나 문제가 있다. Human error로 인해 실수로 dept_name을 잘못 작성했을 경우(Packend) 데이터 불일치 가능성도 존재할수 있다.
+
+그래도 모 일단 아직까진 잘 작동할 거다. 하지만 여기서 <R>아직 부서 배치를 받지 못한 임직원을 추가하게 되는 상황이 온다면 어떻게 될까?</R>
+
+그렇다면 Table은 이렇게 될 것이다.
+
+| empl_id | empl_name | birth_date | position | salary | dept_id | dept_name | dept_leader_id|
+|---------|-----------|------------|----------|--------|---------|-----------|---------------|
+| ...     | ...       | ...        | ...      | ...    | ...     | ...       | ...           |
+| 3       | NEYMAR    | 1999-01-01 | Manager  | ...    | NULL    | NULL      | NULL          |
+
+이때 dept_id, dept_name, dept_leader_id 는 특정 값을 넣거나 아니면 NULL 값을 넣어야 할거다.
+
+이렇게 NULL값을 많이 쓰는것 또한 문제가 될 수 있다. 왜 적게 써야 하는지는 다음에 설명하겠다.
+
+그렇다면 또다시 이러한 Data를 추가해보면 어떻게 될까?
+
+<B>임직원이 한 명도 없는 부서 정보를 입력하고 싶은 경우</B>
+
+그렇다면 해당 Table의 구성은 이렇게 될거다. 해당 테이블은 직원가 부서를 같이 저장하고 있기 때문에 부서 정보를 저장하기 위해 해당 Table를 사용해야 한다는 가정이다.
+
+| empl_id | empl_name | birth_date | position | salary | dept_id | dept_name | dept_leader_id|
+|---------|-----------|------------|----------|--------|---------|-----------|---------------|
+| ...     | ...       | ...        | ...      | ...    | ...     | ...       | ...           |
+| 4       | NULL      | NULL       | NULL     | NULL   | 1002    | Frontend  | NULL          |
+
+임직원이 한명도 없기 때문에 역시 NULL값들이 무수히 많이 발생하게 된다. PK는 NULL값이 들어갈 수 없기 때문에 4 다.
+
+
+여기서 어떤 직원이 Frontend 부서에 들어갔다면 어떻게 될까?
+
+| empl_id | empl_name | birth_date | position | salary | dept_id | dept_name | dept_leader_id|
+|---------|-----------|------------|----------|--------|---------|-----------|---------------|
+| ...     | ...       | ...        | ...      | ...    | ...     | ...       | ...           |
+| 4       | NULL      | NULL       | NULL     | NULL   | 1002    | Frontend  | NULL          |
+| 5       | KANE      | 1999-01-01 | Manager  | ...    | 1002    | Frontend  | 5             |
+
+이때 4번 Tuple은 더이상 필요가 없어진다. 왜냐하면 부서에 속한 직원이 생겼기 때문이다. 그러기에 부서 정보를 저장하기 위한 4번 Tuple을 삭제 해야 한다.
+
+애초에 Table 설계 자체가 잘못되었으니 실제로 발생할 가능성이 있는 여러 문제들을 커버할 수 없다. 그리고 NULL값들이 너무 많고 쓸데없이 delete를 해야하는 상황이 발생한다.
+
+### 해결 방법
+해결 방법은 다음과 같다.
+
+애초에 문제는 EMPLOYEE 와 DEPARTMENT 를 같이 저장하는 Table을 만들었기 때문에 발생한 문제이다. 그렇기에 EMPLOYEE 와 DEPARTMENT 를 따로 저장하는 Table을 만들어야 한다.
+
+관심사의 분리는 어디서나 중요한거 같다.
+
+**EMPLOYEE**
+| <U>empl_id</U> | empl_name | birth_date | position | salary | dept_id |
+|----------------|-----------|------------|----------|--------|---------|
+| 1              | MESSI     | 1990-01-01 | Manager  | 5000   | 1001    |
+| 2              | RONALDO   | 1990-01-01 | Manager  | 5000   | 1001    |
+| 3              | NEYMAR    | 1999-01-01 | Manager  | ...    | NULL    |
+| 4              | KANE      | 1999-01-01 | Manager  | 5000   | 1002    |
+
+**DEPARTMENT**
+| <U>dept_id</U> | dept_name | dept_leader_id |
+|----------------|-----------|----------------|
+| 1001           | Backend   | 1              |
+| 1002           | Frontend  | NULL           |
+
+훨씬더 깔끔하고 관리하기 쉬운 Table이 만들어진 것을 볼 수 있다.
+
+만약 새로운 직원이 들어오고 아무 부서에 등록돼지 않았다면 그냥 dept_id를 NULL로 두면 된다.
+
+그리고 부서에 등록이 되면 다시 dept_id를 부서 번호로 바꿔주면 된다.
+
+
+## Deletion Anomaly
+이또한 테이블을 같이 설계했단 가정 하게 이루어 진다.
+
+| empl_id | empl_name | birth_date | position | salary | dept_id | dept_name | dept_leader_id|
+|---------|-----------|------------|----------|--------|---------|-----------|---------------|
+| ...     | ...       | ...        | ...      | ...    | ...     | ...       | ...           |
+| 5       | KANE      | 1999-01-01 | Manager  | ...    | 1002    | Frontend  | 5             |
+
+KANE는 Frontend에 남아있는 최후의 1인이다. 4번 Tuple은 필요 없다 가정하에 삭제했기 때문
+
+근데 KANE이 퇴사했다면? KANE 정보를 삭제해야 하는데 이러면 Frontend 정보까지 삭제되게 된다.
+
+KANE을 삭제하려 했는데 Frontend 정보 자체가 사라진다.
+
+혹은 empl_name, birth_date, position, salary 정보를 NULL로 바꿔주는것도 방법이 될 수 있다. 하지만 이또한 뭔가 이상하고 NULL값이 너무 많아진다.
+
+
+## Update Anomaly
+| empl_id | empl_name | birth_date | position | salary | dept_id | dept_name | dept_leader_id|
+|---------|-----------|------------|----------|--------|---------|-----------|---------------|
+| 1       | MESSI     | 1990-01-01 | Manager  | 5000   | 1001    | Backend   | 1             |
+| 2       | RONALDO   | 1990-01-01 | Manager  | 5000   | 1001    | Backend   | 1             |
+
+KANE이 퇴사해 Frontend가 없어졌다. 그래서 Backend가 Frontend 역할까지 다 해야한다. 그래서 Backend를 Fullstack으로 바꿔주려고 한다.
+
+그렇게 된다면 다음과 같이 Table이 바뀔 것이다.
+
+| empl_id | empl_name | birth_date | position | salary | dept_id | dept_name | dept_leader_id|
+|---------|-----------|------------|----------|--------|---------|-----------|---------------|
+| 1       | MESSI     | 1990-01-01 | Manager  | 5000   | 1001    | Fullstack | 1             |
+| 2       | RONALDO   | 1990-01-01 | Manager  | 5000   | 1001    | Backend   | 1             |
+
+하지만 누군가의 실수로 Tuple를 하나만 바꿔주지 않았다.. 이 현상은 부서 이름의 불일치가 발생 했다. 현실은 같은 부서에서 일하는데 부서 이름이 다르게 표기되어 있다.
+
+이또한 Table이 따로따로 설계되어 있다면 발생하지 않을 문제였을 거다.
+
+***
+
 # 정규화
 * SQL은 끝
 * 이제부턴 설계를 위한 이론적인 내용
