@@ -1,0 +1,134 @@
+# 2NF
+| bank_name | account_num    | <U>account_id</U> | class  | ratio | empl_id | empl_name | <U>card_id</U> |
+|-----------|----------------|-------------------|--------|-------|---------|-----------|----------------|
+| Woori     | 010-5432-7777  | a11               | BRONZE | 0.1   | e1      | SONY      | c101           |
+| Woori     | 102-999-343434 | a12               | SILVER | 0.2   | e1      | SONY      | c102           |
+| Kookmin   | 111-2222-4444  | a13               | LOYAL  | 0.7   | e1      | SONY      | c103           |
+| Kookmin   | 110-11111-3333 | a21               | LOYAL  | 1     | e2      | Messi     | c201           |
+| Kookmin   | 110-11111-3333 | a21               | LOYAL  | 1     | e2      | Messi     | c202           |
+
+문제점: 왜 중복 데이터가 생길까? card_id를 나누었기 때문에 이런 문제가 생김, 이를 해결하기 위해 2NF를 사용한다.
+
+2NF를 진행하기 전 KEY를 다시 생각해보자
+* candidate key: [account_id, card_id], [bank_name, account_num, card_id]
+* 1NF를 만들어 주기 위해 card_id가 key에 포함됨
+
+이런 상태에서 Non prime attribute를 구해보자
+* non-prime attribute: [class], [ratio], [empl_id], [empl_name]
+
+
+이때 Non-prime attribute 에 대한 FD를 생각해 보자
+
+[account_id, card_id] 가 정해지면 [class], [ratio], [empl_id], [empl_name]이 결정된다. 그러므로 FD가 성립된다.
+
+
+하지만 곰곰히 생각해보면, 반드시 [account_id, card_id] 두개 모두에 의존 해야 할까? [account_id] 만 있어도 [class], [ratio], [empl_id], [empl_name] 는 결정된다.
+
+그러므로 현재 FD는 부분적으로 결정되어 있다. 이를 모든 Non-prime attribute 들이 [account_id, card_id]에 partially dependent 하다고 한다. 부분적 함수 종속이라고 한다.
+
+다른 candidate key도 살펴보자. 원래 모든 키를 고려해서 생각해야 한다.
+
+[bank_name, account_num, card_id] 가 주어지면 [class], [ratio], [empl_id], [empl_name] 이 결정된다. 그러므로 FD가 성립된다.
+
+하지만 이때도 [bank_name, account_num] 만으로도 Non-prime attribute 들이 결정된다. 그러므로 부분적 함수 종속이다.
+
+이제 2NF의 정의를 살펴보자
+
+2NF: 모든 non-prime attribute 는 모든 key에 fully functionally dependent 해야 한다.
+
+그러면 해당 테이블은 2NF를 위반하고 있다. 문제의 원인도 card_id 때문인걸 분석했다. 그러므로 해당 attribute를 해당 Table에서 분리시켜주면 해결이 될 것이다.
+
+이제 2NF를 만족시키기 위해 테이블을 분리해보자, 분리할때 JOIN을 통해 데이터를 복원할 수 있어야 한다. 그러므로 적절한 key를 설정해서 분리해야 한다.
+
+기존 key였던 account_id를 선택해 분리하겠다.
+
+**EMPLOYEE_ACCOUNT**
+| bank_name | account_num    | <U>account_id</U> | class  | ratio | empl_id | empl_name |
+|-----------|----------------|-------------------|--------|-------|---------|-----------|
+| Woori     | 010-5432-7777  | a11               | BRONZE | 0.1   | e1      | SONY      |
+| Woori     | 102-999-343434 | a12               | SILVER | 0.2   | e1      | SONY      |
+| Kookmin   | 111-2222-4444  | a13               | LOYAL  | 0.7   | e1      | SONY      |
+| Kookmin   | 110-11111-3333 | a21               | LOYAL  | 1     | e2      | Messi     |
+
+**ACCOUNT_CARD**
+| <U>account_id</U> | <U>card_id</U> |
+|-------------------|---------------|
+| a11               | c101          |
+| a12               | c102          |
+| a13               | c103          |
+| a21               | c201          |
+| a21               | c202          |
+
+최종적인 테이블이다. 이제 모든 candidate_key가 non-prime attribute 에  fully functionally dependent 하다. 그러므로 2NF를 만족한다.
+
+ACCOUNT_CARD 또한 2NF를 만족하는지 확인이 필요하긴 한데, 해당 경우는 non-prime attribute 가 없으므로 2NF를 만족한다. 너무 명확
+
+
+## 다른 예시
+한번 다른 예시를 보자
+
+**PLAYER**
+| <U>team_id</U> | <U>back_number</U> | team_name | name |
+|----------------|---------------------|-----------|------|
+
+테이블을 2NF로 변환하려면 부분 함수 종속성을 제거해야 합니다. 여기서 team_id와 back_number는 복합 기본 키(Primary Key)입니다. 2NF를 만족시키려면 비기본 키 속성들이 복합 기본 키의 전체에 종속되도록 해야 합니다.
+
+현재 테이블에서 team_name은 team_id에만 종속되고, 이는 부분 함수 종속성이므로 2NF를 만족하지 못합니다.
+
+변환 과정
+1. PLAYER 테이블에서 부분 함수 종속성을 분리합니다.
+1. team_name을 별도의 테이블로 옮기고, team_id를 기본 키로 설정합니다.
+1. PLAYER 테이블에는 team_id, back_number, 그리고 name만 남깁니다.
+
+**PLAYER**
+| team_id | back_number | name       |
+|---------|-------------|------------|
+| 1       | 10          | John Doe   |
+| 1       | 7           | Jane Smith |
+| 2       | 15          | Alice Lee  |
+
+**TEAM**
+| team_id | team_name   |
+|---------|-------------|
+| 1       | Team A      |
+| 2       | Team B      |
+
+
+## 2NF 참고 사항
+2NF는 key가 복합키(composite key)가 아니라면 2NF는 자동적으로 만족한다?
+
+일반적으론 맞는말이다.
+
+개념 자체가 모든 non-prime attribute 가 모든 key에 fully functionally dependent 해야 한다는 것이기 때문에, 복합키가 아니라면 fully dependent 하다는 것은 너무 자연스럽다.
+
+**EMPLOYEE**
+| empl_id | empl_name | empl_position |
+|---------|-----------|---------------|
+|         |           | ez.           |
+|         |           | ez.           |
+
+이러한 테이블이 있다 가정해보자, 어떤 이유에서인진 모르겠는데 empl_position이 모두 ez. 라는 값으로 채워져 있다.
+
+이땐 empl_position의 FD를 표현해보면 이렇게 표현할수 있다.
+1. ${empl_id} -> empl_name, empl_position$
+2. ${} -> empl_position$
+
+2번째의 공집합은 empl_id의 부분집합 이다. 그러므로 어떻게보면 이는 부분적 함수 종속이 발생한다 볼수 있다. empl_position 은 partially dependent on key 하다. 즉 2NF 위반
+
+그러므로 이러한 테이블로 만들수 있을거다.
+
+**EMPLOYEE**
+| empl_id | empl_name |
+|---------|-----------|
+
+**POSITION**
+| empl_position |
+|---------------|
+
+이때 **POSITION**은 하나의 값이다. 이제 2NF를 만족한다.
+
+하지만.. 이러한 경우는 너무 특수한 경우이기도 하고, 이런 경우가 발생한다 해도 그냥 무시하는 경우도 있다. 테이블을 너무 많이 쪼개면 공간은 덜 차지하지만, JOIN 연산이 많이 발생하게 되어 성능이 떨어질수도 있기 때문이다.
+
+그렇기에 이는 설계하는 사람이 TRADE-OFF를 잘 판단해야 한다.
+
+이를 정규화의 반대, 반 정규화, 역정규화 라고 부른다. denormalization 이라고 한다.

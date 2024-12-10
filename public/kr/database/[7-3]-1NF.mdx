@@ -1,0 +1,129 @@
+출처: https://youtu.be/EdkjkifH-m8?si=fatMdog2kyFWFRPH
+
+# Normalization
+FD를 사용해서 DB를 설계하는 방법
+
+정규화: 데이터 중복과, insert, update, delete 시 발생하는 이상현상을 제거하기 위해 사용되는 일련의 규칙들로 relational DB를 구성하는 과정
+
+일련의 규칙(normal form): 정규화 되기 위해 준수해야 하는 몇가지 rule 들, 각각의 rule 들을 nf 라 부름
+
+| Init table | 1NF | 2NF | 3NF | BCNF | 4NF | 5NF |
+|------------|-----|-----|-----|------|-----|-----|
+
+처음부터 순차적으로 진행, nf를 만족하지 못하면, 만족하도록 테이블 구조를 조정
+
+앞단계를 만족해야 다음 단계로 진행 가능
+
+이런식으로 중복 데이터와 이상현상을 제거하고, 데이터의 일관성을 유지하게 Table를 조정하는 것이 정규화
+
+## FD와 key 만으로 정의되는 NF
+보통 1NF, 2NF, 3NF, BCNF는 FD와 key로 정의됨, 3NF 까지 도달하면 정규화 됐다고 간주되기도 함
+
+많이 해도 4NF 까지 진행
+
+5NF와 6NF는 복잡하기도 하고, 학술적인 측면에서 분석하는 경향이 있음
+
+여기선 BCNF 까지만 다룸
+
+***
+
+# 예제에 사용될 Table 소개
+해당 Table를 가지고 정규화를 진행 할 것
+
+| bank_name | account_num | <U>account_id</U> | class | ratio | empl_id | empl_name | card_id |
+|-----------|-------------|-------------------|-------|-------|---------|-----------|---------|
+
+해당 테이블은 입직원의 월급 계좌를 관리하는 테이블
+
+해당 월급 계좌는 국민은행, 우리은행 중 하나 bank_name으로 구분
+
+한 직원이 하나 이상의 월급 게좌를 등록할 수 있음(account_num), 월급 비율도 조정 가능(ratio)
+
+각 계좌마다 등급(class)이 존재, 국민 = (STAR, PRESTIGE, LOYAL), 우리 = (BRONZE, SILVER, GOLD)
+
+한 계좌는 하나 이상의 현금 카드와 연동 가능
+
+정리
+
+* bank_name: 국민은행, 우리은행
+* account_num: 계좌번호
+* account_id: 각 계좌를 식별하기 위해 부여한 ID
+* class: 계좌 등급
+* ratio: 계좌당 월급을 받는 비율
+* empl_id: 직원 ID
+* empl_name: 직원 이름
+* card_id: 해당 계좌와 연동된 card ID
+
+## Key
+키에 대한 소개는 넘어감
+
+* candidate key: [account_id], [bank_name, account_num]
+    * 한 은행의 계좌번호는 중복되지 않으므로 [bank_name, account_num]은 유일한 값
+* primary key: [account_id]
+    * 관리가 쉬우므로 account_id를 primary key로 설정
+* prime attribute: [account_id], [bank_name, account_num], [empl_id]
+    * key를 구성하는 attribute
+* non-prime attribute: [class], [ratio], [empl_id], [empl_name], [card_id]
+    * key를 구성하지 않는 attribute
+
+## FD
+FD를 찾아보자
+
+```math
+account_id \rightarrow bank_name, account_num, class, ratio, empl_id, empl_name, card_id
+```
+* prime_key인 account_id가 주어지면 나머지 attribute들이 결정됨
+
+<br />
+
+```math
+bank_name, account_num \rightarrow account_id, class, ratio, empl_id, empl_name, card_id
+```
+* candidate key인 [bank_name, account_num]가 주어지면 나머지 attribute들이 결정됨
+
+<br />
+
+```math
+empl_id \rightarrow empl_name
+```
+* key가 아닌 이러한 FD도 존재
+
+```math
+class \rightarrow bank_name
+```
+* 위의 은행 계좌당 등급을 살펴보면 중복이 없음, 그러므로 class가 주어지면 한 bank_name이 결정됨
+
+## 데이터 추가
+| bank_name | account_num    | <U>account_id</U> | class  | ratio | empl_id | empl_name | card_id    |
+|-----------|----------------|-------------------|--------|-------|---------|-----------|------------|
+| Woori     | 010-5432-7777  | a11               | BRONZE | 0.1   | e1      | SONY      | c101       |
+| Woori     | 102-999-343434 | a12               | SILVER | 0.2   | e1      | SONY      | c102       |
+| Kookmin   | 111-2222-4444  | a13               | LOYAL  | 0.7   | e1      | SONY      | c103       |
+| Kookmin   | 110-11111-3333 | a21               | LOYAL  | 1     | e2      | Messi     | c201, c202 |
+
+원래는 스카마만 가지고 정규화를 진행해야 하지만, 데이터를 보면서 정규화를 진행해보자
+
+***
+
+# 1NF
+<R>모든 Attribute의 value는 반드시 나눠질 수 없는 단일한 값이어야 한다.</R>
+
+위 예제에선 Messi의 계좌에 두 개의 카드가 연동되어 있음, 두개의 카드가 하나의 value로 저장이 돼어 있으므로 1NF를 만족하지 않음
+
+처리 방법엔 여러가지가 있지만 가장 단순하게 하나의 Tuple를 추가해 처리해보자
+
+| bank_name | account_num    | <U>account_id</U> | class  | ratio | empl_id | empl_name | <U>card_id</U> |
+|-----------|----------------|-------------------|--------|-------|---------|-----------|----------------|
+| Woori     | 010-5432-7777  | a11               | BRONZE | 0.1   | e1      | SONY      | c101           |
+| Woori     | 102-999-343434 | a12               | SILVER | 0.2   | e1      | SONY      | c102           |
+| Kookmin   | 111-2222-4444  | a13               | LOYAL  | 0.7   | e1      | SONY      | c103           |
+| Kookmin   | 110-11111-3333 | a21               | LOYAL  | 1     | e2      | Messi     | c201           |
+| Kookmin   | 110-11111-3333 | a21               | LOYAL  | 1     | e2      | Messi     | c202           |
+
+일단 1NF를 만족함
+
+문제점: 중복된 데이터 발생, ratio 값의 합이 1을 넘어감, 기존 primary key인 account_id가 중복됨
+
+첫번째와 두번째도 문제긴 하지만 primary key가 중복되는 것이 가장 큰 문제
+
+이는 card_id를 분해해서 생긴 문제기 때문에 account_id와 card_id를 복합키로 설정하면 해결됨

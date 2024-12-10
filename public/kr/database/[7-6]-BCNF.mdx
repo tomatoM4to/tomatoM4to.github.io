@@ -1,0 +1,100 @@
+# BCNF
+사실 3NF 까지만 가도 정규화(normalized) 됐다 라고 말할 수 있다.
+
+**EMPLOYEE_ACCOUNT**
+| bank_name | account_num    | <U>account_id</U> | class  | ratio | empl_id |
+|-----------|----------------|-------------------|--------|-------|---------|
+| Woori     | 010-5432-7777  | a11               | BRONZE | 0.1   | e1      |
+| Woori     | 102-999-343434 | a12               | SILVER | 0.2   | e1      |
+| Kookmin   | 111-2222-4444  | a13               | LOYAL  | 0.7   | e1      |
+| Kookmin   | 110-11111-3333 | a21               | LOYAL  | 1     | e2      |
+
+해당 테이블만 가지고 일단 BCNF를 진행해 보자.
+
+해당 테이블은 이미 3NF를 만족하는 상태이다.
+
+한번 다시 FD를 살펴보자.
+
+1. account_id -> bank_name, account_num, class, ratio, empl_id
+2. bank_name, account_num -> account_id, class, ratio, empl_id
+3. class -> bank_name
+
+이때 3번의 FD를 살펴보자.
+
+class -> bank_name 이라는 FD가 성립한다. class는 6개의 값이 있고, 각 값은 서로 다른 유니크하기 때문에 class 를 보고 bank_name을 알 수 있다.
+
+이를 알고 자세히 살펴보니 Woori와 Kookmin이 중복되어 나타나고 있다.
+
+문제점을 알았으니 이제 BCNF가 무엇인지 살펴보자.
+
+BCNF: 모든 유효한 non-trivial FD X -> Y 는 X가 super key 여야 한다.
+
+해당 룰에 따르면 class 가 super key 여야 하는데 그렇지 않다.
+
+non-trivial FD: X -> Y 일때 Y가 X의 부분집합이 아닌 경우
+
+이또한 Table를 쪼개줘야 한다.
+
+새로운 테이블을 정의 해보자, 해당 Table은 정확히 6개의 row만 있으면 된다.
+
+**ACCOUNT_CLASS**
+| <U>class</U> | bank_name |
+|--------------|-----------|
+| BRONZE       | Woori     |
+| SILVER       | Woori     |
+| GOLD         | Woori     |
+| STAR         | Kookmin   |
+| PRESTIGE     | Kookmin   |
+| LOYAL        | Kookmin   |
+
+새롭게 Table를 만들어 줬으니 원래 Table도 이러한 형태가 될거다.
+
+**EMPLOYEE_ACCOUNT**
+| account_num    | <U>account_id</U> | class | ratio | empl_id |
+|----------------|-------------------|-------|-------|---------|
+| 010-5432-7777  | a11               | BRONZE| 0.1   | e1      |
+| 102-999-343434 | a12               | SILVER| 0.2   | e1      |
+| 111-2222-4444  | a13               | LOYAL | 0.7   | e1      |
+| 110-11111-3333 | a21               | LOYAL | 1     | e2      |
+
+class 는 JOIN을 해야 하기 때문에 남겨두고, 이로서 반복되는 bank_name 을 없애줬다.
+
+나머지 Table은 이전에 만들었던 Table을 그대로 사용하면 된다. 이또한 BCNF를 만족하는지 확인해야 하지만, 이미 만족하므로 따로 살펴보지 않겠다.
+
+## 최종 table
+Table이 너무 많아지면 관리도 힘들어지고 JOIN 연산이 많아져 성능이 떨어질 수 있다. 그러므로 3NF까지만 쪼개는것도 선택이다. 설계하는 사람이 Trade-off를 잘 고려하여 과도한 JOIN과 중복 데이터 최소화 사이의 Trade-off를 고려하여 설계해야 한다. 딱히 정답은 없다.
+
+
+**EMPLOYEE_ACCOUNT**
+| account_num    | <U>account_id</U> | class | ratio | empl_id |
+|----------------|-------------------|-------|-------|---------|
+| 010-5432-7777  | a11               | BRONZE| 0.1   | e1      |
+| 102-999-343434 | a12               | SILVER| 0.2   | e1      |
+| 111-2222-4444  | a13               | LOYAL | 0.7   | e1      |
+| 110-11111-3333 | a21               | LOYAL | 1     | e2      |
+
+**ACCOUNT_CLASS**
+| <U>class</U> | bank_name |
+|--------------|-----------|
+| BRONZE       | Woori     |
+| SILVER       | Woori     |
+| GOLD         | Woori     |
+| STAR         | Kookmin   |
+| PRESTIGE     | Kookmin   |
+| LOYAL        | Kookmin   |
+
+**EMPLOYEE**
+| <U>empl_id</U> | empl_name |
+|----------------|-----------|
+| e1             | SONY      |
+| e2             | Messi     |
+
+**ACCOUNT_CARD**
+| <U>account_id</U> | <U>card_id</U> |
+|-------------------|---------------|
+| a11               | c101          |
+| a12               | c102          |
+| a13               | c103          |
+| a21               | c201          |
+| a21               | c202          |
+

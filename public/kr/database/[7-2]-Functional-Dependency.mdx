@@ -15,8 +15,8 @@
 * dept_id: 사원이 속한 부서의 ID
 
 이러한 Attribute를 두 개의 집합으로 나누어보자.
-* $X = {empl_id}$
-* $Y = {empl_name, birth_date, position, salary}$
+* $X = \{empl\_id\}$
+* $Y = \{empl\_name, birth\_date, position, salary\}$
 
 이때 $X$와 $Y$ 는 하나의 값일수도 있고 아닐수도 있다. 왜 dept_id가 빠졌는진 이후에 설명한다.
 
@@ -34,8 +34,22 @@
 이러한 관계를 기호로 이렇게 나타낼 수 있다.
 
 ```math
-X -> Y
+X \rightarrow Y
 ```
+<br />
+
+> <R>주의</R>
+> ```math
+> X \rightarrow Y
+> ```
+> 가 성립한다고 해서
+> ```math
+> Y \rightarrow X
+> ```
+> 가 성립하는 것은 아니다.
+>
+> 가령 empl_id이 empl_name을 결정한다고 해서, empl_name이 empl_id를 결정하는 것은 아니다.
+
 
 ## FD 파악하기
 Table의 Schema를 보고 의미적으로 파악해야 한다.
@@ -83,12 +97,34 @@ TODO: 위 문장은 좀더 정확하게 써야함
 **다이어그램**: 책마다 다름
 
 ## FD의 몇가지 예시
+* $\{stu\_id\} \rightarrow \{stuname, birth\_date, address\}$
+* student 테이블 예시, 학생의 id가 같다면 해당 학생의 이름, 생일, 주소 도 같다.
+
+<br />
+
+* $\{class\_id\} \rightarrow \{class\_name, year, semester, credit\}$
+* 수업의 id가 같다면, 해당 수업의 이름, 해당 수업의 개설 연도, 개성 학기, 학점도 같다.
+
+<br />
+
+* $\{stu\_id, class\_id\} \rightarrow \{grade\}$
+* 학생의 수업 성적을 저장하는 테이블일 경우, 해당 학생의 id와 수업의 id가 성적을 결정한다.
+
+<br />
+
+* $\{bank\_name, account\_num\} \rightarrow \{balance, open\_date\}$
+* 은행 계좌 테이블일 경우, 은행의 이름과 계좌번호가, 해당 계좌번호의 잔고와 언제 개설되었는지 결정한다.
 
 
+<br />
 
+* $\{user\_id, location, visit\_date\} \rightarrow \{comment, like\}$
+* 위치기반 SNS의 테이블일 경우, 사용자의 id, 위치, 방문 날짜가, 코멘트와 좋아요를 결정한다.
 
-
-
+> $\{\} \rightarrow Y$
+>
+> 가끔 이런 형태의 FD가 있는데, 이는 특정 Attribute가 오직 하나의 값만 가지고 있다는 것을 의미한다.
+> 가령 위 예에선 직원들이 여러 부서에 속할수 있다는 가정 하에 Table를 설계했지만, 어떠한 문제로 인해 모든 직원이 하나의 부서에만 속하게 바뀌었다면 $\{\} \rightarrow dept\_id$ 라는 FD가 성립할 것이다.
 
 ## 함수 종속성 규칙
 DB에서 이론적인 내용을 하는것은 싫어하는데.. 기본적이것만 보자.

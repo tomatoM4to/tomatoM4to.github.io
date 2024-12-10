@@ -1,0 +1,86 @@
+# 3NF
+
+**EMPLOYEE_ACCOUNT**
+| bank_name | account_num    | <U>account_id</U> | class  | ratio | empl_id | empl_name |
+|-----------|----------------|-------------------|--------|-------|---------|-----------|
+| Woori     | 010-5432-7777  | a11               | BRONZE | 0.1   | e1      | SONY      |
+| Woori     | 102-999-343434 | a12               | SILVER | 0.2   | e1      | SONY      |
+| Kookmin   | 111-2222-4444  | a13               | LOYAL  | 0.7   | e1      | SONY      |
+| Kookmin   | 110-11111-3333 | a21               | LOYAL  | 1     | e2      | Messi     |
+
+**ACCOUNT_CARD**
+| <U>account_id</U> | <U>card_id</U> |
+|-------------------|---------------|
+| a11               | c101          |
+| a12               | c102          |
+| a13               | c103          |
+| a21               | c201          |
+| a21               | c202          |
+
+여기까지 2NF를 만족한다. 이제 해당 Table의 문제점을 찾아보자.
+
+empl_id와 empl_name에서 중복이 발생하고 있다. 이를 해결하기 위해 먼저 FD를 분석해보자
+
+1. account_id -> bank_name, account_num, class, ratio, empl_id, empl_name
+2. bank_name, account_num -> account_id, class, ratio, empl_id, empl_name
+3. class -> bank_name
+4. empl_id -> empl_name
+
+3번의 경우 empl_id가 empl_name를 결정한다.
+
+그리고 1번의 경우 account_id가 empl_id를 결정한다.
+
+account_id -> empl_id, empl_id -> empl_name
+
+인 상황이 발생한다.
+
+그러므로 account_id가 empl_name를 결정한다고 볼 수 있다. 1번에서 말한것과 똑같은 결과긴 하지만
+
+다른 키도 살펴보면 결국 똑같이
+
+bank_name, account_num -> empl_name 을 결정한다.
+
+이렇게 연결연결 되어 있는 FD를 transitive FD라 부른다.
+
+> **Transitive FD**: A->B, B->C 일때 A->C
+>
+> 주의: B와 C가 어떤 key에도 속하지 않아야 한다.
+
+그러므로 account_id -> class -> bank_name 이라는 FD는 transitive FD가 아니다.
+
+이제 왜 중복데이터가 발생했는지 알수 있다.
+
+3NF: 모든 Non-prime attribute 는 어떤 key에도 transitively dependent하지 않아야 한다.
+
+쉽게말하면 non-prime attribute 와 non-prime attribute 사이에는 FD가 존재하면 안된다. 라고 해석해도 된다.
+
+위 예제에선 empl_id -> empl_name 이라는 FD가 존재하므로 3NF를 만족하지 않는다.
+
+결국 empl_id -> empl_name 라는 FD를 제거해주면 된다.
+
+**EMPLOYEE_ACCOUNT**
+| bank_name | account_num    | <U>account_id</U> | class  | ratio | empl_id |
+|-----------|----------------|-------------------|--------|-------|---------|
+| Woori     | 010-5432-7777  | a11               | BRONZE | 0.1   | e1      |
+| Woori     | 102-999-343434 | a12               | SILVER | 0.2   | e1      |
+| Kookmin   | 111-2222-4444  | a13               | LOYAL  | 0.7   | e1      |
+| Kookmin   | 110-11111-3333 | a21               | LOYAL  | 1     | e2      |
+
+**EMPLOYEE**
+| <U>empl_id</U> | empl_name |
+|----------------|-----------|
+| e1             | SONY      |
+| e2             | Messi     |
+
+**ACCOUNT_CARD**
+| <U>account_id</U> | <U>card_id</U> |
+|-------------------|---------------|
+| a11               | c101          |
+| a12               | c102          |
+| a13               | c103          |
+| a21               | c201          |
+| a21               | c202          |
+
+이때 **EMPLOYEE_ACCOUNT** 의 empl_id는 제거하면 안된다. JOIN을 통해 EMPLOYEE의 empl_name을 가져와야 하기 때문에
+
+이떄 **ACCOUNT_CARD**도 3NF를 만족하는지 확인해야 하지만, 이미 3NF를 만족하고 있으므로 넘어가겠다.

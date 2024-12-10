@@ -136,7 +136,7 @@ export const highlights = {
         </span>
     ),
     U: ({ children }: { children: React.ReactNode }) => (
-        <span className="underline decoration-dotted decoration-blue-400 hover:decoration-solid hover:decoration-blue-600 transition-all duration-200">
+        <span className="underline decoration-4 decoration-dotted decoration-blue-400 hover:decoration-solid hover:decoration-blue-600 transition-all duration-200">
             {children}
         </span>
     ),
