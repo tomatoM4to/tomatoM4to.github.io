@@ -1,28 +1,65 @@
 'use client';
 
 import { useState } from "react";
-import { Post, PostWrapper } from "@/components/utils";
+import { Post } from "@/components/utils";
 import Link from "next/link";
 import { IoIosArrowForward } from "react-icons/io";
+import { ResponsiveConfig } from "../tailwindConfig";
 
-export function AccordionWrapper({
-    postWrapper,
+export function NonAccordionLink({
+    href,
+    label,
+    setIsOpen
+}: {
+    href: string,
+    label: string,
+    setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+    return (
+        <Link
+            href={href}
+            className={`
+                flex
+                items-center
+                px-1 py-2
+                rounded-lg
+                hover:bg-slate-300
+                ${ResponsiveConfig.accordion}
+                `}
+            onClick={() => setIsOpen && setIsOpen(false)}
+        >
+            <div
+                className={`
+                    ${ResponsiveConfig.accordionDot} bg-blue-950 rounded-full mr-3
+                `}
+            />
+            {label}
+        </Link>
+    )
+}
+
+
+export function Accordion({
+    label,
     children
 }: {
-    postWrapper: PostWrapper,
+    label: string,
     children: React.ReactNode
 }) {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
     return (
-        <div className="flex flex-col">
+        <div className={`flex flex-col ${ResponsiveConfig.accordion}`}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex justify-between items-center text-left px-1 py-2 hover:bg-slate-300 focus:outline-none rounded-lg"
             >
                 <div className="flex items-center">
-                    <span className="w-2 h-2 bg-blue-950 rounded-full mr-3" />
-                    {postWrapper.title}
+                    <span
+                        className={
+                            `${ResponsiveConfig.accordionDot} bg-blue-950 rounded-full mr-3`
+                        } />
+                    {label}
                 </div>
                 <IoIosArrowForward className={`${isOpen ? "rotate-90" : "rotate-0"}`} />
             </button>
@@ -35,7 +72,7 @@ export function AccordionWrapper({
     );
 }
 
-export function Accordion({
+export function AccordionItem({
     contentList,
     setIsOpen
 }: {

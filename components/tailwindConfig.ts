@@ -7,7 +7,9 @@ export class ResponsiveConfig {
     static themeGridLayout = `w-11/12 grid-cols-1 sm:grid-cols-2 xl:w-3/4 2xl:grid-cols-3 2xl:w-2/3`;
     static themeH1 = `text-xl md:text:2xl font-bold lg:text-3xl`;
     static themeH2 = `text-lg font-bold lg:text-xl`;
-    static nav = `text-xl h-12 md:h-14 md:text-2xl`
+    static nav = `text-xl h-12 md:h-14 md:text-2xl`;
+    static accordion = `text-sm sm:text-base`;
+    static accordionDot = `w-1.5 h-1.5 sm:w-2 sm:h-2`;
 }
 
 export class ZIndexConfig {

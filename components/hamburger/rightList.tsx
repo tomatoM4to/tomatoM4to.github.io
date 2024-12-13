@@ -2,8 +2,7 @@
 
 import { PostWrapper } from "../utils";
 import { UtilityButtons } from "@/components/hamburger/utility";
-import Link from "next/link";
-import { Accordion, AccordionWrapper } from '@/components/sidebar/accordion';
+import { Accordion, AccordionItem, NonAccordionLink } from '@/components/sidebar/accordion';
 import { ZIndexConfig } from "@/components/tailwindConfig";
 
 export function RightList({
@@ -42,22 +41,21 @@ export function RightList({
                 res.map((postWrapper, index) => {
                     if (postWrapper.contentList.length === 0) {
                         return (
-                            <Link
+                            <NonAccordionLink
                                 key={index}
                                 href={`./${postWrapper.originalName}`}
-                                className='flex items-center px-1 py-2 rounded-lg hover:bg-slate-300'
-                                onClick={() => setIsOpen(false)}>
-                                <div className='w-2 h-2 bg-blue-950 rounded-full mr-3' /> {postWrapper.title}
-                            </Link>
+                                label={postWrapper.title}
+                                setIsOpen={setIsOpen}
+                            />
                         );
                     }
                     return (
-                        <AccordionWrapper postWrapper={postWrapper} key={index}>
-                            <Accordion
+                        <Accordion label={postWrapper.title} key={index}>
+                            <AccordionItem
                                 contentList={postWrapper.contentList}
                                 setIsOpen={setIsOpen}
                             />
-                        </AccordionWrapper>
+                        </Accordion>
                     );
                 })
             }
