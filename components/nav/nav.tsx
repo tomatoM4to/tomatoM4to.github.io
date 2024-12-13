@@ -2,7 +2,7 @@ import Link from "next/link";
 import { VscGithubInverted } from "react-icons/vsc";
 import { GrLanguage } from "react-icons/gr";
 import { BsFillMoonStarsFill } from "react-icons/bs";
-import { ZIndexConfig } from "@/components/tailwindConfig";
+import { ZIndexConfig, ResponsiveConfig } from "@/components/tailwindConfig";
 
 function Search() {
     return (
@@ -39,8 +39,11 @@ export function Nav({ className }: { className: string }) {
     return (
         <nav className={`
         ${className}
-        bg-slate-50
-        w-full h-14
+        ${ZIndexConfig.nav}
+        ${ResponsiveConfig.nav}
+        bg-slate-50/30
+        backdrop-blur-md
+        w-full
         flex
         items-center
         justify-between
@@ -49,9 +52,8 @@ export function Nav({ className }: { className: string }) {
         mb-20
         border-b-2
         border-b-slate-300
-        text-2xl
-        fixed
-        ${ZIndexConfig.nav}`}>
+        fixed`
+        }>
             <Link href="/">tomatoM4to&apos;s blog</Link>
             <UtilityButtons />
         </nav>

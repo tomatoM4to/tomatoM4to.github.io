@@ -24,8 +24,6 @@ function HamburgerBtn({
             gap-1
             justify-center
             items-center
-            w-10
-            h-10
             rounded-lg
             fixed
             right-2
@@ -34,8 +32,9 @@ function HamburgerBtn({
             p-2
             hover:bg-gray-200
             transition-all
-            z-
-            ${ZIndexConfig.hamburgerBtn}`}
+            ${ResponsiveConfig.hamburgerBtn}
+            ${ZIndexConfig.hamburgerBtn}
+            `}
         >
             <span
                 className={`${tailwind} ${isOpen ? "rotate-45 translate-y-1.5" : ""}`}
