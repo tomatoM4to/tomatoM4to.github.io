@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { RightList } from "./rightList";
-import { ResponsiveConfig, ZIndexConfig } from "@/components/tailwindConfig";
+import { ColorConfig, ResponsiveConfig, ZIndexConfig } from "@/components/tailwindConfig";
 import { Background } from "./background";
 import { PostWrapper } from "@/components/utils";
 
@@ -14,7 +14,7 @@ function HamburgerBtn({
     isOpen: boolean,
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-    const tailwind = `w-6 h-0.5 bg-black rounded transform transition-transform duration-300 ease-in-out`;
+    const tailwind = `w-6 h-0.5 ${ColorConfig.accordionDot} rounded transform transition-transform duration-300 ease-in-out`;
     return (
         <button
             onClick={() => setIsOpen(!isOpen)}
@@ -30,8 +30,8 @@ function HamburgerBtn({
             top-2
             active:outline-none
             p-2
-            hover:bg-gray-200
             transition-all
+            ${ColorConfig.hover}
             ${ResponsiveConfig.hamburgerBtn}
             ${ZIndexConfig.hamburgerBtn}
             `}
@@ -40,7 +40,7 @@ function HamburgerBtn({
                 className={`${tailwind} ${isOpen ? "rotate-45 translate-y-1.5" : ""}`}
             ></span>
             <span
-                className={`w-6 h-0.5 bg-black rounded transition-opacity duration-300 ease-in-out ${isOpen ? "opacity-0" : "opacity-100"}`}
+                className={`w-6 h-0.5 ${ColorConfig.accordionDot} rounded transition-opacity duration-300 ease-in-out ${isOpen ? "opacity-0" : "opacity-100"}`}
             ></span>
             <span
                 className={`${tailwind} ${isOpen ? "-rotate-45 -translate-y-1.5" : ""}`}

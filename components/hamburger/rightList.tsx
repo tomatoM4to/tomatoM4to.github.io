@@ -3,7 +3,7 @@
 import { PostWrapper } from "../utils";
 import { UtilityButtons } from "@/components/hamburger/utility";
 import { Accordion, AccordionItem, NonAccordionLink } from '@/components/sidebar/accordion';
-import { ZIndexConfig } from "@/components/tailwindConfig";
+import { ColorConfig, ZIndexConfig } from "@/components/tailwindConfig";
 
 export function RightList({
     isOpen,
@@ -17,7 +17,7 @@ export function RightList({
     return (
         <div
             className={`
-                bg-slate-50
+                ${ColorConfig.root}
                 fixed
                 top-0
                 right-0

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ResponsiveConfig } from "@/components/tailwindConfig";
+import { ColorConfig, ResponsiveConfig } from "@/components/tailwindConfig";
 import { PostWrapper } from "../utils";
 import { Accordion, AccordionItem, NonAccordionLink } from './accordion';
 
@@ -14,10 +14,10 @@ export function SideList({
         <aside
             className={`
                 ${ResponsiveConfig.sideList}
+                ${ColorConfig.sideList}
                 flex-col
                 h-screen
                 border-r-2
-                border-gray-300
                 p-1
                 pl-5
                 pt-14

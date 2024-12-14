@@ -1,0 +1,50 @@
+'use client';
+
+import { useEffect, useState } from "react";
+import { BsFillMoonStarsFill, BsFillSunFill } from "react-icons/bs";
+import { ColorConfig } from "../tailwindConfig";
+
+export function DarkModeButton() {
+    const [darkMode, setDarkMode] = useState<boolean>(false);
+
+    useEffect(() => {
+        let theme: string | null = window.localStorage.getItem('theme');
+
+        if (theme === 'dark') {
+            setDarkMode(theme === 'dark');
+        }
+        else {
+            // matchMedia docs: https://developer.mozilla.org/ko/docs/Web/API/Window/matchMedia
+            let prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            setDarkMode(prefersDarkMode);
+        }
+    }, [])
+
+    useEffect(() => {
+        if (darkMode) {
+            document.documentElement.classList.add('dark');
+            window.localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            window.localStorage.setItem('theme', 'light');
+        }
+    }, [darkMode]);
+
+    return (
+        <button
+            onClick={() => setDarkMode(!darkMode)}
+            className={`
+                p-2
+                rounded-full
+                ${ColorConfig.hover}
+                transition-colors
+                duration-300`}
+        >
+            {
+                darkMode
+                    ? <BsFillSunFill className="text-2xl cursor-pointer" />
+                    : <BsFillMoonStarsFill className="text-2xl cursor-pointer" />
+            }
+        </button>
+    )
+}

@@ -1,27 +1,17 @@
 import React from "react";
+import { ColorConfig } from "./tailwindConfig";
 
 export const code = {
     code: (props: React.HTMLAttributes<HTMLElement>) => {
         return (
             <code
                 {...props}
-                className={`overflow-x-auto bg-slate-300 px-1 rounded-md ${props.className || ''}`}
+                className={`overflow-x-auto ${ColorConfig.code} px-1 rounded-md ${props.className || ''}`}
             >
                 {props.children}
             </code>
         );
     },
-
-    pre: (props: React.HTMLAttributes<HTMLPreElement>) => {
-        return (
-            <pre
-                {...props}
-                className={`overflow-x-auto bg-gray-200 rounded-lg ${props.className || ''}`}
-            >
-                {props.children}
-            </pre>
-        );
-    }
 };
 
 

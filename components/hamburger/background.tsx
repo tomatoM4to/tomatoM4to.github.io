@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from "react"
-import { ZIndexConfig } from "@/components/tailwindConfig";
+import { ColorConfig, ZIndexConfig } from "@/components/tailwindConfig";
 
 export function Background({
     isOpen,
@@ -25,13 +25,12 @@ export function Background({
             className={`
         w-screen
         h-screen
-        bg-white
-        blur-lg
         fixed
         left-0
         top-0
         transition-opacity
         duration-300
+        ${ColorConfig.hamburgerBackground}
         ${isOpen ? 'opacity-70' : 'opacity-0 pointer-events-none'}
         ${ZIndexConfig.hamburgerBackground}`}
             onClick={() => setIsOpen(false)}

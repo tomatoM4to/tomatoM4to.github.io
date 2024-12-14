@@ -4,7 +4,20 @@ import { useState } from "react";
 import { Post } from "@/components/utils";
 import Link from "next/link";
 import { IoIosArrowForward } from "react-icons/io";
-import { ResponsiveConfig } from "../tailwindConfig";
+import { ColorConfig, ResponsiveConfig } from "../tailwindConfig";
+
+function Dot() {
+    return (
+        <div
+            className={`
+                ${ResponsiveConfig.accordionDot}
+                ${ColorConfig.accordionDot}
+                rounded-full
+                mr-3
+            `}
+        />
+    )
+}
 
 export function NonAccordionLink({
     href,
@@ -23,16 +36,12 @@ export function NonAccordionLink({
                 items-center
                 px-1 py-2
                 rounded-lg
-                hover:bg-slate-300
+                ${ColorConfig.hover}
                 ${ResponsiveConfig.accordion}
                 `}
             onClick={() => setIsOpen && setIsOpen(false)}
         >
-            <div
-                className={`
-                    ${ResponsiveConfig.accordionDot} bg-blue-950 rounded-full mr-3
-                `}
-            />
+            <Dot />
             {label}
         </Link>
     )
@@ -52,13 +61,18 @@ export function Accordion({
         <div className={`flex flex-col ${ResponsiveConfig.accordion}`}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex justify-between items-center text-left px-1 py-2 hover:bg-slate-300 focus:outline-none rounded-lg"
+                className={`
+                    flex
+                    justify-between
+                    items-center
+                    text-left
+                    px-1 py-2
+                    ${ColorConfig.hover}
+                    focus:outline-none
+                    rounded-lg`}
             >
                 <div className="flex items-center">
-                    <span
-                        className={
-                            `${ResponsiveConfig.accordionDot} bg-blue-950 rounded-full mr-3`
-                        } />
+                    <Dot />
                     {label}
                 </div>
                 <IoIosArrowForward className={`${isOpen ? "rotate-90" : "rotate-0"}`} />
@@ -85,7 +99,11 @@ export function AccordionItem({
                 <Link
                     key={index}
                     href={`./${content.originalName}`}
-                    className="p-2 border-l-2 border-gray-300 hover:text-blue-500 hover:border-blue-500"
+                    className={`
+                        p-2
+                        border-l-2
+                        ${ColorConfig.accordionItem}`
+                    }
                     onClick={() => setIsOpen && setIsOpen(false)}
                 >
                     {content.title}

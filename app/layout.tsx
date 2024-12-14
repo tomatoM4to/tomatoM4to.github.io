@@ -2,7 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Nav } from "@/components/nav/nav";
 import { Inter, Playball } from 'next/font/google';
 import "./globals.css";
-import "highlight.js/styles/github-dark-dimmed.css";
+import "highlight.js/styles/xt256.css";
+import { ColorConfig } from "@/components/tailwindConfig";
 
 const inter = Inter({
     subsets: ['latin'],
@@ -68,7 +69,11 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="ko">
-            <body className={`${inter.className} min-h-screen bg-slate-50 text-blue-950`}>
+            <body className={
+                `${inter.className}
+                min-h-screen
+                ${ColorConfig.root}`
+            }>
                 <div className="grid grid-cols-[24rem_1fr] auto-rows-auto">
                     <Nav className={sixCaps.className} />
                     <main className="col-span-2">

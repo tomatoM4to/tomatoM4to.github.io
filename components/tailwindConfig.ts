@@ -20,3 +20,19 @@ export class ZIndexConfig {
     static sideList = `z-10`;
     static post = `z-0`;
 }
+
+export class ColorConfig {
+    static root = `bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-50`;
+    static nav = `bg-slate-50/30 dark:bg-slate-900/30 border-b-slate-300 dark:border-b-slate-600`;
+    static theme = `border-slate-300 dark:border-slate-600`;
+    static sideList = `border-r-slate-300 dark:border-r-slate-600`;
+    static pointText = `text-blue-600 dark:text-cyan-400`;
+    static hover = `hover:bg-slate-300 dark:hover:bg-slate-600`;
+    static accordionDot = `bg-slate-900 dark:bg-slate-50`;
+    static accordionItem = `
+    border-l-slate-300 dark:border-l-slate-600
+    hover:text-blue-600 dark:hover:text-cyan-400
+    hover:border-blue-600 dark:hover:border-cyan-400`;
+    static code = `bg-slate-300 border border-slate-400 dark:bg-slate-600 dark:border-slate-500`;
+    static hamburgerBackground = `bg-slate-50/70 dark:bg-slate-900/70`;
+}
