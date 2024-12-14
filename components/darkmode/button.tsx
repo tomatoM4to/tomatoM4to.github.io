@@ -5,20 +5,14 @@ import { BsFillMoonStarsFill, BsFillSunFill } from "react-icons/bs";
 import { ColorConfig } from "../tailwindConfig";
 
 export function DarkModeButton() {
-    const [darkMode, setDarkMode] = useState<boolean>(false);
+    const [darkMode, setDarkMode] = useState<boolean>(() => {
+        let theme = window.localStorage.getItem('theme');
+        if (theme === 'dark') return true;
+        if (theme === 'light') return false;
 
-    useEffect(() => {
-        let theme: string | null = window.localStorage.getItem('theme');
-
-        if (theme === 'dark') {
-            setDarkMode(theme === 'dark');
-        }
-        else {
-            // matchMedia docs: https://developer.mozilla.org/ko/docs/Web/API/Window/matchMedia
-            let prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            setDarkMode(prefersDarkMode);
-        }
-    }, [])
+        // 로컬 스토리지에 저장된 값이 없으면 시스템 설정 사용
+        return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    });
 
     useEffect(() => {
         if (darkMode) {
