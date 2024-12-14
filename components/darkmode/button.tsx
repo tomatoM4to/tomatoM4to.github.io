@@ -6,6 +6,9 @@ import { ColorConfig } from "../tailwindConfig";
 
 export function DarkModeButton() {
     const [darkMode, setDarkMode] = useState<boolean>(() => {
+        // 서버 환경에서는 무조건 false
+        if (typeof window === 'undefined') return false;
+
         let theme = window.localStorage.getItem('theme');
         if (theme === 'dark') return true;
         if (theme === 'light') return false;
