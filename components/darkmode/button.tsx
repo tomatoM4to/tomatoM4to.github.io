@@ -5,19 +5,25 @@ import { BsFillMoonStarsFill, BsFillSunFill } from "react-icons/bs";
 import { ColorConfig } from "../tailwindConfig";
 
 export function DarkModeButton() {
-    const [darkMode, setDarkMode] = useState<boolean>(() => {
-        // 서버 환경에서는 무조건 false
-        if (typeof window === 'undefined') return false;
-
-        let theme = window.localStorage.getItem('theme');
-        if (theme === 'dark') return true;
-        if (theme === 'light') return false;
-
-        // 로컬 스토리지에 저장된 값이 없으면 시스템 설정 사용
-        return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    });
+    const [darkMode, setDarkMode] = useState<boolean | null>(null);
 
     useEffect(() => {
+        // 클라이언트 환경에서 로컬 스토리지 값 및 시스템 설정 확인
+        const theme = window.localStorage.getItem('theme');
+        if (theme === 'dark') {
+            setDarkMode(true);
+        } else if (theme === 'light') {
+            setDarkMode(false);
+        } else {
+            // 로컬 스토리지 값이 없으면 시스템 설정 사용
+            setDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
+        }
+    }, []);
+
+    useEffect(() => {
+        // 초기화되지 않은 상태는 건너뜀
+        if (darkMode === null) return;
+
         if (darkMode) {
             document.documentElement.classList.add('dark');
             window.localStorage.setItem('theme', 'dark');
@@ -26,6 +32,11 @@ export function DarkModeButton() {
             window.localStorage.setItem('theme', 'light');
         }
     }, [darkMode]);
+
+    if (darkMode === null) {
+        // 상태 초기화 중에는 아무 UI도 렌더링 하지 않음
+        return null;
+    }
 
     return (
         <button
@@ -43,5 +54,5 @@ export function DarkModeButton() {
                     : <BsFillMoonStarsFill className="text-2xl cursor-pointer" />
             }
         </button>
-    )
+    );
 }
