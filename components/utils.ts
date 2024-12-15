@@ -47,10 +47,12 @@ export interface Post {
     order: string,
     title: string,
     originalName: string,
+    index: number
 }
 
 export async function getSortedPostList(theme: string, wrapper: boolean = false): Promise<PostWrapper[] | Post[]> {
     let postList: string[] = await fs.readdir(path.join(process.cwd(), 'public', 'kr', theme));
+    let index: number = 1;
 
     let newPostList: Post[] = postList
         .filter((post: string) => post !== 'img')
@@ -71,6 +73,7 @@ export async function getSortedPostList(theme: string, wrapper: boolean = false)
                     order: `${firstOrder}-${secondOrder}`,
                     title,
                     originalName: post.replace(".mdx", ""),
+                    index: -1
                 };
             }
             return {
@@ -80,6 +83,7 @@ export async function getSortedPostList(theme: string, wrapper: boolean = false)
                 order: `${firstOrder}`,
                 title,
                 originalName: post.replace(".mdx", ""),
+                index: -1
             };
         })
         .sort((a: Post, b: Post) => {
@@ -90,6 +94,16 @@ export async function getSortedPostList(theme: string, wrapper: boolean = false)
             // secondOrder
             return a.secondOrder - b.secondOrder;
         })
+        .map((post: Post, _: number, arr: Post[]) => {
+            if (
+                post.isTitle &&
+                index + 1 < arr.length &&
+                arr[index + 1].order.includes(`${post.order}-`)
+            ) return post;
+            post.index = index++;
+            return post;
+        })
+
     if (!wrapper) return newPostList;
 
     let postWrapper: PostWrapper[] = [];
@@ -140,7 +154,28 @@ interface CompileMDXResult {
     content: ReactElement<any>;
 }
 
-export async function getPost(theme: string, post: string): Promise<ReactElement<any>> {
+export interface PostContent {
+    content: ReactElement<any>;
+    prePost: {
+        originalName: string,
+        title: string
+    } | null,
+    nextPost: {
+        originalName: string,
+        title: string
+    } | null
+}
+
+export async function getPost(theme: string, post: string): Promise<PostContent> {
+    let postList: Post[] | PostWrapper[] = await getSortedPostList(theme);
+    if (isPostWrapperArray(postList)) throw new Error('getPost: PostList is not Post[]');
+
+    let currentIndex: Post | undefined = postList.find((p: Post) => `${p.originalName}.mdx` === decodeURIComponent(post));
+    if (currentIndex === undefined) throw new Error('getPost: Post not found');
+
+    let prePost: Post | undefined = postList.find((p: Post) => p.index === currentIndex.index - 1);
+    let nextPost: Post | undefined = postList.find((p: Post) => p.index === currentIndex.index + 1);
+
     let postPath: string = path.join(process.cwd(), 'public', 'kr', theme, post);
     postPath = decodeURIComponent(postPath);
     let source: string = await fs.readFile(postPath, 'utf8');
@@ -164,5 +199,15 @@ export async function getPost(theme: string, post: string): Promise<ReactElement
             ...code
         }
     })
-    return content;
+    return {
+        content,
+        prePost: prePost === undefined ? null : {
+            originalName: prePost.originalName,
+            title: prePost.title
+        },
+        nextPost: nextPost === undefined ? null : {
+            originalName: nextPost.originalName,
+            title: nextPost.title
+        }
+    };
 }
