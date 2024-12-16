@@ -96,6 +96,19 @@ print(z)
 print(z.shape) # 1, 3, 1
 ```
 
+**OUTPUT**
+```
+tensor([1, 2, 3])
+
+tensor([[1, 2, 3]])
+torch.Size([1, 3])
+
+tensor([[[1],
+         [2],
+         [3]]])
+torch.Size([1, 3, 1])
+```
+
 ## 텐서간 결합
 `stack` 메서드를 사용하면 텐서를 결합할 수 있습니다. 이때 결합할때 차원이 같아야 합니다.
 
@@ -112,6 +125,13 @@ t = torch.stack([x, y, z])
 print(t)
 ```
 
+**OUTPUT**
+```python
+tensor([[1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]])
+```
+
 또 `cat` 라는 메서드를 사용할수 있습니다. `stack`과 듀사하지만 쌓을 차원정보인 `dim`이 존재 해야 합니다. 내부적인 동작으론 해당 차원을 늘려준 후 결합을 합니다.
 
 `cat` 은 `concatenate`의 줄임말 입니다.
@@ -122,10 +142,25 @@ import torch
 x = torch.tensor([1, 2, 3])
 y = torch.tensor([4, 5, 6])
 
-t = torch.cat([x, y], dim = 0)
+t = torch.cat([x, y])
+print(t)
+print(t.size())
+
+x = torch.tensor([1, 2, 3, 4])
+y = torch.tensor([5, 6, 7])
+t = torch.cat([x, y])
 print(t)
 print(t.size())
 ```
+
+**OUTPUT**
+```shell
+tensor([1, 2, 3, 4, 5, 6])
+torch.Size([6])
+tensor([1, 2, 3, 4, 5, 6, 7])
+torch.Size([7])
+```
+
 
 ## 텐서 분할
 `chunk`와 `split` 메서드를 사용하면 텐서를 분할할 수 있습니다. `chunk`는 동일한 크기로 텐서를 분할하고 `split`은 지정한 크기로 텐서를 분할합니다.
