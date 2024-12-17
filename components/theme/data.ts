@@ -54,7 +54,7 @@ export const database: ThemeType = {
     header: "Database",
     subTheme: [
         {
-            header: "RDBMS Basic",
+            header: "RDBMS",
             explanation:
                 "가장 널리 사용되는 데이터베이스 패러다임인 관계형 데이터베이스의 기초를 다룹니다. PostgreSQL과 SQL을 활용하여 데이터베이스의 설계, 생성, 관리, 질의 등 전반적인 데이터 관리 방법을 배웁니다.",
             list: [
@@ -116,13 +116,6 @@ export const linux: ThemeType = {
     header: "Linux",
     subTheme: [
         {
-            header: "Portable Linux",
-            explanation:
-                "USB에 담아 어디서든 부팅 가능한 포터블 리눅스 시스템을 직접 만들어봅니다. 파일 시스템 설정, 사용자 관리, 네트워크 구성 등 핵심 기능을 설정하여 나만의 휴대용 리눅스 환경을 구축합니다.",
-            list: [""],
-            link: "/",
-        },
-        {
             header: "How to Use Linux",
             explanation:
                 "리눅스의 기본 사용법과 주요 명령어들을 익혀봅니다. 터미널에서 파일 및 디렉토리 관리, 프로세스 제어, 사용자 및 권한 관리, 패키지 설치와 업데이트 등 리눅스 시스템 운영에 필요한 기본 지식을 습득합니다.",
@@ -143,7 +136,7 @@ export const git: ThemeType = {
     header: "Git/Github",
     subTheme: [
         {
-            header: "Basic",
+            header: "Git",
             explanation:
                 "분산 버전 관리 시스템인 Git의 기본 사용법을 학습합니다. 저장소 생성부터 커밋, 브랜치 관리, 머지, 충돌 해결 등 Git의 핵심 기능을 실습하며 버전 관리의 중요성을 이해합니다.",
             list: [""],
@@ -203,13 +196,6 @@ export const ai: ThemeType = {
                 "Neural Network",
             ],
             link: "./pytorch/[1]-Introduction",
-        },
-        {
-            header: "Deep Learning",
-            explanation:
-                "딥러닝의 기본 원리와 다양한 신경망 구조를 학습합니다. 합성곱 신경망(CNN), 순환 신경망(RNN), 생성 모델 등 최신 딥러닝 기법을 배우고, 실제 데이터를 활용하여 모델을 설계하고 훈련시켜봅니다.",
-            list: [""],
-            link: "",
         },
     ],
 };
@@ -282,13 +268,6 @@ export const dev: ThemeType = {
             header: "Fast API Reverse Engineering",
             explanation:
                 "Python의 FastAPI로 개발된 웹 애플리케이션을 분석하고, 그 구조와 기능을 FastAPI로 재구현해봅니다. 이를 통해 웹 프레임워크의 동작 원리를 이해하고, RESTful API 설계에 대한 실무 경험을 쌓습니다.",
-            list: [""],
-            link: "/",
-        },
-        {
-            header: "Testing",
-            explanation:
-                "FastAPI 기반의 웹 애플리케이션에 대한 테스트 방법을 학습합니다. Mocha, Chai 등 테스트 도구를 활용하여 단위 테스트와 통합 테스트를 작성하고 실행하며, 코드 품질과 안정성을 향상시키는 방법을 배웁니다.",
             list: [""],
             link: "/",
         },
