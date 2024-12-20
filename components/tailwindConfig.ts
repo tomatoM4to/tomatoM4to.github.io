@@ -35,4 +35,5 @@ export class ColorConfig {
     hover:border-blue-600 dark:hover:border-cyan-400`;
     static code = `bg-slate-300 border border-slate-400 dark:bg-slate-600 dark:border-slate-500`;
     static hamburgerBackground = `bg-slate-50/70 dark:bg-slate-900/70`;
+    static bottomNav = `border-t-slate-300 dark:border-t-slate-600`;
 }

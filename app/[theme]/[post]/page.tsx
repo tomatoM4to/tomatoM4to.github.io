@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation';
-import { ResponsiveConfig, ZIndexConfig } from '@/components/tailwindConfig';
+import { ResponsiveConfig } from '@/components/tailwindConfig';
 import { getPostParams, getPost, PostParams, PostContent } from '@/components/utils';
 import Link from 'next/link';
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { BottomNavLayout, BottomLayoutButton, NoneButton } from '@/components/nav/bottimNav';
 
 export async function generateStaticParams(): Promise<PostParams[]> {
     return await getPostParams();
@@ -23,32 +23,24 @@ export default async function Page(
                 <div className={`${ResponsiveConfig.post} markdown-body`}>
                     {postContent.content}
                 </div>
-                <div className="flex justify-between items-center w-full mt-8 pt-4 gap-4 border-t-slate-600 border-t-2">
-                    {postContent.prePost ? (
-                        <Link
-                            href={`./${postContent.prePost.originalName}`}
-                            className="flex gap-2 justify-center items-center text-lg font-medium mx-5 py-4 rounded-lg basis-1/2 hover:bg-slate-700"
-                        >
-                            <FaArrowLeft /> {postContent.prePost.title}
-                        </Link>
-                    ) : (
-                        <div className="basis-1/2"></div>
-                    )}
-
-                    {postContent.nextPost ? (
-                        <Link
-                            href={`./${postContent.nextPost.originalName}`}
-                            className="flex gap-2 justify-center items-center text-lg font-medium py-4 rounded-lg basis-1/2 hover:bg-slate-700"
-                        >
-                            {postContent.nextPost.title} <FaArrowRight />
-                        </Link>
-                    ) : (
-                        <div className="basis-1/2"></div>
-                    )}
-                </div>
-
-
-
+                <BottomNavLayout className={ResponsiveConfig.post}>
+                    {
+                        postContent.prePost ?
+                            <BottomLayoutButton
+                                isLeft={true}
+                                href={postContent.prePost.originalName}
+                                label={postContent.prePost.title}
+                            /> : <NoneButton />
+                    }
+                    {
+                        postContent.nextPost ?
+                            <BottomLayoutButton
+                                isLeft={false}
+                                href={postContent.nextPost.originalName}
+                                label={postContent.nextPost.title}
+                            /> : <NoneButton />
+                    }
+                </BottomNavLayout>
             </div>
         )
     }
