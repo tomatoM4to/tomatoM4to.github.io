@@ -10,6 +10,8 @@ export class ResponsiveConfig {
     static nav = `text-xl h-12 md:h-14 md:text-2xl`;
     static accordion = `text-sm sm:text-base`;
     static accordionDot = `w-1.5 h-1.5 sm:w-2 sm:h-2`;
+    static bottomNavLayout = `flex-col sm:flex-row`;
+    static bottomLayoutButton = `py-2 sm:py-4`;
 }
 
 export class ZIndexConfig {

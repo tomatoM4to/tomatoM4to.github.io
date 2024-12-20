@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-import { ColorConfig } from "../tailwindConfig";
+import { ColorConfig, ResponsiveConfig } from "../tailwindConfig";
 
 export function BottomNavLayout({
     children,
@@ -12,6 +12,7 @@ export function BottomNavLayout({
     return (
         <div className={`
             flex
+            ${ResponsiveConfig.bottomNavLayout}
             justify-between
             items-center
             w-full
@@ -39,16 +40,15 @@ export function BottomLayoutButton({
         <Link
             href={href}
             className={`
+                w-full
                 flex
                 gap-2
                 ${isLeft ? "justify-start" : "justify-end"}
                 items-center
-                text-lg
                 font-medium
-                py-4
+                ${ResponsiveConfig.bottomLayoutButton}
                 px-2
                 rounded-lg
-                basis-1/2
                 ${ColorConfig.hover}
             `}
         >
