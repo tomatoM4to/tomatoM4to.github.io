@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { ColorConfig, ResponsiveConfig } from "@/components/tailwindConfig";
 import { PostWrapper } from "../utils";
 import { Accordion, AccordionItem, NonAccordionLink } from './accordion';

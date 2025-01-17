@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { BsFillMoonStarsFill, BsFillSunFill } from "react-icons/bs";
-import { ColorConfig } from "../tailwindConfig";
+import { ColorConfig } from "@/components/tailwindConfig";
 
 export function DarkModeButton() {
     const [darkMode, setDarkMode] = useState<boolean | null>(null);

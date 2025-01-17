@@ -1,9 +1,7 @@
 import Link from "next/link";
 import { VscGithubInverted } from "react-icons/vsc";
-import { GrLanguage } from "react-icons/gr";
-import { FaSearch } from "react-icons/fa";
-import { DarkModeButton } from "../darkmode/button";
-import { ColorConfig, ResponsiveConfig } from "../tailwindConfig";
+import { DarkModeButton } from "@/components/darkmode/button";
+import { ColorConfig } from "@/components/tailwindConfig";
 
 export function UtilityButtons() {
     return (

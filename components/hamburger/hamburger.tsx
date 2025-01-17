@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from "react"
-import { RightList } from "./rightList";
+import { RightList } from "@/components/hamburger/rightList";
 import { ColorConfig, ResponsiveConfig, ZIndexConfig } from "@/components/tailwindConfig";
-import { Background } from "./background";
+import { Background } from "@/components/hamburger/background";
 import { PostWrapper } from "@/components/utils";
 
 

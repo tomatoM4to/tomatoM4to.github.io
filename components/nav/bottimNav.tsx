@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-import { ColorConfig, ResponsiveConfig } from "../tailwindConfig";
+import { ColorConfig, ResponsiveConfig } from "@/components/tailwindConfig";
 
 export function BottomNavLayout({
     children,

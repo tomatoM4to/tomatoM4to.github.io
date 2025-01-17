@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
 import { ResponsiveConfig } from '@/components/tailwindConfig';
 import { getPostParams, getPost, PostParams, PostContent } from '@/components/utils';
-import Link from 'next/link';
 import { BottomNavLayout, BottomLayoutButton, NoneButton } from '@/components/nav/bottimNav';
 
 export async function generateStaticParams(): Promise<PostParams[]> {

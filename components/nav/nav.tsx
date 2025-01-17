@@ -2,7 +2,7 @@ import Link from "next/link";
 import { VscGithubInverted } from "react-icons/vsc";
 import { GrLanguage } from "react-icons/gr";
 import { ZIndexConfig, ResponsiveConfig, ColorConfig } from "@/components/tailwindConfig";
-import { DarkModeButton } from "../darkmode/button";
+import { DarkModeButton } from "@/components/darkmode/button";
 
 function Search() {
     return (
