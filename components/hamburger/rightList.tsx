@@ -12,7 +12,7 @@ export function RightList({
 }: {
     isOpen: boolean,
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>,
-    res: PostWrapper[],
+    res?: PostWrapper[],
 }) {
     return (
         <div
@@ -38,7 +38,7 @@ export function RightList({
             <UtilityButtons />
 
             {
-                res.map((postWrapper, index) => {
+                res && res.map((postWrapper, index) => {
                     if (postWrapper.contentList.length === 0) {
                         return (
                             <NonAccordionLink

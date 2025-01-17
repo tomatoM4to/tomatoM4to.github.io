@@ -50,8 +50,8 @@ export function DarkModeButton() {
         >
             {
                 darkMode
-                    ? <BsFillSunFill className="text-2xl cursor-pointer" />
-                    : <BsFillMoonStarsFill className="text-2xl cursor-pointer" />
+                    ? <BsFillSunFill className="text-xl md:text-2xl cursor-pointer" />
+                    : <BsFillMoonStarsFill className="text-xl md:text-2xl cursor-pointer" />
             }
         </button>
     );

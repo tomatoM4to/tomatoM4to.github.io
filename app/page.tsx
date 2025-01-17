@@ -1,3 +1,4 @@
+import { Hamburger } from "@/components/hamburger/hamburger";
 import {
     operatingSystem,
     database,
@@ -14,6 +15,7 @@ import { Layout, Theme } from "@/components/theme/main";
 export default async function Home() {
     return (
         <Layout>
+            <Hamburger />
             <Theme theme={operatingSystem} />
             <Theme theme={database} />
             <Theme theme={network} />

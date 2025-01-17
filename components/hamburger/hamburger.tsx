@@ -52,10 +52,8 @@ function HamburgerBtn({
 
 export function Hamburger({
     res,
-    params
 }: {
-    res: PostWrapper[],
-    params: { theme: string }
+    res?: PostWrapper[],
 }) {
     const [isOpen, setIsOpen] = useState(false);
     return (
