@@ -21,9 +21,9 @@ export default async function Layout(
         return (
             <div className="flex">
                 {res.length > 0 && isPostWrapperArray(res) &&
-                    <Hamburger res={res} params={params} />}
+                    <Hamburger res={res} />}
                 {res.length > 0 && isPostWrapperArray(res) &&
-                    <SideList res={res} params={params} />}
+                    <SideList res={res} />}
                 {children}
             </div>
         );

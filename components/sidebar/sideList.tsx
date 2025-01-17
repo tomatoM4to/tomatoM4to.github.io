@@ -5,10 +5,8 @@ import { Accordion, AccordionItem, NonAccordionLink } from './accordion';
 
 export function SideList({
     res,
-    params
 }: {
     res: PostWrapper[],
-    params: { theme: string }
 }) {
     return (
         <aside
