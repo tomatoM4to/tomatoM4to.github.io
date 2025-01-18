@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+import type { Metadata } from "next";
 import { Nav } from "@/components/nav/nav";
 import { Inter, Playball } from 'next/font/google';
 import "./globals.css";
@@ -14,13 +14,6 @@ const sixCaps = Playball({
     subsets: ['latin'],
     weight: '400',
 });
-
-export const viewport: Viewport = {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: true,
-};
 
 export const metadata: Metadata = {
     metadataBase: new URL('https://tomatom4to.github.io'),
@@ -59,7 +52,6 @@ export const metadata: Metadata = {
     alternates: {
         canonical: 'https://tomatom4to.github.io',
     },
-    viewport: "width=device-width, initial-scale=1.0",
 };
 
 export default function RootLayout({

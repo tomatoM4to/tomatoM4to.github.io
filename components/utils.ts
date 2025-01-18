@@ -24,15 +24,6 @@ export interface ThemeParams {
     theme: string
 }
 
-export async function getThemeParams(): Promise<ThemeParams[]> {
-    let themeList: string[] = await fs.readdir(path.join(process.cwd(), 'public', 'kr'));
-    return themeList.map((theme: string) => {
-        return {
-            theme: theme
-        }
-    })
-}
-
 export interface PostWrapper {
     title: string,
     originalName: string,
@@ -50,8 +41,76 @@ export interface Post {
     index: number
 }
 
-export async function getSortedPostList(theme: string, wrapper: boolean = false): Promise<PostWrapper[] | Post[]> {
-    let postList: string[] = await fs.readdir(path.join(process.cwd(), 'public', 'kr', theme));
+export interface PostParams {
+    theme: string,
+    post: string
+}
+
+interface CompileMDXResult {
+    content: ReactElement<any>;
+}
+
+export interface PostContent {
+    content: ReactElement<any>;
+    prePost: {
+        originalName: string,
+        title: string
+    } | null,
+    nextPost: {
+        originalName: string,
+        title: string
+    } | null
+}
+
+
+function encodePost(post: string): string {
+    if (!post.includes(']')) return post;
+
+    let nPost: string[] = post.split(']');
+    if (nPost.length === 1) throw new Error('encodePost: Invalid post');
+    return nPost[0] + ']' + encodeURIComponent(nPost[1]);
+}
+
+export async function getThemeParams(): Promise<ThemeParams[]> {
+    let themeList: string[] = await fs.readdir(
+        path.join(process.cwd(), 'public', 'kr')
+    );
+    return themeList.map((theme: string) => {
+        return {
+            theme: encodeURIComponent(theme)
+        }
+    })
+}
+
+export async function getPostParams(): Promise<PostParams[]> {
+    let res: PostParams[] = [];
+    let themeList: ThemeParams[] = await getThemeParams();
+    for (let s of themeList) {
+        let postListPath: string = path.join(
+            process.cwd(),
+            'public',
+            'kr',
+            decodeURIComponent(s.theme)
+        );
+        let postList: string[] = await fs.readdir(postListPath);
+        for (let p of postList as string[]) {
+            let post: string = p.replace('.mdx', '');
+            res.push({
+                theme: encodeURIComponent(s.theme),
+                post: encodePost(post)
+            })
+        }
+    }
+    return res;
+}
+
+export async function getSortedPostList(
+    theme: string,
+    wrapper: boolean = false
+): Promise<PostWrapper[] | Post[]> {
+    let postList: string[] = await fs.readdir(
+        path.join(process.cwd(), 'public', 'kr', theme)
+    );
     let index: number = 1;
 
     let newPostList: Post[] = postList
@@ -123,47 +182,9 @@ export async function getSortedPostList(theme: string, wrapper: boolean = false)
     return postWrapper;
 }
 
+
 export function isPostWrapperArray(res: (Post | PostWrapper)[]): res is PostWrapper[] {
     return res.every((item) => 'contentList' in item && Array.isArray(item.contentList));
-}
-
-export interface PostParams {
-    theme: string,
-    post: string
-}
-
-export async function getPostParams(): Promise<PostParams[]> {
-    let res: PostParams[] = [];
-    let themeList: ThemeParams[] = await getThemeParams();
-    for (let s of themeList) {
-        let postListPath: string = path.join(process.cwd(), 'public', 'kr', s.theme);
-        postListPath = decodeURIComponent(postListPath);
-        let postList: string[] = await fs.readdir(postListPath);
-        for (let p of postList as string[]) {
-            let post: string = p.replace('.mdx', '');
-            res.push({
-                theme: s.theme,
-                post: post
-            })
-        }
-    }
-    return res;
-}
-
-interface CompileMDXResult {
-    content: ReactElement<any>;
-}
-
-export interface PostContent {
-    content: ReactElement<any>;
-    prePost: {
-        originalName: string,
-        title: string
-    } | null,
-    nextPost: {
-        originalName: string,
-        title: string
-    } | null
 }
 
 export async function getPost(theme: string, post: string): Promise<PostContent> {
