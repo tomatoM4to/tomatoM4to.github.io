@@ -97,7 +97,7 @@ export async function getPostParams(): Promise<PostParams[]> {
             let post: string = p.replace('.mdx', '');
             res.push({
                 theme: encodeURIComponent(s.theme),
-                post: encodePost(post)
+                post: post
             })
         }
     }
