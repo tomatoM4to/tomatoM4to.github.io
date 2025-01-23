@@ -28,7 +28,7 @@ export const operatingSystem: ThemeType = {
                 "디스크 시스템",
                 "파일 시스템템",
             ],
-            link: "./os/[1]-컴퓨터-구조-개요요",
+            link: "./os/[1]-컴퓨터-구조-개요",
         },
     ],
 };
