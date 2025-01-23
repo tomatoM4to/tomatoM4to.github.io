@@ -97,6 +97,7 @@ export async function getPostParams(): Promise<PostParams[]> {
             let post: string = p.replace('.mdx', '');
             res.push({
                 theme: encodeURIComponent(s.theme),
+                // TODO: dev 모드에선 정상작동 하지 않음, encodePost(post)로 수정해야 함
                 post: post
             })
         }
