@@ -20,11 +20,11 @@ export default async function Home() {
             <Theme theme={database} />
             <Theme theme={network} />
             <Theme theme={ai} />
-            <Theme theme={linux} />
-            <Theme theme={git} />
+            {/* <Theme theme={linux} /> */}
+            {/* <Theme theme={git} /> */}
             <Theme theme={algorithm} />
-            <Theme theme={computerStructure} />
-            <Theme theme={dev} />
+            {/* <Theme theme={computerStructure} /> */}
+            {/* <Theme theme={dev} /> */}
         </Layout>
     );
 }

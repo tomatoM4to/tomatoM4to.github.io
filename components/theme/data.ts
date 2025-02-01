@@ -144,11 +144,17 @@ export const algorithm: ThemeType = {
     header: "Algorithm",
     subTheme: [
         {
-            header: "C++ Containers Library",
+            header: "C++ for Coding Test",
             explanation:
                 "알고리즘 문제에서 자주 사용하는 C++ 컨테이너 라이브러리의 사용법을 빠르고 간단하게 알아봅니다.",
-            list: [""],
-            link: "./cpp-containers-library/[1]-소개",
+            list: [
+                "STL 소개",
+                "컨테이너",
+                "반복자",
+                "알고리즘",
+                "함수자"
+            ],
+            link: "./cpp-stl/[1]-STL-소개",
         },
     ],
 };
