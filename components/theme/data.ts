@@ -170,3 +170,18 @@ export const dev: ThemeType = {
     subTheme: [
     ],
 };
+
+export const flutter: ThemeType = {
+    header: "Flutter",
+    subTheme: [
+        {
+            header: "Dart",
+            explanation:
+                "Flutter 를 다루기 전 Flutter 를 구성하는 언어인 Dart 에 익숙해져 봅시다.",
+            list: [
+                "Dart 소개",
+            ],
+            link: "./dart/[1]-Dart-소개",
+        },
+    ],
+}
