@@ -28,7 +28,10 @@ export const heads = {
                 bg-gradient-to-r
                 from-blue-500
                 via-purple-500
-                to-pink-500"
+                to-pink-500
+                dark:from-blue-400
+                dark:via-purple-400
+                dark:to-pink-400"
         >
             {props.children}
         </h1>
@@ -42,6 +45,8 @@ export const heads = {
                 my-5
                 text-purple-600
                 hover:text-purple-800
+                dark:text-purple-400
+                dark:hover:text-purple-500
                 transition-colors
                 duration-200"
         >
@@ -57,6 +62,8 @@ export const heads = {
                 my-4
                 text-green-600
                 hover:text-green-800
+                dark:text-green-400
+                dark:hover:text-green-500
                 transition-colors
                 duration-200"
         >
@@ -72,6 +79,8 @@ export const heads = {
                 my-3
                 text-blue-600
                 hover:text-blue-800
+                dark:text-blue-400
+                dark:hover:text-blue-500
                 transition-colors
                 duration-200"
         >
@@ -86,6 +95,8 @@ export const heads = {
                 my-2
                 text-green-600
                 hover:text-green-800
+                dark:text-green-400
+                dark:hover:text-green-500
                 transition-colors
                 duration-200"
         >
@@ -100,6 +111,8 @@ export const heads = {
                 my-2
                 text-gray-700
                 hover:text-gray-900
+                dark:text-gray-400
+                dark:hover:text-gray-500
                 transition-colors
                 duration-200"
         >
@@ -111,22 +124,58 @@ export const heads = {
 
 export const highlights = {
     R: ({ children }: { children: React.ReactNode }) => (
-        <span className="text-rose-500 font-bold hover:text-red-700 transition-colors duration-200">
+        <span className="
+            text-rose-600
+            font-bold
+            text-lg
+            hover:text-rose-700
+            dark:text-rose-400
+            dark:hover:text-rose-500
+            transition-colors
+            duration-200"
+        >
             {children}
         </span>
     ),
     G: ({ children }: { children: React.ReactNode }) => (
-        <span className="text-emerald-500 text- font-bold hover:text-green-700 transition-colors duration-200">
+        <span className="
+            text-emerald-600
+            font-bold
+            text-lg
+            hover:text-emerald-700
+            dark:text-emerald-400
+            dark:hover:text-emerald-500
+            transition-colors
+            duration-200"
+        >
             {children}
         </span>
     ),
     B: ({ children }: { children: React.ReactNode }) => (
-        <span className="text-sky-500 font-bold hover:text-blue-700 transition-colors duration-200">
+        <span className="
+            text-sky-600
+            font-bold
+            text-lg
+            hover:text-sky-700
+            dark:text-sky-400
+            dark:hover:text-sky-500
+            transition-colors
+            duration-200"
+        >
             {children}
         </span>
     ),
     U: ({ children }: { children: React.ReactNode }) => (
-        <span className="underline decoration-4 decoration-dotted decoration-blue-400 hover:decoration-solid hover:decoration-blue-600 transition-all duration-200">
+        <span className="
+            underline
+            decoration-4
+            decoration-blue-500
+            hover:decoration-blue-600
+            dark:decoration-blue-300
+            dark:hover:decoration-blue-400
+            transition-all
+            duration-200"
+        >
             {children}
         </span>
     ),
