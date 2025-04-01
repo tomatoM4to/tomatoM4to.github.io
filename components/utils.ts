@@ -13,6 +13,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import { ReactElement } from 'react';
 import rehypeHighlight from 'rehype-highlight';
+import rehypeCodeTitles from 'rehype-code-titles';
 
 export interface ThemeInfo {
     enTheme: string,
@@ -98,8 +99,8 @@ export async function getPostParams(): Promise<PostParams[]> {
             res.push({
                 theme: encodeURIComponent(s.theme),
                 // TODO: dev 모드에선 정상작동 하지 않음, encodePost(post)로 수정해야 함
-                post: encodePost(post)
-                // post: post
+                // post: encodePost(post)
+                post: post
             })
         }
     }
@@ -209,6 +210,7 @@ export async function getPost(theme: string, post: string): Promise<PostContent>
             mdxOptions: {
                 remarkPlugins: [remarkGfm, remarkMath],
                 rehypePlugins: [
+                    rehypeCodeTitles,
                     [rehypeKatex, { output: 'mathml' }],
                     rehypeHighlight
                 ]
@@ -219,7 +221,7 @@ export async function getPost(theme: string, post: string): Promise<PostContent>
             ...lists,
             ...table,
             ...highlights,
-            ...code
+            // ...code
         }
     })
     return {
