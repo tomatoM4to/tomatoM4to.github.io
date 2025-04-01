@@ -1,0 +1,96 @@
+# The main() Function
+
+만약 Python 이나 JavaScript 만을 사용해 보셨다면, 생소한 개념일수 있는데요, Dart 의 문법은 Java 와 비슷한 경향을 보입니다. 그렇기에 Java 처럼 `main()` 이 존재하게 되는데요, 이제 이 `main()` 에 대해 알아보겠습니다.
+
+많은 프로그래밍 언어가 그렇듯, **dart** 에도 **main** 함수가 존재합니다. **main** 함수는 프로그램의 시작점으로, <U>모든 Dart 프로그램은 최상위 `main()` 함수가 필요합니다.</U>
+
+Dart 프로그램을 실행한다는것은 곧 `main()` 을 실행한다는것과 똑같은 의미를 가진다 볼수 있습니다다. 물론 **class** 나 **type** 같은건 `main()` 밖에서 정의할 수 있습니다. 만약 `main()` 없이 프로그램을 실행한다면 이러한 오류를 내보내게 됩니다.
+
+```dart
+void hello() {
+  print('Hello, World!');
+}
+```
+
+**ERROR**
+```bash
+main.dart:4:13: Error: Method not found: 'main'.
+```
+
+main 이라는 Method 을 찾을수 없다는 오류를 내보내는걸 볼수 있습니다. Method 라는 단어를 처음 들어보셨을 수도 있겠는데요, 나중에 class 에 대해 다룰때 다시 설명 하겠습니다. 그냥 함수랑 똑같은 개념이라고 생각해도 전혀 문제가 없습니다.
+
+## command-line arguments
+
+추가적으로 **main** 함수는 `command-line arguments` 를 받을 수 있습니다. `command-line arguments` 는 프로그램을 실행할 때 전달되는 인자들로, Dart 에서는 `List<String>` 형태로 전달됩니다. 예를 들어, 아래와 같이 `hello.dart` 파일을 작성했다고 가정해보겠습니다.
+
+```dart
+void main(List<String> args) {
+  if (args.isEmpty) {
+    print('No arguments provided!');
+  } else {
+    print('Arguments: ${args.join(', ')}');
+  }
+}
+```
+
+해당 파일을 실행하는 방법에 따라 두가지 형태로 실행할 수 있습니다.
+
+```bash
+dart hello.dart
+```
+
+```bash
+dart hello.dart arg1 arg2 arg3
+```
+
+각각의 경우에 따라 아래와 같은 결과를 얻을 수 있습니다.
+
+```bash
+No arguments provided!
+```
+
+```bash
+Arguments: arg1, arg2, arg3
+```
+
+***
+
+# loop
+
+Dart 는 3가지 형태의 loop 를 지원합니다. `for`, `while`, `do while` 입니다. Dart 의 loop 는 다른 언어와 비슷한 형태로 작성할 수 있습니다.
+
+
+
+***
+
+# if-else
+
+Dart 의 if-else 문은 아래와 같은 형태로 작성할 수 있습니다.
+
+```dart
+void main() {
+  int number = 10;
+
+  if (number > 0) {
+    print('Positive number');
+  } else if (number < 0) {
+    print('Negative number');
+  } else {
+    print('Zero');
+  }
+}
+```
+
+***
+
+# Function
+
+Dart 의 함수는 아래와 같은 형태로 작성할 수 있습니다.
+
+```dart
+
+void main() {
+  int result = add(5, 10);
+  print('Result: $result');
+}
+
