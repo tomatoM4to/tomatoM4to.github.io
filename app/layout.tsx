@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Nav } from "@/components/nav/nav";
 import { Inter, Playball } from 'next/font/google';
 import "./globals.css";
-import "highlight.js/styles/vs2015.css";
+import "highlight.js/styles/atom-one-dark.css";
 import { ColorConfig } from "@/components/tailwindConfig";
 
 const inter = Inter({
