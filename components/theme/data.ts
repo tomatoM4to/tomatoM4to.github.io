@@ -180,6 +180,9 @@ export const flutter: ThemeType = {
                 "Flutter 를 다루기 전 Flutter 를 구성하는 언어인 Dart 에 익숙해져 봅시다.",
             list: [
                 "Dart 소개",
+                "Dart Tour",
+                "기본 문법",
+                "데이터 타입",
             ],
             link: "./dart/[1]-Dart-소개",
         },
