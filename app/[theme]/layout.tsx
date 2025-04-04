@@ -1,7 +1,12 @@
 import { notFound } from 'next/navigation';
 import { SideList } from '@/components/sidebar/sideList';
 import { Hamburger } from '@/components/hamburger/hamburger';
-import { getThemeParams, ThemeParams, getSortedPostList, Post, PostWrapper, isPostWrapperArray } from '@/components/utils';
+import {
+    getThemeParams,
+    ThemeParams,
+    getPostListMoreInfo,
+    PostMoreInfo,
+} from '@/components/utils';
 
 export async function generateStaticParams(): Promise<ThemeParams[]> {
     return await getThemeParams();
@@ -17,13 +22,11 @@ export default async function Layout(
     const { children } = props;
 
     try {
-        let res: Post[] | PostWrapper[] = await getSortedPostList(params.theme, true);
+        let res: PostMoreInfo[] = await getPostListMoreInfo(params.theme);
         return (
             <div className="flex">
-                {res.length > 0 && isPostWrapperArray(res) &&
-                    <Hamburger res={res} />}
-                {res.length > 0 && isPostWrapperArray(res) &&
-                    <SideList res={res} />}
+                <Hamburger res={res} />
+                <SideList res={res} />
                 {children}
             </div>
         );

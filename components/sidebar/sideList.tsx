@@ -1,11 +1,11 @@
 import { ColorConfig, ResponsiveConfig } from "@/components/tailwindConfig";
-import { PostWrapper } from "../utils";
+import { PostMoreInfo } from "../utils";
 import { Accordion, AccordionItem, NonAccordionLink } from './accordion';
 
 export function SideList({
     res,
 }: {
-    res: PostWrapper[],
+    res: PostMoreInfo[],
 }) {
     return (
         <aside
@@ -25,19 +25,19 @@ export function SideList({
                 `}
         >
             {
-                res.map((postWrapper, index) => {
-                    if (postWrapper.contentList.length === 0) {
+                res.map((pmi, index) => {
+                    if (pmi.contentList.length === 0) {
                         return (
                             <NonAccordionLink
                                 key={index}
-                                href={`./${postWrapper.originalName}`}
-                                label={postWrapper.title}
+                                href={`./${pmi.originalName}`}
+                                label={pmi.title}
                             />
                         );
                     }
                     return (
-                        <Accordion label={postWrapper.title} key={index}>
-                            <AccordionItem contentList={postWrapper.contentList} />
+                        <Accordion label={pmi.title} key={index}>
+                            <AccordionItem contentList={pmi.contentList} />
                         </Accordion>
                     );
                 })

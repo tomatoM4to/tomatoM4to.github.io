@@ -25,13 +25,6 @@ export interface ThemeParams {
     theme: string
 }
 
-export interface PostWrapper {
-    title: string,
-    originalName: string,
-    order: number,
-    contentList: Post[]
-}
-
 export interface Post {
     isTitle: boolean,
     firstOrder: number,
@@ -41,6 +34,14 @@ export interface Post {
     originalName: string,
     index: number
 }
+
+export interface PostMoreInfo {
+    title: string,
+    originalName: string,
+    order: number,
+    contentList: Post[]
+}
+
 
 export interface PostParams {
     theme: string,
@@ -109,8 +110,7 @@ export async function getPostParams(): Promise<PostParams[]> {
 
 export async function getSortedPostList(
     theme: string,
-    wrapper: boolean = false
-): Promise<PostWrapper[] | Post[]> {
+): Promise<Post[]> {
     let postList: string[] = await fs.readdir(
         path.join(process.cwd(), 'public', 'kr', theme)
     );
@@ -166,33 +166,34 @@ export async function getSortedPostList(
             return post;
         })
 
-    if (!wrapper) return newPostList;
+    return newPostList;
+}
 
-    let postWrapper: PostWrapper[] = [];
-    for (let post of newPostList) {
+export async function getPostListMoreInfo(
+    theme: string
+): Promise<PostMoreInfo[]> {
+    let postList: Post[] = await getSortedPostList(theme);
+    let postListMoreInfo: PostMoreInfo[] = []
+    for (let post of postList) {
         if (post.isTitle) {
-            postWrapper.push({
+            postListMoreInfo.push({
                 title: post.title,
                 originalName: post.originalName,
                 order: post.firstOrder,
                 contentList: []
-            })
-        } else {
-            postWrapper[postWrapper.length - 1].contentList.push(post);
+            });
+        }
+        else {
+            postListMoreInfo[postListMoreInfo.length - 1].contentList.push(post);
         }
     }
-
-    return postWrapper;
+    return postListMoreInfo;
 }
 
 
-export function isPostWrapperArray(res: (Post | PostWrapper)[]): res is PostWrapper[] {
-    return res.every((item) => 'contentList' in item && Array.isArray(item.contentList));
-}
 
 export async function getPost(theme: string, post: string): Promise<PostContent> {
-    let postList: Post[] | PostWrapper[] = await getSortedPostList(theme);
-    if (isPostWrapperArray(postList)) throw new Error('getPost: PostList is not Post[]');
+    let postList: Post[] = await getSortedPostList(theme);
 
     let currentIndex: Post | undefined = postList.find((p: Post) => `${p.originalName}.mdx` === decodeURIComponent(post));
     if (currentIndex === undefined) throw new Error('getPost: Post not found');
