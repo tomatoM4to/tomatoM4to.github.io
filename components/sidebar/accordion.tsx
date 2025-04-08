@@ -98,7 +98,7 @@ export function AccordionItem({
             {contentList.map((content, index) => (
                 <Link
                     key={index}
-                    href={`./${content.originalName}`}
+                    href={`./${content.URL}`}
                     className={`
                         p-2
                         border-l-2

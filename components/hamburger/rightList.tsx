@@ -1,6 +1,6 @@
 'use client';
 
-import { PostMoreInfo } from "../utils";
+import { Post } from "../utils";
 import { UtilityButtons } from "@/components/hamburger/utility";
 import { Accordion, AccordionItem, NonAccordionLink } from '@/components/sidebar/accordion';
 import { ColorConfig, ZIndexConfig } from "@/components/tailwindConfig";
@@ -12,7 +12,7 @@ export function RightList({
 }: {
     isOpen: boolean,
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>,
-    res?: PostMoreInfo[],
+    res?: Post[],
 }) {
     return (
         <div
@@ -43,7 +43,7 @@ export function RightList({
                         return (
                             <NonAccordionLink
                                 key={index}
-                                href={`./${pmi.originalName}`}
+                                href={`./${pmi.URL}`}
                                 label={pmi.title}
                                 setIsOpen={setIsOpen}
                             />

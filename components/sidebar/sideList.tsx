@@ -1,11 +1,11 @@
 import { ColorConfig, ResponsiveConfig } from "@/components/tailwindConfig";
-import { PostMoreInfo } from "../utils";
+import { Post } from "../utils";
 import { Accordion, AccordionItem, NonAccordionLink } from './accordion';
 
 export function SideList({
     res,
 }: {
-    res: PostMoreInfo[],
+    res: Post[],
 }) {
     return (
         <aside
@@ -30,7 +30,7 @@ export function SideList({
                         return (
                             <NonAccordionLink
                                 key={index}
-                                href={`./${pmi.originalName}`}
+                                href={`./${pmi.URL}`}
                                 label={pmi.title}
                             />
                         );

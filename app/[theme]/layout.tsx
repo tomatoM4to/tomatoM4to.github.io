@@ -4,8 +4,8 @@ import { Hamburger } from '@/components/hamburger/hamburger';
 import {
     getThemeParams,
     ThemeParams,
-    getPostListMoreInfo,
-    PostMoreInfo,
+    getSortedPostList,
+    Post,
 } from '@/components/utils';
 
 export async function generateStaticParams(): Promise<ThemeParams[]> {
@@ -22,7 +22,7 @@ export default async function Layout(
     const { children } = props;
 
     try {
-        let res: PostMoreInfo[] = await getPostListMoreInfo(params.theme);
+        let res: Post[] = await getSortedPostList(params.theme);
         return (
             <div className="flex">
                 <Hamburger res={res} />

@@ -16,7 +16,7 @@ export default async function Page(
 ) {
     const params = await props.params;
     try {
-        let postContent: PostContent = await getPost(params.theme, `${params.post}.mdx`);
+        let postContent: PostContent = await getPost(params.theme, params.post);
         return (
             <div className={`${ResponsiveConfig.postPage} mt-32 mb-32 flex-1 flex flex-col items-center overflow-x-hidden`}>
                 <div className={`${ResponsiveConfig.post} markdown-body`}>
@@ -24,10 +24,10 @@ export default async function Page(
                 </div>
                 <BottomNavLayout className={ResponsiveConfig.post}>
                     {
-                        postContent.prePost ?
+                        !(postContent.prePost === undefined) ?
                             <BottomLayoutButton
                                 isLeft={true}
-                                href={postContent.prePost.originalName}
+                                href={postContent.prePost.URL}
                                 label={postContent.prePost.title}
                             /> : <NoneButton />
                     }
@@ -35,7 +35,7 @@ export default async function Page(
                         postContent.nextPost ?
                             <BottomLayoutButton
                                 isLeft={false}
-                                href={postContent.nextPost.originalName}
+                                href={postContent.nextPost.URL}
                                 label={postContent.nextPost.title}
                             /> : <NoneButton />
                     }

@@ -26,22 +26,13 @@ export interface ThemeParams {
 }
 
 export interface Post {
-    isTitle: boolean,
+    includeHyphen: boolean,
     firstOrder: number,
     secondOrder: number,
-    order: string,
-    title: string,
-    originalName: string,
-    index: number
-}
-
-export interface PostMoreInfo {
-    title: string,
-    originalName: string,
-    order: number,
+    URL: string,
+    title: string
     contentList: Post[]
 }
-
 
 export interface PostParams {
     theme: string,
@@ -54,14 +45,8 @@ interface CompileMDXResult {
 
 export interface PostContent {
     content: ReactElement<any>;
-    prePost: {
-        originalName: string,
-        title: string
-    } | null,
-    nextPost: {
-        originalName: string,
-        title: string
-    } | null
+    prePost: Post | undefined,
+    nextPost: Post | undefined
 }
 
 
@@ -114,38 +99,41 @@ export async function getSortedPostList(
     let postList: string[] = await fs.readdir(
         path.join(process.cwd(), 'public', 'kr', theme)
     );
-    let index: number = 1;
 
     let newPostList: Post[] = postList
         .filter((post: string) => post !== 'img')
         .map((post: string) => {
-            let cleanName: string = post.replace(/[\[\]]/g, "").replace(".mdx", "");
+            let cleanName: string = post
+            .replace(/[\[\]]/g, "")
+            .replace(".mdx", "");
             let parts: string[] = cleanName.split("-");
 
             let firstOrder: number = parseInt(parts[0]);
             let secondOrder: number = parseInt(parts[1]);
-            let title: string = isNaN(secondOrder) ? parts.slice(1).join(" ") : parts.slice(2).join(" ");
             secondOrder = isNaN(secondOrder) ? -1 : secondOrder;
+
+            // nav 제목
+            let title: string = secondOrder === -1 ?
+                parts.slice(1).join(" ") : parts.slice(2).join(" ");
+
 
             if (secondOrder !== -1) {
                 return {
-                    isTitle: false,
+                    includeHyphen: true,
                     firstOrder,
                     secondOrder,
-                    order: `${firstOrder}-${secondOrder}`,
+                    URL: post.replace(".mdx", ""),
                     title,
-                    originalName: post.replace(".mdx", ""),
-                    index: -1
+                    contentList: [],
                 };
             }
             return {
-                isTitle: true,
+                includeHyphen: false,
                 firstOrder,
                 secondOrder,
-                order: `${firstOrder}`,
+                URL: post.replace(".mdx", ""),
                 title,
-                originalName: post.replace(".mdx", ""),
-                index: -1
+                contentList: [],
             };
         })
         .sort((a: Post, b: Post) => {
@@ -155,53 +143,87 @@ export async function getSortedPostList(
             }
             // secondOrder
             return a.secondOrder - b.secondOrder;
-        })
-        .map((post: Post, _: number, arr: Post[]) => {
-            if (
-                post.isTitle &&
-                index + 1 < arr.length &&
-                arr[index + 1].order.includes(`${post.order}-`)
-            ) return post;
-            post.index = index++;
-            return post;
-        })
+        });
 
-    return newPostList;
+        let result: Post[] = [];
+        newPostList.forEach((post: Post) => {
+            if (!post.includeHyphen) {
+                result.push(post);
+            } else {
+                let lastPost: Post | undefined = result.at(-1);
+                if (lastPost) {
+                    lastPost.contentList.push(post);
+                } else {
+                    throw new Error(
+                        "No parent post found for a hyphenated post."
+                    );
+                }
+            }
+        });
+
+        return result;
 }
-
-export async function getPostListMoreInfo(
-    theme: string
-): Promise<PostMoreInfo[]> {
-    let postList: Post[] = await getSortedPostList(theme);
-    let postListMoreInfo: PostMoreInfo[] = []
-    for (let post of postList) {
-        if (post.isTitle) {
-            postListMoreInfo.push({
-                title: post.title,
-                originalName: post.originalName,
-                order: post.firstOrder,
-                contentList: []
-            });
-        }
-        else {
-            postListMoreInfo[postListMoreInfo.length - 1].contentList.push(post);
-        }
-    }
-    return postListMoreInfo;
-}
-
 
 
 export async function getPost(theme: string, post: string): Promise<PostContent> {
     let postList: Post[] = await getSortedPostList(theme);
 
-    let currentIndex: Post | undefined = postList.find((p: Post) => `${p.originalName}.mdx` === decodeURIComponent(post));
-    if (currentIndex === undefined) throw new Error('getPost: Post not found');
+    let currentPost: Post | undefined = undefined;
+    let prePost: Post | undefined = undefined;
+    let nextPost: Post | undefined = undefined;
 
-    let prePost: Post | undefined = postList.find((p: Post) => p.index === currentIndex.index - 1);
-    let nextPost: Post | undefined = postList.find((p: Post) => p.index === currentIndex.index + 1);
+    postList.forEach((p: Post, i: number, arr: Post[]) => {
+        if (p.URL === decodeURIComponent(post)) {
+            currentPost = p;
 
-    let postPath: string = path.join(process.cwd(), 'public', 'kr', theme, post);
+            if (i - 1 >= 0) {
+                if (arr[i - 1].contentList.length > 0) {
+                    prePost = arr[i - 1].contentList.at(-1);
+                } else {
+                    prePost = arr[i - 1];
+                }
+            }
+
+            if (i + 1 < arr.length) {
+                if (arr[i + 1].contentList.length > 0) {
+                    nextPost = arr[i + 1].contentList[0];
+                } else {
+                    nextPost = arr[i + 1];
+                }
+            }
+        }
+
+        p.contentList.forEach((c: Post, j: number, arr_: Post[]) => {
+            if (c.URL === decodeURIComponent(post)) {
+                currentPost = c;
+
+                if (j - 1 >= 0) {
+                    prePost = arr_[j - 1];
+                }
+                else if (i - 1 >= 0) {
+                    if (arr[i - 1].contentList.length > 0) {
+                        prePost = arr[i - 1].contentList.at(-1);
+                    }
+                    else {
+                        prePost = arr[i - 1];
+                    }
+                }
+
+                if (j + 1 < arr_.length) {
+                    nextPost = arr_[j + 1];
+                }
+                else if (i + 1 < arr.length) {
+                    if (arr[i + 1].contentList.length > 0) {
+                        nextPost = arr[i + 1].contentList[0];
+                    } else {
+                        nextPost = arr[i + 1];
+                    }
+                }
+            }
+        });
+    });
+
+    let postPath: string = path.join(process.cwd(), 'public', 'kr', theme, `${post}.mdx`);
     postPath = decodeURIComponent(postPath);
     let source: string = await fs.readFile(postPath, 'utf8');
 
@@ -224,16 +246,10 @@ export async function getPost(theme: string, post: string): Promise<PostContent>
             ...highlights,
             // ...code
         }
-    })
+    });
     return {
         content,
-        prePost: prePost === undefined ? null : {
-            originalName: prePost.originalName,
-            title: prePost.title
-        },
-        nextPost: nextPost === undefined ? null : {
-            originalName: nextPost.originalName,
-            title: nextPost.title
-        }
+        prePost: prePost === undefined ? undefined : prePost,
+        nextPost: nextPost === undefined ? undefined : nextPost
     };
 }

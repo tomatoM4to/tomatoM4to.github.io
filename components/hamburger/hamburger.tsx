@@ -4,7 +4,7 @@ import { useState } from "react"
 import { RightList } from "@/components/hamburger/rightList";
 import { ColorConfig, ResponsiveConfig, ZIndexConfig } from "@/components/tailwindConfig";
 import { Background } from "@/components/hamburger/background";
-import { PostMoreInfo } from "@/components/utils";
+import { Post } from "@/components/utils";
 
 
 function HamburgerBtn({
@@ -53,7 +53,7 @@ function HamburgerBtn({
 export function Hamburger({
     res,
 }: {
-    res?: PostMoreInfo[],
+    res?: Post[],
 }) {
     const [isOpen, setIsOpen] = useState(false);
     return (
