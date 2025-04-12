@@ -1,0 +1,220 @@
+# Collections
+
+한국어로는 반복 가능한 자료구조 라고 부르는데요, Dart 에선 대표적으로 `List`, `Set`, `Map` 이 있습니다.
+
+이 자료구조들은 모두 **collection** 이라고 부릅니다.
+
+***
+
+# List
+
+이전부터 계속 강조했던게, **Dart** 는 모든것이 **객체**라는 점인데요, List 도 마찬가지로 객체 라는것을 짚고 넘어갑시다. 물론 부를땐 그냥 List 라 부르지요.
+
+선언하는 방법엔 보통 2가지가 있습니다.
+
+```dart:main.dart
+void main() {
+  var list1 = [1, 2, 3, 4, 5];
+  List<int> list2 = [1, 2, 3, 4, 5];
+  List<int> list3 = List.filled(5, 0); // 0 으로 채워진 길이 5의 List 생성
+
+  print(list1); // [1, 2, 3, 4, 5]
+  print(list2); // [1, 2, 3, 4, 5]
+  print(list3); // [0, 0, 0, 0, 0]
+}
+```
+
+여기서 `var list1 = [1, 2, 3, 4, 5];` 로 선언해도 Dart 는 해당 리스트의 타입이 `List<int>` 라고 **추론**합니다.
+
+따라서 이후에 문자를 넣으려 하면 에러가 발생합니다.
+
+```dart:main.dart
+void main() {
+  var list1 = [1, 2, 3, 4, 5]; // 리터럴로 선언
+  list1.add('a'); // 에러 발생
+}
+```
+
+
+타입 추론에 대해서 더 알고싶다면 아래 링크를 참고하세요.
+
+> [https://dart.dev/language/type-system#type-inference](https://dart.dev/language/type-system#type-inference)
+
+## Method
+
+자주 사용되는 List 의 메소드는 아래와 같습니다.
+
+* `add()` : List 의 마지막에 요소를 추가합니다.
+* `addAll()` : List 의 마지막에 여러 요소를 추가합니다.
+* `insert()` : List 의 특정 위치에 요소를 추가합니다.
+* `insertAll()` : List 의 특정 위치에 여러 요소를 추가합니다.
+* `remove()` : List 의 특정 요소를 삭제합니다.
+* `removeAt()` : List 의 특정 위치에 있는 요소를 삭제합니다.
+* `removeLast()` : List 의 마지막 요소를 삭제합니다.
+
+```java:main.dart
+void main() {
+    List<int> lst = [];
+    lst.add(1); // [1]
+    lst.addAll([2, 3]); // [1, 2, 3]
+    lst.insert(0, 0); // [0, 1, 2, 3]
+    lst.insertAll(1, [4, 5]); // [0, 4, 5, 1, 2, 3]
+    lst.remove(1); // [0, 4, 5, 2, 3]
+    lst.removeAt(0); // [4, 5, 2, 3]
+    lst.removeLast(); // [4, 5, 2]
+}
+```
+
+## for-in
+List 의 요소를 순회할때는 `for-in` 문을 사용합니다.
+
+```dart:main.dart
+void main() {
+  List<int> lst = [1, 2, 3, 4, 5];
+
+  for (var item in lst) {
+    print(item); // 1 2 3 4 5
+  }
+}
+```
+
+혹은 `forEach()` or `map()` 메소드를 사용해도 됩니다. 둘 사이엔 미묘한 차이가 있습니다.
+
+```dart:main.dart
+void main() {
+  List<int> lst1 = [1, 2, 3, 4, 5];
+
+  var lst2 = lst1.map((item) => item * 2);
+  print(lst1);
+  print(lst2);
+
+  void lst3 = lst1.forEach((item) => item * 2);
+  print(lst1);
+}
+```
+
+```bash:output
+[1, 2, 3, 4, 5]
+(2, 4, 6, 8, 10)
+[1, 2, 3, 4, 5]
+```
+
+`map()` 은 콜백함수가 적용된 새로운 `Iterable` 를 반환합니다. `forEach()` 는 콜백함수가 적용된 새로운 `Iterable` 을 반환하지 않습니다. 그저 콜백함수를 매 요소마다 호출하는것 뿐입니다.
+
+`map()` 은 체이닝 이 가능합니다. `forEach()` 는 체이닝이 불가능 하단 특징이 있고 상황에 맞게 사용하면 됩니다. 사실 뭘 써도 결과는 크게 차이나진 않아요
+
+```dart:main.dart
+void main() {
+  List<int> lst1 = [1, 2, 3, 4, 5];
+  var lst2 = lst1.map((item) => item * 2).map((item) => item + 1);
+  print(lst2); // (3, 5, 7, 9, 11);
+}
+```
+
+
+
+이때 `Iterable` 타입은 추상 클래스 입니다. `List` 나 `Set` 은 `Iterable` 을 구현한 클래스입니다.
+
+그렇기 때문에 `List` 에서 사용한 Method 대부분을 `Iterable` 에서도 사용할 수 있습니다. 차이점이 있다면 `Interable` 은 인덱스로 접근할 수 없습니다.
+
+사실 개발할때 알게보르게 자주 사용하긴 하는데 신경써서 사용할만한건 아닌거 같습니다. 그래서 대표적인 차이점만 소개하고 자세한 설명은 문서로 대체하겠습니다.
+
+> [https://dart.dev/libraries/collections/iterables](https://dart.dev/libraries/collections/iterables)
+
+
+# Sets
+
+`Set` 은 `List` 와 비슷하지만, 중복된 값을 허용하지 않으며, 순서가 보장되지 않습니다.
+
+중요한점은 `Set<Object>` 는 각 객체의 고유성을 확인하기 위해 내부적으로 hashCode 를 사용합니다. 그래서 저장된 객체가 많으면 속도가 느려질 수 있습니다. 경험상 100개 이상으로 가면 느려지는것 같습니다.
+
+그렇기 때문에 많은 자료를 담기 위해선 `SplayTreeSet<E>` 을 사용하는것이 훨씬 효율적일 겁니다. 해당 자료구조는 내부적으로 정렬된 트리 구조를 사용하기 때문에, 대부분의 연산에서 log(n) 의 시간복잡도를 가집니다. 더 자세히 들어가면 자료구조 에 대한 설명이 필요해지니 생략하겠습니다. 자세한 사항은 문서로 대체하겠습니다.
+
+> [https://api.dart.dev/stable/2.18.2/dart-core/Set-class.html](https://api.dart.dev/stable/2.18.2/dart-core/Set-class.html)
+```dart:main.dart
+void main() {
+  var set1 = {1, 2, 3, 3, 3};
+  Set<int> set2 = {1, 2, 3, 3, 3};
+  Set<int> set3 = Set.from([1, 1, 1, 2, 2]); // List 로 부터 Set 생성
+
+  print(set1); // {1, 2, 3}
+  print(set2); // {1, 2, 3}
+  print(set3); // {1, 2}
+}
+```
+
+## Method
+
+자주 사용되는 Set 의 메소드는 아래와 같습니다.
+
+* `add()` : Set 의 마지막에 요소를 추가합니다.
+* `addAll()` : Set 의 마지막에 여러 요소를 추가합니다.
+* `remove()` : Set 의 특정 요소를 삭제합니다.
+* `removeAll()` : Set 의 특정 요소를 삭제합니다.
+* `contains()` : Set 에 특정 요소가 포함되어 있는지 확인합니다.
+* `intersection()` : Set 의 교집합을 구합니다.
+* `difference()` : Set 의 차집합을 구합니다.
+* `union()` : Set 의 합집합을 구합니다.
+
+```dart:main.dart
+void main() {
+  Set<int> set1 = {1, 2, 3};
+  set1.add(4); // {1, 2, 3, 4}
+  set1.addAll({5, 6}); // {1, 2, 3, 4, 5, 6}
+  set1.remove(3); // {1, 2, 4, 5, 6}
+  set1.removeAll({1, 2}); // {4, 5, 6}
+
+  print(set1.contains(4)); // true
+
+  Set<int> set2 = {5, 6};
+
+  print(set1.intersection(set2)); // {5, 6}
+  print(set1.difference(set2)); // {4}
+  print(set1.union(set2)); // {4, 5, 6}
+}
+```
+
+## for-in
+Set 의 요소를 순회할때는 `for-in` 문을 사용합니다. 순서가 보장되지 않는다는 점을 유의하세요.
+
+```dart:main.dart
+void main() {
+  Set<int> set1 = {1, 2, 3, 4, 5};
+
+  for (var item in set1) {
+    print(item); // 1 2 3 4 5
+  }
+}
+```
+
+`forEach()` 나 `map()` 메소드를 사용해도 됩니다.
+```dart:main.dart
+void main() {
+  Set<int> set1 = {1, 2, 3, 4, 5};
+
+  var set2 = set1.map((item) => item * 2);
+  print(set1); // {1, 2, 3, 4, 5}
+  print(set2); // (2, 4, 6, 8, 10)
+
+  void set3 = set1.forEach((item) => item * 2);
+  print(set1); // {1, 2, 3, 4, 5}
+}
+```
+
+***
+
+# Map
+
+
+하지만 여기서 주의할 점이 있습니다. <R>명시적인 타입을 지정하지 않고 빈 `Set` 을 생성할 경우, Dart 는 해당 변수를 `Map` 으로 추론합니다!!</R>
+
+```dart:main.dart
+void main() {
+  var set1 = {}; // Map 으로 생성됨
+  Set<int> set2 = {}; // Set<int> 로 생성됨
+
+  print(set1); // {}
+  print(set2); // {}
+}
+```
+
