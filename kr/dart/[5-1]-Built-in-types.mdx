@@ -27,33 +27,16 @@ Dart 공식문서에서 이러한 설명이 존재합니다.
 1. 정수 `1` 은 `int` 타입의 객체로 힙(Heap) 메모리에 저장
 2. 변수 `i` 는 `int` 타입의 객체(Object) 를 참조하는 포인터(Reference) 역할을 함
 
+***
+# Numbers
 
-# Dart 에서 숫자가 객체임을 확인해보자
+## 숫자가 객체?
 
-`int` 가 **Object** 라면 **Method**를 호출할 수 있어야 겠죠? 실제로 `int` 객체도 **Method**를 사용할 수 있습니다. 아래 코드에서 `num.isEven` 이나 `num.toDouble()` 처럼 `int` 객체에 **Method**를 호출하는걸 볼 수 있습니다.
 
-```java:main.dart
-void main() {
-  int num = 42;
-  print(num.isEven);  // true (짝수인지 확인하는 Method)
-  print(num.toDouble()); // 42.0 (double로 변환)
-}
-```
+***
 
-혹은 이런식으로도 확인이 가능합니다.
+# Strings
 
-```java:main.dart
-void add(int i) {
-  i++;
-}
+***
 
-void main() {
-  int out = 2025;
-
-  print(out);  // 2025
-  add(out);
-  print(out);  // 2025 (out은 여전히 2025)
-}
-```
-
-함수가 호출되었지만, `out` 의 값은 변하지 않았습니다. `int` 타입은 **Pass by Reference** 방식으로 동작한다는걸 확인할 수 있습니다.
+# Booleans
