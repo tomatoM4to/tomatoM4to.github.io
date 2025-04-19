@@ -28,15 +28,144 @@ Dart 공식문서에서 이러한 설명이 존재합니다.
 2. 변수 `i` 는 `int` 타입의 객체(Object) 를 참조하는 포인터(Reference) 역할을 함
 
 ***
+
 # Numbers
+**Dart** 에서 숫자를 다루는 방식은 다른 언어와 크게 다르지 않습니다. **Dart** 는 기본적으로 `int` 와 `double` 타입을 제공합니다. 그리고 잘 사용되진 않지만 `num` 이라는 타입도 있습니다. `num`은 `int` 와 `double` 의 부모 타입이라고 생각하시면 됩니다.
 
-## 숫자가 객체?
+또한, 큰 숫자를 더 읽기 쉽게 표현하기 위해 **언더스코어**를 사용할 수 있는 점도 Dart의 특징 중 하나입니다.
 
+> <R>int</R>
+> <br/>
+> 플랫폼에 따라 다를 수 있지만, 네이티브 플랫폼에서는 **정수** 가 표현할 수 있는 값의 범위는 $$-2^{63}$$ 부터 $$2^{63}-1$$ 사이 입니다.
+
+> <R>double</R>
+> <br/>
+> IEEE 754 표준에 따른 64비트(배정밀도) 부동 소수점 숫자를 표현합니다.
+
+> <R>num</R>
+> <br/>
+> `num` 은 `int` 와 `double` 을 모두 포함하는 타입입니다. 즉, 이 <U>두 타입의 부모 타입</U>이며, 일반적인 사칙연산을 포함해 `abs()` 같은 메서드도 여기에 포함되어 있습니다.
+
+```dart:숫자-표현
+void main() {
+    // int
+    int i = 100_000_000;
+    double d = 0.000_000_000_1;
+    num n = 1;
+    n += 1.0; // num 은 int 와 double 을 모두 포함하는 타입입니다.
+
+    print(i); // 100000000
+    print(d); // 1e-10
+    print(2.5); // 2.0
+}
+```
+
+
+## int 가 객체라고?
+
+다른 언어에서는 **객체**와 **기본 데이터 타입**(예: 정수, 실수, 문자)을 구분하는 경우가 많습니다.
+
+하지만 **Dart** 에서는 **숫자든 문자든 모두 객체**입니다. 따라서 다음과 같은 것도 가능합니다:
+
+```dart:객체성
+void main() {
+    String s1 = 123.toString();
+    String s2 = 0.0001.toString();
+
+    print(s1); // 123
+    print(s2); // 0.0001
+}
+```
+
+Dart 공식 문서에서도 이렇게 설명하고 있습니다:
+
+> n Dart, all numbers are part of the common Object type hierarchy, and there are two concrete, user-visible numeric types: `int`, representing integer values, and `double`, representing fractional values.
+> <br/>
+> [https://dart.dev/resources/language/number-representation](https://dart.dev/resources/language/number-representation)
+
+하지만 걱정할 필욘 없습니다. 숫자의 객체성으로 인해 다른 함수로 인자를 전달할때 call by reperence 로 전달되는거 아닌가? 하는 그런 걱정은 할필욘 없습니다. Dart 에선 숫자도 객체이지만, 숫자에 대한 연산은 call by value <R>처럼</R>, 정확히는 ...
+
+## Call by Reference?
+숫자도 객체라면, 함수에 인자로 전달할 때 **Call by Reference** 로 동작하는 거 아닌가? 라는 의문이 생길 수 있습니다.
+
+하지만 걱정할 필요 없습니다. **Dart** 에서는 `int`, `double`, `bool`, `String` 등 **기본 타입은 모두 immutable objects**로 설계되어 있기 때문에, 마치 **Call by Value** <R>처럼</R> 동작하거든요.
+
+정확히 말하면, 변수는 객체의 **reference** 를 담고 있는 것이 맞습니다. 하지만 중요한 건 그 객체가 <U>수정 가능한(mutable)이냐, 수정 불가능한(immutable)이냐는 점이에요.</U>
+
+```dart:example
+void main() {
+    int a = 10;
+    int b = a;
+    print(identical(a, b)); // true
+
+    b = 20;
+
+    print(identical(a, b)); // false
+}
+```
+
+위 코드를 보면 `b = a` 를 했을 때 `b` 가 `a` 의 값을 그대로 가져온 것처럼 보이죠. 하지만 실제로는 `a` 가 참조하고 있는 `10` 이라는 **int 객체를 b도 함께 참조**한 겁니다. 그래서 `identical(a, b)` 는 `true` 를 반환합니다.
+
+* `identical` 는 두 **객체 reference** 가 동일한 객체에 대한 **reference** 인지 확인하는 함수 입니다.
+
+그런데 int는 불변 객체이기 때문에, b = 20을 하면 기존 객체를 바꾸는 게 아니라, <U>`b`가 새로운 **int 객체** `20`을 참조</U>하게 되는 거예요. 즉, a는 여전히 10을 가리키고 있기 때문에 값이 변하지 않은 겁니다.
+
+이러한 **immutable** 한 특성을 가진 대표적인 타입은 `int`, `double`, `String`, `bool` 등이 있습니다.
 
 ***
 
 # Strings
 
+**Dart**의 문자열은 `String` 타입 객체이며, 내부적으로 UTF-16 코드 유닛의 연속된 배열(시퀸스)로 구성되어 있습니다. <U>문자열을 만들 때는 **Python** 처럼 작은 따옴표(') 나 큰 따옴표(") 모두 사용할 수 있어요.</U>
+
+프로그래밍 언어가 문자를 어떻게 다루는지에 대한 설명은 자세히 하지 않겠습니다. 그냥 간단히 말해서, **Dart는 문자를 저장할 때 UTF-16 인코딩을 사용**한다고 생각하면 됩니다.
+
+```dart:example
+String s1 = '작은 따옴표는 문자열에 적합합니다.';
+String s2 = "큰 따옴표도 동일하게 사용할 수 있습니다.";
+String s3 = '작은 따옴표 안에선 \' 이스케이프가 필요합니다.';
+String s4 = "큰 따옴표에선 It's 같은 표현이 더 편하죠.";
+```
+
+이 밖에도 문자열 보간(interpolation), 비교, 연결 같은 기본적인 연산에 대해 간단히 예제를 보여드릴게요.
+
+문자열 비교는 값이 같으면 true를 반환한다는 점 정도 기억해 두면 좋습니다.
+
+```dart:보간-비교-연결
+void main() {
+    // 문자열 보간
+    String s1 = 'Hello';
+    print('$s1 World!'); // Hello World!
+
+    // 문자열 비교
+    assert('hello' == 'he' + 'llo'); // true
+
+    // 문자열 연결
+    print('hello' + ' world'); // hello world
+}
+```
+
+
 ***
 
 # Booleans
+
+**Dart** 에서 **boolean** 값을 표현할 땐 `bool` 타입을 사용합니다. 이 타입에는 오직 두 가지 값, `true`와 `false`만 존재합니다.
+
+여기서 꼭 기억해야 할 점은, **Dart**는 타입에 엄격한 언어이기 때문에 `if (1)`이나 `if ('문자열')`처럼 <R>bool 이 아닌 값은 조건식에 쓸 수 없습니다!</R>
+
+즉, 숫자나 문자열의 **truthy/falsy** 개념은 Dart에선 동작하지 않아요. 조건을 쓸 땐 항상 `==`, `.isEmpty`, `.isNaN` 같은 **명시적인 방식**으로 판단해야 합니다.
+
+```dart:Booleans
+void main() {
+    // Error: A value of type 'int' can't be assigned to a variable of type 'bool'
+    if (1) {
+        print('error!');
+    }
+
+    // Error: A value of type 'String' can't be assigned to a variable of type 'bool'.
+    if ('true') {
+        print('error!');
+    }
+}
+```
