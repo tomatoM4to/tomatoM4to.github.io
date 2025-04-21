@@ -22,7 +22,93 @@
 
 # Object vs dynamic
 
-`dynamic` 타입도 결국 `Object` 타입의 하위 타입이긴 한데, **모든 타입을 담을 수 있다** 라는 공통점도 존재 합니다. 하지만 둘은 의미와 사용목적이 완전히 다르기 때문에 한번 짚고 넘어가겠습니다.
+`dynamic` 타입도 결국 `Object` 타입의 하위 타입이긴 합니다. 그리고 **둘 다 모든 타입을 담을 수 있다**는 공통점도 있죠.
 
+하지만!
 
+의미와 사용 목적은 완전히 다르기 때문에, 이 부분은 꼭 짚고 넘어갈 필요가 있습니다.
 
+| 타입 | 의미 |
+| ---- | --- |
+| `dynamic` | 타입 검사 하지마! |
+| `Object` | 타입 검사는 해줘! |
+
+## dynamic 타입
+`dynamic` 타입은 <R>컴파일 타임에 타입 검사를 하지 않습니다!</R> 한마디로 Dart에게 **날 믿고 그냥 실행해줘!** 라고 말하는 셈이에요.
+
+어떻게 보면 **Python**이나 **JavaScript**처럼 작동한다고 봐도 무방합니다. 그래서 아래와 같은 코드도 **Dart** 는 에러 없이 실행하려고 시도해요. 물론 런타임에 에러가 나서 프로그램이 죽을 수도 있지만요.
+
+중요한 포인트는, <U>DartPad에서 빨간줄(에러 표시)이 없다는 거예요!</U>
+
+```dart:dynamic-타입
+void main() {
+    dynamic v = 123;
+    print(v.length);
+}
+```
+
+## Object 타입
+
+반대로 Object는 어떨까요? 역시 **모든 타입을 담을 수는 있지만, 타입 검사는 하겠다**는 의미예요.
+
+바로 아래 코드를 보면, **DartPad**에서는 <R>빨간줄로 경고를 표시</R>합니다. 애초에 컴파일타임 조차 되지 않다고 경고하는 것이죠.
+
+```dart:Object-타입
+void main() {
+    Object v = 123;
+    print(v.length);
+}
+```
+
+`Object` 타입은 타입 안전성을 유지하면서 유연하게 다형성을 사용하고 싶을 때 사용합니다. 그래서 위 코드를 실행하려면 타입을 명시적으로 확인해주는 방식으로 바꿔야 해요.
+
+```dart:Object-타입
+void main() {
+    Object v = 123;
+    if (v is String) {
+        print(v.length);
+    }
+    else {
+        print('v is not a String');
+    }
+}
+```
+
+***
+
+# Never
+
+먼저 공식 문서에선 `Never` 타입을 이렇게 설명하고 있습니다
+
+> Indicates that an expression can never successfully finish evaluating. Most often used for functions that always throw an exception.
+> <br />
+> [https://dart.dev/language/built-in-types](https://dart.dev/language/built-in-types)
+
+하나씩 살펴보면, `Never`는 어떤 표현식(expression)이 <R>정상적으로 실행을 끝내지 못한다</R>는 의미입니다. 쉽게 말해, 다음과 같은 상황들을 나타냅니다.
+
+* 항상 예외를 던지는 함수
+* 무한 루프
+
+가장 대표적인 예는 항상 예외를 던지는 함수예요. 아래 코드를 보면 `Never` 타입이 왜 필요한지 바로 감이 올 거예요.
+
+```dart:Never-타입
+void crashApp1() {
+    throw Exception('앱이 강제 종료되었습니다!');
+}
+
+Never crashApp2() {
+    throw Exception('앱이 강제 종료되었습니다!');
+}
+
+void main() {
+    crashApp1();
+    crashApp2();
+}
+```
+
+두 함수는 동작은 같지만, crashApp2는 반환 타입을 Never로 명시하고 있습니다. 이렇게 하면 **Dart**에게 다음과 같은 정보를 더 명확히 전달할 수 있어요:
+
+* 이 함수는 절대 정상적으로 끝나지 않는다
+* 따라서 이후 코드에서 **type safet)** 를 더 정확히 분석할 수 있다
+
+예를 들어, 어떤 분기에서 `throw` 만 있는 함수가 호출된다면, 그 아래 분기는 실행되지 않는다고 판단할 수 있게 되는 거죠.
