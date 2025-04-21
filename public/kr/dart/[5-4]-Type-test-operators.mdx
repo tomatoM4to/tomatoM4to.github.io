@@ -1,37 +1,90 @@
-# 타입 검사 연산자
-Dart에서는 `as`, `is`, `is!` 연산자를 통해 런타임에서 객체의 타입을 확인하거나 변환할 수 있습니다.
+# Type Test Operators
 
-다른 언어의 `instanceof` 나 `type casting`과 비슷한 개념이라 익숙할 거예요.
+Dart에서는 런타임에 객체의 **타입을 확인**하거나 **변환**할 수 있는 타입 테스트 연산자들이 있습니다.
 
 | 연산자 | 의미 |
 |---|---|
-| `as` | 타입 캐스팅 (또는 라이브러리 prefix 지정 시 사용) |
-| `is` | 객체가 해당 타입이면 true |
-| `is!` | 객체가 해당 타입이 아니면 true |
+| `is` | 객체가 특정 타입이면 `true` |
+| `is!` | 객체가 특정 타입이 아니면 `true` |
+| `as` | 타입 캐스팅 (명시적 형변환) |
 
 
-```dart:타입
+## is - 타입 체크를
+
+`is` 연산자는 객체가 특정 타입인지 확인할 때 사용합니다. 아래처럼 타입을 먼저 체크한 뒤, 그 안에서 안전하게 해당 타입의 속성에 접근할 수 있어요.
+
+```dart:is
 void main() {
-    dynamic employee = Person();
-
-    // is 연산자: 타입 검사
-    if (employee is Person) {
-        employee.firstName = 'Bob';
+    dynamic v = 'Hello World!';
+    if (v is String) {
+        print(v.length); // 12
     }
-
-    // as 연산자: 타입 캐스팅 (타입이 확실할 때만 사용)
-    (employee as Person).firstName = 'Alice';
 }
 ```
 
-## 잠깐! 주의할 점
-`is` 연산자는 검사만 하고, 타입을 바꾸진 않아요.
+## is! - 반대 타입 체크
 
-`as` 연산자는 타입을 강제로 변환하며, 타입이 다르면 예외를 발생시킵니다.
+`is!`는 `is`의 반대입니다. 객체가 특정 타입이 아닐 경우에 `true`를 반환해요.
 
-따라서 타입이 확실하지 않을 때는 `is`로 먼저 체크한 뒤 `as`를 사용하는 것이 안전한 패턴입니다.
+```dart:is!
+void main() {
+    dynamic v = 123;
+    if (v is! String) {
+        print('문자열이 아닙니다!');
+    }
+}
+```
 
-## 참고
-obj is Object?는 항상 true입니다. Dart에서는 모든 값이 Object?를 구현하기 때문입니다.
+## as - 타입 캐스팅
 
-이 연산자들은 클래스, 인터페이스, 그리고 null 처리까지 다루는 부분에서 더 자주 사용됩니다. 자세한 건 클래스 파트에서 다시 설명할게요.
+`as` 연산자는 객체를 특정 타입으로 **명시적으로 캐스팅**할 때 사용합니다. 예를 들어 아래 예제처럼 `item`이 `Object` 타입일 경우, `String`의 속성에 접근하려면 **형변환**이 필요해요.
+
+```dart:as
+void main() {
+    Object item = 'Hello Dart';
+
+    // item은 Object 타입이라 바로 length 접근 불가
+    // item.length; // ❌ 오류
+
+    // 명시적 캐스팅 후 사용
+    String text = item as String;
+    print(text.length); // ✅ 10
+}
+```
+
+단, `as` 는 잘못된 타입일 경우 **런타임 오류**가 발생할 수 있기 때문에, 보통은 `is` 로 먼저 **타입을 확인한 뒤 사용**하는 것이 권장됩니다.
+
+```dart:안전한-사용법
+void printLength(Object value) {
+    if (value is String) {
+        print((value as String).length); // ✅ 안전한 캐스팅
+    }
+    else {
+        print('String 타입이 아닙니다');
+    }
+}
+```
+
+이러한 `as` 연산자는 상속 관계에서 **다운캐스팅** 할 때도 자주 사용됩니다.
+
+```dart:as-예제
+class Animal {
+    void breathe() => print('숨 쉰다');
+}
+
+class Dog extends Animal {
+    void bark() => print('멍멍!');
+}
+
+void main() {
+    Animal pet = Dog(); // 업캐스팅: Dog → Animal
+
+    // pet은 Animal 타입이므로 bark()는 호출 불가
+    // pet.bark(); // ❌ 오류
+
+    // Dog로 다운캐스팅 후 사용
+    (pet as Dog).bark(); // ✅ 멍멍!
+}
+```
+
+이런 방식은 특히 다형성을 활용하는 코드에서 자주 등장합니다.
