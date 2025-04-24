@@ -1,0 +1,44 @@
+# Lexical Scope (렉시컬 스코프)
+
+먼저 **scope(스코프)**가 뭔지부터 살짝 짚고 갈게요.
+스코프란, <R>변수가 살아 있는 영역</R>을 말해요.
+어떤 변수를 어디서까지 쓸 수 있냐? 그걸 결정해주는 거죠.
+
+Dart는 <U>lexical scope (렉시컬 스코프)</U>라는 규칙을 따릅니다.
+이게 무슨 말이냐면:
+
+중괄호 `{}` 를 따라 바깥으로 쭉 나가면서
+어떤 변수가 이 코드 블록에서 보이는지 판단하는 방식이에요.
+
+```dart:scope
+bool topLevel = true;
+
+void main() {
+  var insideMain = true;
+
+  void myFunction() {
+    var insideFunction = true;
+
+    void nestedFunction() {
+      var insideNestedFunction = true;
+
+      assert(topLevel);               // ✅ 접근 가능
+      assert(insideMain);             // ✅ 접근 가능
+      assert(insideFunction);         // ✅ 접근 가능
+      assert(insideNestedFunction);   // ✅ 접근 가능
+    }
+  }
+}
+```
+
+`nestedFunction` 안에서는
+
+* 자기 안에 있는 insideNestedFunction은 물론이고
+
+* 그 바깥인 insideFunction,
+
+* 더 바깥인 insideMain,
+
+그리고 아예 전역인 topLevel까지 다 접근할 수 있어요.
+
+왜냐하면 Dart는 렉시컬 스코프 언어니까요.

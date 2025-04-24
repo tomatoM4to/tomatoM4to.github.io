@@ -1,0 +1,44 @@
+# Function Types
+
+Dart에서는 함수도 <R>하나의 객체</R>라고 했었죠? 그래서 변수에 저장하거나 다른 함수에 넘길 수 있었는데, 그렇다면 그 함수의 타입도 지정할 수 있어요.
+
+예를 들어, 이런 함수가 있다 해보겠 습니다.
+
+```dart:function-type
+void greet(String name, {String greeting = 'Hello'}) =>
+    print('$greeting $name!');
+```
+
+해당 함수는 다음과 같습니다.
+
+* 필수 parameter 인 `name`
+* 선택 parameter 인 `greeting`
+* 반환값은 없는 `void`
+
+이제 해당 함수를 변수에 저장하려면, 해당 함수 시크니처(모양) 에 맞는 타입을 써줘야 합니다.
+
+```dart::function-type
+void Function(String, {String greeting}) g = greet;
+g('Dash', greeting: 'Howdy');  // Howdy Dash!
+```
+
+여기서 여기서 `void Function(String, {String greeting})` 이 부분이 바로 `greet` 함수의 타입이에요.
+
+* 반환값이 `void`
+* 첫 번째 positional parameter 가 `String`
+* named parameter `greeting` 이 `String`
+
+이렇게 함수 시크니처 그대로 타입으로 표현할 수 있습니다. 참고로 named parameter 는 이름을 생략 불가 합니다.
+
+## typedef 로 함수 타입에 이름 붙이기
+
+하지만 매번 `void Function(String, {String greeting})` 이렇게 쓰면 너무 길고 보기 불편하잖아요? 이럴 때는 `typedef` 를 사용해서 함수 타입에 이름을 붙여줄 수 있어요.
+
+```dart:function-typedef
+typedef GreetFunction = void Function(String, {String greeting});
+
+GreetFunction g = greet;
+g('Dash', greeting: 'Hi');  // Hi Dash!
+```
+
+이렇게 하면 코드가 훨씬 깔끔해지고, 다른 곳에서도 `GreetFunction` 이라는 이름으로 재사용할 수 있어서 더 편리합니다.
