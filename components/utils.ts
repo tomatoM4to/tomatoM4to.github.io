@@ -12,8 +12,9 @@ import remarkGfm from "remark-gfm";
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import { ReactElement } from 'react';
-import rehypeHighlight from 'rehype-highlight';
 import rehypeCodeTitles from 'rehype-code-titles';
+import rehypePrettyCode from "rehype-pretty-code";
+
 
 export interface ThemeInfo {
     enTheme: string,
@@ -112,7 +113,6 @@ export async function getSortedPostList(
             let secondOrder: number = parseInt(parts[1]);
             secondOrder = isNaN(secondOrder) ? -1 : secondOrder;
 
-            // nav 제목
             let title: string = secondOrder === -1 ?
                 parts.slice(1).join(" ") : parts.slice(2).join(" ");
 
@@ -149,11 +149,13 @@ export async function getSortedPostList(
         newPostList.forEach((post: Post) => {
             if (!post.includeHyphen) {
                 result.push(post);
-            } else {
+            }
+            else {
                 let lastPost: Post | undefined = result.at(-1);
                 if (lastPost) {
                     lastPost.contentList.push(post);
-                } else {
+                }
+                else {
                     throw new Error(
                         "No parent post found for a hyphenated post."
                     );
@@ -179,7 +181,8 @@ export async function getPost(theme: string, post: string): Promise<PostContent>
             if (i - 1 >= 0) {
                 if (arr[i - 1].contentList.length > 0) {
                     prePost = arr[i - 1].contentList.at(-1);
-                } else {
+                }
+                else {
                     prePost = arr[i - 1];
                 }
             }
@@ -187,7 +190,8 @@ export async function getPost(theme: string, post: string): Promise<PostContent>
             if (i + 1 < arr.length) {
                 if (arr[i + 1].contentList.length > 0) {
                     nextPost = arr[i + 1].contentList[0];
-                } else {
+                }
+                else {
                     nextPost = arr[i + 1];
                 }
             }
@@ -215,7 +219,8 @@ export async function getPost(theme: string, post: string): Promise<PostContent>
                 else if (i + 1 < arr.length) {
                     if (arr[i + 1].contentList.length > 0) {
                         nextPost = arr[i + 1].contentList[0];
-                    } else {
+                    }
+                    else {
                         nextPost = arr[i + 1];
                     }
                 }
@@ -235,8 +240,11 @@ export async function getPost(theme: string, post: string): Promise<PostContent>
                 rehypePlugins: [
                     rehypeCodeTitles,
                     [rehypeKatex, { output: 'mathml' }],
-                    rehypeHighlight
-                ]
+                    [rehypePrettyCode, {
+                        theme: "one-dark-pro",
+                        keepBackground: true,
+                    }]
+                  ]
             }
         },
         components: {

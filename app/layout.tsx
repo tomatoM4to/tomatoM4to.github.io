@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Nav } from "@/components/nav/nav";
 import { Inter, Playball } from 'next/font/google';
-import "./globals.css";
-import "highlight.js/styles/atom-one-dark.css";
 import { ColorConfig } from "@/components/tailwindConfig";
+import "./globals.css";
+import "./code.css";
+import "./markdown.css";
 
 const inter = Inter({
     subsets: ['latin'],
