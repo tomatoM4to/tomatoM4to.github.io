@@ -4,7 +4,7 @@
 
 하지만 그렇다고 **Type** 이 없다는 뜻이 아님니다. <R>Dart 는 타입 추론을 통해 변수의 타입을 자동으로 결정합니다.</R> 예를 들어, 아래와 같이 변수를 선언할 수 있습니다.
 
-```java:main.dart
+```dart:main.dart
 void main() {
   var name = 'John Doe'; // String
   var age = 30; // int
@@ -24,7 +24,7 @@ TODO: 사진 필요
 
 이어서 `var age = 30;` 로 선언된 변수에 **String** 타입의 값을 넣어보겠습니다. 아래와 같이 `String` 타입의 값을 넣으면 vscode 에서 빨간줄 이 그어지며 에러가 발생합니다.
 
-```java:main.dart
+```dart:main.dart
 void main() {
   var age = 30; // int
 
@@ -38,7 +38,7 @@ void main() {
 
 **C++** 나 **Java** 처럼 명시적으로 타입을 선언할 수 있습니다. <U>위와 기능상 차이점은 존재하지 않는다 봐도 됩니다.</U>
 
-```java:main.dart
+```dart:main.dart
 void main() {
   String name = 'John Doe';
   int age = 30;
@@ -64,7 +64,7 @@ void main() {
 
 여기서 중요한 포인트는 **값이 언제 결정되는가**입니다. `final` 은 **런타임에 값이 정해**지는 상수입니다. 실행 중 얻은 값을 저장할 수 있죠. 다만, final이 막는 것은 변수 자체의 재할당이며, <U>내부 데이터의 변경까지 막지는 않습니다.</U>
 
-```java:final.dart
+```dart:final.dart
 final currentTime = DateTime.now(); // 현재 시간으로 초기화
 
 final list1 = [1, 2, 3];
@@ -79,7 +79,7 @@ list1[0] = 99; // 가능!
 
 또한 const의 불변성은 변수 자체뿐 아니라, **내부에 포함된 모든 데이터**도 `const`이어야 합니다.
 
-```java:const.dart
+```dart:const.dart
 const pi = 3.14159;
 const api_url = 'https://api.example.com';
 
