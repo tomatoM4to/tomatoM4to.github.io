@@ -1,0 +1,190 @@
+# Dart 의 Class 와 상속
+Dart는 클래스와 믹스인 기반 상속(mixin-based inheritance)을 사용하는 객체 지향 언어입니다.
+모든 객체는 클래스의 인스턴스이며, Null을 제외한 모든 클래스는 Object 클래스로부터 파생됩니다.
+
+믹스인 기반 상속이란,
+각 클래스가 하나의 슈퍼클래스만 가질 수 있지만(최상위 클래스인 Object 제외),
+클래스의 본문(body)은 여러 클래스 계층 구조에서 재사용될 수 있다는 의미입니다.
+
+**확장 메서드(Extension methods)**를 사용하면
+기존 클래스를 변경하거나 서브클래스를 만들지 않고도 기능을 추가할 수 있습니다.
+
+또한, **클래스 한정자(Class modifiers)**를 사용하면
+다른 라이브러리에서 해당 클래스를 어떤 방식으로 상속(subtype)할 수 있는지 제어할 수 있습니다.
+
+***
+
+# Class 생성
+
+Dart 에서 클래스를 만드는 방법은 여러 가지가 있습니다. 단순하게 만들 수도 있고, 조금 더 안전하고 편리하게 만들 수도 있어요. 하나씩 단계별로 살펴보겠습니다.
+
+참고로 Dart 에서는 인스턴스를 생성할 때 `new` 키워드를 **사용하지 않아도** 됩니다. 물론 `new` 를 사용해도 **동작은 동일**합니다. 저는 `new` 를 사용하는게 의미상 더 명확해 지는거 같아 사용하는것이 더 좋다고 생각합니다. 하지만 안써도 전혀 문제 없어요!
+
+아래 코드는 `Point` 라는 클래스를 만들고, `x`와 `y` 라는 두 개의 변수를 선언한 뒤, `print_area()` 라는 메서드를 통해 면적을 출력하는 가장 기본적인 예제입니다.
+
+여기서 특징은, `this` 를 **사용하지 않아도 클래스 내부 멤버에 접근할 수 있**다는 점입니다.
+
+```dart:class-생성성
+class Point {
+    int x = 10;
+    int y = 10;
+
+    void print_area() => print('Area: ${x * y}');
+}
+
+void main() {
+    Point p = new Point();
+    p.print_area();
+
+    p = Point();
+    p.print_area();
+}
+```
+
+## Constructor 를 이용한 class 선언
+
+Dart 에서 생성자를 정의하는 방법은 class 와 같은 이름으로 method 를 정의하면 됩니다. 이땐 반환 타입을 정의할 필요가 없습니다. 그리고 생성자를 이용해 멤버 변수를 초기화 하기 위해 `late` 키워드를 사용했습니다. Dart 의 null-safety 기능 때문에 변수를 초기화 하지 않은체 생성자로만 초기화 하려면 Dart compiler 는 int x 는 null 을 허용하지 않는다는 에러를 발생시킵니다. 그렇기 때문에 late 를 꼳 넣어줘야 합니다.
+
+추가적으로 멤버를 수정하지도 않을거기 때문에 `final` 키워드도 추가해봤습니다.
+
+```dart:Class-생성
+class Point {
+    late final int x;
+    late final int y;
+
+    Point(x, y) {
+        // 이때는 this 필요
+        this.x = x;
+        this.y = y;
+    }
+
+    void print_area() => print('Area: ${x * y}');
+}
+
+void main() {
+    Point p = new Point();
+    p.print_area();
+
+    p = Point();
+    p.print_area();
+}
+```
+
+## Constructor 를 이용한 Class 선언
+
+Dart 에서 생성자를 정의할 때는 <R>클래스 이름과 동일한 메서드</R>를 만들면 됩니다. 이때 **반환 타입은 따로 작성하지 않**습니다.
+
+생성자를 이용해서 멤버 변수를 초기화하려면, Dart의 **null-safety** 기능 때문에 **바로 초기화를 하지 않은 상태**에서는 **에러가 발생**해요. `int x` 는 `null` 을 허용하지 않기 때문입니다.
+
+이런 경우에는 `late` 키워드를 사용하면, **나중에 생성자에서 초기화하겠다는 의도를 Dart에게 알려줄 수 있**습니다. 그리고 변수를 수정할 일이 없다면, `final` 키워드를 함께 사용해주는 게 좋아요.
+
+TODO: 또, 맴버변수와 지역변수가 같은 이름을 가질 경우, `this` 를 사용해야 합니다.
+
+```dart:Constructor
+class Point {
+    late final int x;
+    late final int y;
+
+    Point(x, y) {
+        // 이 경우에는 this가 필요
+        this.x = x;
+        this.y = y;
+    }
+
+    void print_area() => print('Area: ${x * y}');
+}
+
+void main() {
+    Point p = Point(5, 5);
+    p.print_area();
+
+    p = new Point(10, 10);
+    p.print_area();
+}
+```
+
+## 축약 문법
+
+위 코드처럼 `this.x = x` 로 멤버 변수를 초기화하는 패턴은 매우 흔하게 사용되기 때문에, 이걸 간단하게 **줄여 쓸 수 있는 문법**을 제공합니다.
+```dart:축약-문법
+class Point {
+  late final int x;
+  late final int y;
+
+  Point(this.x, this.y);
+
+  void print_area() => print('Area: ${x * y}');
+}
+```
+위 코드는 바로 전 코드와 **동일하게 동작**합니다. 훨씬 간결하죠?
+
+
+## Named Parameters
+
+Dart에서는 생성자에 **Named Parameters**도 사용할 수 있습니다. 이 방식은 파라미터의 순서를 신경 쓰지 않아도 되기 때문에 실수를 줄일 수 있어요.
+
+단, **Named Parameters** 는 기본적으로 **nullable** 이기 때문에 `required` 키워드를 사용해서 반드시 값을 전달하도록 설정해줘야 **null-safety** 를 지킬 수 있습니다.
+
+
+```dart:Named-Parameters
+class Point {
+    late final int x;
+    late final int y;
+
+    Point({
+        required this.x,
+        required this.y,
+    });
+
+    void print_area() => print('Area: ${x * y}');
+}
+```
+
+## Named Constructor
+
+가끔 Class 에 <R>여러 종류의 생성자</R>가 필요할 때가 있어요. 이럴 때 Dart 에서는 **Named Constructor** 를 사용할 수 있습니다.
+
+TODO: 아래 예제에서는 `Point` 클래스에 `fix` 라는 이름의 생성자를 추가한 경우입니다. Method 를 사용하는것처럼 Class 명과 `.` 을 사용해 선언하면 됩니다. 사용할때도 `new Point().fix()` 처럼 마치 Method 처럼 쓸 수 있습니다.
+
+이렇게 하면 `Point` 클래스는 기본 생성자와 `fix` 생성자 <R>두 가지를 가질 수 있</R>어요.
+
+
+```dart:Named-Constructor
+class Point {
+    late final int x;
+    late final int y;
+
+    Point({
+        required this.x,
+        required this.y
+    });
+
+    Point.fix({this.x = 10, this.y = 10});
+
+    void print_area() => print('Area: ${x * y}');
+}
+
+void main() {
+    Point p = new Point(x: 5, y: 5);
+    p.print_area();
+
+    p = new Point.fix();
+    p.print_area();
+}
+```
+```dart:class
+class Point {
+    int x = 10;
+    int y = 10;
+
+    void print_area() => print('Area: ${x * y}');
+}
+
+void main() {
+    Point p = new Point();
+    p.print_area();
+
+    p = new Point().fix();
+    p.print_area();
+}
+```
