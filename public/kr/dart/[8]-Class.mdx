@@ -1,0 +1,166 @@
+```dart
+class Point {
+    int x = 10;
+    int y = 10;
+
+    // this 불필요함
+    void print_area() => print('Area: ${x * y}');
+}
+```
+
+```dart
+class Point {
+    int x;
+    int y;
+
+    Point(x, y) {
+        // 이때는 this 필요
+        this.x = x;
+        this.y = y;
+    }
+
+    void print_area() => print('Area: ${x * y}');
+}
+```
+
+```dart
+class Point {
+    late final int x;
+    late final int y;
+
+    Point(this.x, this.y);
+
+    void print_area() => print('Area: ${x * y}');
+}
+```
+
+```dart
+class Point {
+    late final int x;
+    late final int y;
+
+    Point({
+        required this.x,
+        required this.y
+    });
+
+    void print_area() => print('Area: ${x * y}');
+}
+```
+
+```dart:named-constructor
+class Point {
+    late final int x;
+    late final int y;
+
+    Point({
+        required this.x,
+        required this.y
+    });
+
+    Point.positional(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    Point.fix()
+        : x = 10,
+          y = 10;
+
+    void print_area() => print('Area: ${x * y}');
+}
+
+void main() {
+    Point p = Point.positional(5, 5);
+    p.print_area();
+
+    p = Point(x: 5, y: 5);
+    p.print_area();
+
+    p = Point.fix();
+    p.print_area();
+}
+```
+
+```dart:from-json-패턴
+```
+
+***
+
+```dart:cascade-notation
+class Point {
+    late int x;
+    late int y;
+
+    Point({
+        required this.x,
+        required this.y
+    });
+
+    void print_area() => print('Area: ${x * y}');
+}
+
+void main() {
+    Point p = Point(x: 5, y: 5)
+        ..print_area()
+        ..x = 10
+        ..y = 10
+        ..print_area();
+}
+```
+
+***
+
+```dart:enum
+class Point {
+    late int x;
+    late int y;
+    late String color;
+    Point({
+        required this.x,
+        required this.y,
+        required this.color
+    });
+
+    void print_area() => print('Area: ${x * y}');
+}
+
+void main() {
+    Point p_red = Point(x: 5, y: 5, color: 'red');
+
+    // 이런 오타 같은 실수를 하지 않게끔 도와주는것이 Enum
+    // Enum 은 선택의 폭을 좁혀주는 역할을 함
+    Point p_blue = Point(x: 5, y: 5, color: 'bleu');
+}
+```
+
+```dart:enum-2
+// "" 가 필요 없음, 그저 Color red, Color, green, Color.blue 로 사용됨
+// 이런식으로 새로운 타입을 만들어 낼 수 있단 것
+enum Color {
+    red,
+    green,
+    blue
+}
+
+class Point {
+    late int x;
+    late int y;
+    late Color color;
+    Point({
+        required this.x,
+        required this.y,
+        required this.color
+    });
+
+    void print_area() => print('Area: ${x * y}, ${color.toString()}');
+}
+
+void main() {
+    Point p_red = Point(x: 5, y: 5, color: Color.red);
+    Point p_green = Point(x: 5, y: 5, color: Color.green);
+    Point p_blue = Point(x: 5, y: 5, color: Color.blue);
+}
+```
+
+Flutter 의 색상도 Enum 일것으로 추측됨
