@@ -1,76 +1,4 @@
-# Dart 의 Class 와 상속
-Dart는 클래스와 믹스인 기반 상속(mixin-based inheritance)을 사용하는 객체 지향 언어입니다.
-모든 객체는 클래스의 인스턴스이며, Null을 제외한 모든 클래스는 Object 클래스로부터 파생됩니다.
-
-믹스인 기반 상속이란,
-각 클래스가 하나의 슈퍼클래스만 가질 수 있지만(최상위 클래스인 Object 제외),
-클래스의 본문(body)은 여러 클래스 계층 구조에서 재사용될 수 있다는 의미입니다.
-
-**확장 메서드(Extension methods)**를 사용하면
-기존 클래스를 변경하거나 서브클래스를 만들지 않고도 기능을 추가할 수 있습니다.
-
-또한, **클래스 한정자(Class modifiers)**를 사용하면
-다른 라이브러리에서 해당 클래스를 어떤 방식으로 상속(subtype)할 수 있는지 제어할 수 있습니다.
-
-***
-
-# Class 생성
-
-Dart 에서 클래스를 만드는 방법은 여러 가지가 있습니다. 단순하게 만들 수도 있고, 조금 더 안전하고 편리하게 만들 수도 있어요. 하나씩 단계별로 살펴보겠습니다.
-
-참고로 Dart 에서는 인스턴스를 생성할 때 `new` 키워드를 **사용하지 않아도** 됩니다. 물론 `new` 를 사용해도 **동작은 동일**합니다. 저는 `new` 를 사용하는게 의미상 더 명확해 지는거 같아 사용하는것이 더 좋다고 생각합니다. 하지만 안써도 전혀 문제 없어요!
-
-아래 코드는 `Point` 라는 클래스를 만들고, `x`와 `y` 라는 두 개의 변수를 선언한 뒤, `print_area()` 라는 메서드를 통해 면적을 출력하는 가장 기본적인 예제입니다.
-
-여기서 특징은, `this` 를 **사용하지 않아도 클래스 내부 멤버에 접근할 수 있**다는 점입니다.
-
-```dart:class-생성성
-class Point {
-    int x = 10;
-    int y = 10;
-
-    void print_area() => print('Area: ${x * y}');
-}
-
-void main() {
-    Point p = new Point();
-    p.print_area();
-
-    p = Point();
-    p.print_area();
-}
-```
-
-## Constructor 를 이용한 class 선언
-
-Dart 에서 생성자를 정의하는 방법은 class 와 같은 이름으로 method 를 정의하면 됩니다. 이땐 반환 타입을 정의할 필요가 없습니다. 그리고 생성자를 이용해 멤버 변수를 초기화 하기 위해 `late` 키워드를 사용했습니다. Dart 의 null-safety 기능 때문에 변수를 초기화 하지 않은체 생성자로만 초기화 하려면 Dart compiler 는 int x 는 null 을 허용하지 않는다는 에러를 발생시킵니다. 그렇기 때문에 late 를 꼳 넣어줘야 합니다.
-
-추가적으로 멤버를 수정하지도 않을거기 때문에 `final` 키워드도 추가해봤습니다.
-
-```dart:Class-생성
-class Point {
-    late final int x;
-    late final int y;
-
-    Point(x, y) {
-        // 이때는 this 필요
-        this.x = x;
-        this.y = y;
-    }
-
-    void print_area() => print('Area: ${x * y}');
-}
-
-void main() {
-    Point p = new Point();
-    p.print_area();
-
-    p = Point();
-    p.print_area();
-}
-```
-
-## Constructor 를 이용한 Class 선언
+# Constructor 를 이용한 Class 선언
 
 Dart 에서 생성자를 정의할 때는 <R>클래스 이름과 동일한 메서드</R>를 만들면 됩니다. 이때 **반환 타입은 따로 작성하지 않**습니다.
 
@@ -103,7 +31,7 @@ void main() {
 }
 ```
 
-## 축약 문법
+# 축약 문법
 
 위 코드처럼 `this.x = x` 로 멤버 변수를 초기화하는 패턴은 매우 흔하게 사용되기 때문에, 이걸 간단하게 **줄여 쓸 수 있는 문법**을 제공합니다.
 ```dart:축약-문법
@@ -119,7 +47,7 @@ class Point {
 위 코드는 바로 전 코드와 **동일하게 동작**합니다. 훨씬 간결하죠?
 
 
-## Named Parameters
+# Named Parameters
 
 Dart에서는 생성자에 **Named Parameters**도 사용할 수 있습니다. 이 방식은 파라미터의 순서를 신경 쓰지 않아도 되기 때문에 실수를 줄일 수 있어요.
 
@@ -140,7 +68,7 @@ class Point {
 }
 ```
 
-## Named Constructor
+# Named Constructor
 
 가끔 Class 에 <R>여러 종류의 생성자</R>가 필요할 때가 있어요. 이럴 때 Dart 에서는 **Named Constructor** 를 사용할 수 있습니다.
 
@@ -188,3 +116,36 @@ void main() {
     p.print_area();
 }
 ```
+
+# Constant Constructor
+
+Dart 에서는 Class 를 `const` 로 선언할수 있습니다. 그러기 위해선 몇가지 제약이 있습니다.
+
+* 모든 멤버 변수는 `final` 이여야 함
+* Constructor 앞에 `const` 키워드를 붙여야 함
+
+이렇게 하면 프로그램이 실행되기 전에 미리 값이 고정되기 때문에 메모리도 절약되고, 코드도 더 안전해질 수 있어요. 그리고 이전에 const 에서 말했듯 같은 값은 한 메모리만 공유하기 때문에 메모리 절약 효과도 볼수 있습니다.
+
+```dart:Constant-Constructor
+class ImmutablePoint {
+    final double x, y;
+
+    const ImmutablePoint(this.x, this.y);
+}
+
+void main() {
+    const p1 = ImmutablePoint(1.0, 2.0);
+    const p2 = ImmutablePoint(1.0, 2.0);
+
+    print(identical(p1, p2));   // true
+    print(p1 == p2);            // true
+}
+```
+
+위 코드는 const 로 생성된 두 instance 가 서로 동일한 메모리를 가리키고 있음을 보여줍니다. `identical()` 메서드는 두 객체가 동일한 메모리를 가리키고 있는지 확인하는 메서드입니다.
+
+여기서 주의할점은 const 생성자가 있다고 해서 항상 상수 객체가 만들어 지는것은 아닙니다. 반드시 const 키워드로 인스턴스를 생성할 때만 상수가 됩니다.
+
+# Redirecting Constructor [생성자 위임]
+
+가끔 클래스 안에서 다른 생성자에게 일을 넘기고 싶을 때가 있어요. 이럴 때 Dart에서는 Redirecting Constructor (생성자 위임) 문법을 제공합니다.
