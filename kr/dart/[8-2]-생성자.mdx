@@ -149,3 +149,154 @@ void main() {
 # Redirecting Constructor [생성자 위임]
 
 가끔 클래스 안에서 다른 생성자에게 일을 넘기고 싶을 때가 있어요. 이럴 때 Dart에서는 Redirecting Constructor (생성자 위임) 문법을 제공합니다.
+
+```dart:Redirecting-Constructor
+class Point {
+    double x, y;
+
+    // 기본 생성자
+    Point(this.x, this.y);
+
+    // alongXAxis는 x만 받고, y는 0으로 고정
+    Point.alongXAxis(double x) : this(x, 0);
+}
+```
+
+여기서 `Point.alongXAxis` 는 `Point(this.x, this.y)` 기본 생성자를 **호출**하고 있어요. `this(x, 0) → x` 값만 받고, `y` 는 `0` 으로 설정하는 생성자가 된 거죠.
+
+***
+
+# Factory Constructor
+
+Dart 에선 factory 키워드를 제공합니다. 해당 키워드를 사용하는 상황은 크게 두가지 인게요.
+
+1. 항상 개로운 Instance 를 생성하고 싶지 않을때
+2. Instance 생성 전 추가 작업이 필요할 때
+
+차례대로 알아보겠습니다.
+
+## 새 Instance 를 만들지 않을 때
+
+TODO: 다른 언어에서도 이런가?
+
+가장 간단히 생각할 수 있는 패턴은 Singleton 패턴인데요. 한번 `final` 없이 Singleton 을 만들어 보겠습니다.
+
+Dart 에선 생성자를 호출시 바로 새로운 Instance 를 생성합니다. 그 후 this 로 해당 Instance 에 접근하고 값을 초기화 하고 수정하게 되죠, 그렇기 때문에 `fianl` 없이 Singleton 을 만들면 아래와 같이 됩니다.
+
+```dart:factory-없이-singleton
+class Singleton {
+    static final Singleton instance = Singleton._internal();
+
+    Singleton._internal(); // private 생성자
+}
+
+void main() {
+    final singleton1 = Singleton.instance;
+    final singleton2 = Singleton.instance;
+
+    print(identical(singleton1, singleton2)); // true
+}
+```
+
+먼저 static 키워드를 사용해 `Singleton` 클래스의 인스턴스를 하나 만들어 놓고, `Singleton._internal()` 생성자를 private 으로 만들어서 외부에서 호출하지 못하게 했습니다. 이렇게 하면 `Singleton` 클래스는 항상 같은 인스턴스를 반환하게 됩니다.
+
+하지만 뭔가 좀 불편하긴 하죠, `new Singleton()` 처럼 사용하고 싶지 않나요? 문법적으로 다른 Class 와 일관되지 않아 불편합니다.
+
+그래서 `final` 키워드를 이용하면 이렇게 깔끔하게 만들 수 있습니다.
+
+```dart:factory-singleton
+class Singleton {
+    static final Singleton _instance = Singleton._internal();
+
+    factory Singleton() {
+        return _instance;
+    }
+
+    Singleton._internal(); // private 생성자
+}
+
+void main() {
+    final singleton1 = new Singleton();
+    final singleton2 = new Singleton();
+
+    print(identical(singleton1, singleton2)); // true
+}
+```
+
+`factory` 키워드를 붙인 생성자는 return 을 통해 특정 Instance 를 반환할 수 있습니다. 그렇기 때문에 `factory Singleton()` 생성자는 항상 `_instance` 를 반환하게 됩니다. 즉, `new Singleton()` 을 호출해도 항상 같은 인스턴스를 반환하게 되는 거죠.
+
+## Instance 생성 전 추가 작업
+
+이전에 생성자는 기본적으로 호출시 즉각적으로 새로운 Instance 를 생성한다 했습니다. 하지만 가끔 Instance 를 생성하기 전에 추가 작업을 해야 할 때가 있어요. 이럴 때 `factory` 키워드를 사용하면 됩니다.
+
+
+```dart:factory-추가작업
+class Point {
+    double x, y;
+
+    // 기본 생성자
+    Point(this.x, this.y);
+
+    // alongXAxis는 x만 받고, y는 0으로 고정
+    factory Point.alongXAxis(double x) {
+        return Point(x, 0);
+    }
+}
+
+void main() {
+    final p1 = Point(1.0, 2.0);
+    final p2 = Point.alongXAxis(1.0);
+
+    print(p1); // Instance of 'Point'
+    print(p2); // Instance of 'Point'
+}
+```
+
+위위 예시에선 매우 간단시 `y` 만 고정하는 방식으로 `factory` 키워드를 사용했습니다. 하지만 실제론 보다 복잡하게 사용할 수 있는데요, Dart 에서 많이 쓰는 패턴인 `fromJson` 패턴 예시를 들고 생성자를 마무리 하겠습니다.
+
+```dart:factory-fromJson
+class User {
+    final int id;
+    final String name;
+    final String email;
+
+    // 일반 생성자
+    User(this.id, this.name, this.email);
+
+    // named constructor: fromJson
+    factory User.fromJson(Map<String, dynamic> json) {
+        return User(
+            json['id'] as int,
+            json['name'] as String,
+            json['email'] as String,
+        );
+    }
+
+    // JSON으로 다시 변환하는 toJson (보통 같이 구현함)
+    Map<String, dynamic> toJson() {
+        return {
+            'id': id,
+            'name': name,
+            'email': email,
+        };
+    }
+}
+
+void main() {
+    final Map<String, dynamic> json = {
+        'id': 1,
+        'name': 'Dawon',
+        'email': 'dawon@example.com'
+    };
+
+    final user = User.fromJson(json);
+
+    print(user.name); // Dawon
+
+    final encoded = user.toJson();
+    print(encoded); // {id: 1, name: Dawon, email: dawon@example.com}
+}
+
+```
+
+해당 코드는 `final Map<String, dynamic> json` 로 선언된 json 형태의 key-value 쌍을 받아서 `User` Instance 를 생성하는 예시입니다. Instance 를 생성할 때 `factory` 키워드를 이용했기 때문에 User(...) 형식으로 return 할 수 있는걸 볼 수 있습니다. 그리고 추가적으로 `toJson` 메서드를 통해 다시 ket-value 쌍으로 변환할 수 있는 메서드도 같이 구현했습니다.
