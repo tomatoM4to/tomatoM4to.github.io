@@ -1,0 +1,99 @@
+# Method
+
+Dart에서 메서드는 객체가 어떤 **행동(Behavior)**을 할 수 있는지를 정의하는 함수입니다.
+
+우리가 **객체지향 프로그래밍** 을 얘기할 때, 객체의 상태는 변수로, 객체의 동작은 바로 이 메서드로 표현되는 거죠.
+
+Dart 에서 메서드는 다양한 형태로 존재할 수 있습니다
+
+* 인스턴스 메서드 (Instance Methods)
+
+* 연산자 오버로딩 (Operators)
+
+* 게터와 세터 (Getters & Setters)
+
+하나씩 차근히 살펴볼게요.
+
+## Instance Methods
+
+인스턴스 메서드는 말 그대로 객체 인스턴스에 소속된 메서드입니다. 이 메서드는 클래스 내부의 변수에 접근할 수 있고, `this` 키워드도 사용할 수 있어요.
+
+```dart:instance-methods
+import 'dart:math';
+
+class Point {
+  final double x;
+  final double y;
+
+  Point(this.x, this.y);
+
+  double distanceTo(Point other) {
+    var dx = x - other.x;
+    var dy = y - other.y;
+    return sqrt(dx * dx + dy * dy);
+  }
+}
+```
+
+
+이 예제에서 `distanceTo()`는 다른 **Point** 와의 거리 차이를 계산하는 메서드입니다. 여기서 중요한 포인트는, `x` 와 `y` 는 인스턴스 변수이므로 이 메서드 안에서 자유롭게 접근할 수 있다는 거죠.
+
+## Operator Overloading
+
+Dart에서는 **일부 연산자**를 직접 정의할 수 있습니다. 이런 기능을 **Operator Overloading(연산자 오버로딩)**이라고 불러요.
+
+예를 들어, `+`, `-`, `==`, `[]` 같은 연산자는 메서드처럼 정의해서 원하는 동작을 구현할 수 있습니다.
+
+```dart:operator-overloading
+class Vector {
+    final int x, y;
+
+    Vector(this.x, this.y);
+
+    Vector operator +(Vector v) => Vector(this.x + v.x, this.y + v.y);
+    Vector operator -(Vector v) => Vector(this.x - v.x, this.y - v.y);
+
+    @override
+    bool operator ==(Object other) =>
+        other is Vector && this.x == other.x && this.y == other.y;
+
+    @override
+    int get hashCode => Object.hash(this.x, this.y);
+}
+
+void main() {
+    final Vector v = Vector(2, 3);
+    final Vector w = Vector(2, 2);
+
+    assert(v + w == Vector(4, 5));
+    assert(v - w == Vector(0, 1));
+}
+```
+
+## Getters & Setters
+
+Dart에서 클래스의 속성을 외부에서 읽거나 변경할 때, 직접 변수에 접근하는 대신 Getter와 Setter를 사용할 수 있어요. 이렇게 하면 코드의 가독성을 높이고, 데이터 캡슐화를 유지할 수 있습니다.
+
+특히 어떤 값을 계산해서 반환하거나, 값을 설정할 때 로직이 필요한 경우 유용합니다.
+
+```dart:getters-setters
+class Rectangle {
+    double left, top, width, height;
+
+    Rectangle(this.left, this.top, this.width, this.height);
+
+    double get right => left + width;
+    set right(double value) => left = value - width;
+
+    double get bottom => top + height;
+    set bottom(double value) => top = value - height;
+}
+
+void main() {
+    Rectangle rect = Rectangle(3, 4, 20, 15);
+    rect.right = 12;
+    assert(rect.left == -8); // right를 12로 설정 → left가 자동 계산됨
+}
+```
+
+Dart에서는 인스턴스 변수를 선언하면, 자동으로 기본 getter, 그리고 필요하면 setter도 만들어줍니다. 그런데 이런 방식으로 직접 커스텀 getter/setter를 정의하면 내부 계산을 감추거나 제어할 수 있어요.

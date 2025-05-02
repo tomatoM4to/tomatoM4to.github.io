@@ -1,0 +1,46 @@
+# Extending a Class
+
+다른 언어에선 보통 상속 이라고 말하는데 Dart 에선 좀 다르게 Extend 라 표현합니다.
+
+말하는게 다를 뿐이지 다른 언어와 거의 동일하게 사용되니 걱정하지 않으셔도 됩니다. 이 페이지에서도 굳이 Extend 라 말하지 않고 익숙하게 상속이라 표현하겠습니다. 한가지 특징으론 **다중 상속을 지원하지 않습니다!**
+
+Dart 에서 extends 키워드를 사용하면, 기존 Class 를 상속해서 기능을 확장할 수 있습니다.
+
+이때 상속받는 클래스를 **subclass**, 상속해주는 클래스를 **superclass** 라고 부릅니다.
+
+```dart:extend-class
+class Television {
+  void turnOn() {
+    _illuminateDisplay();
+    _activateIrSensor();
+  }
+
+  void _illuminateDisplay() => print('Display On');
+  void _activateIrSensor() => print('IR Sensor Activated');
+}
+
+class SmartTelevision extends Television {
+  @override
+  void turnOn() {
+    // 부모 클래스의 turnOn 동작 먼저 실행
+    super.turnOn();
+
+    // 그 다음에 자식 클래스만의 기능 실행
+    _bootNetworkInterface();
+    _initializeMemory();
+    _upgradeApps();
+  }
+
+  void _bootNetworkInterface() => print('Network Ready');
+  void _initializeMemory() => print('Memory Initialized');
+  void _upgradeApps() => print('Apps Updated');
+}
+```
+
+특징으로 `@override` 키워드를 사용하여 부모 클래스의 메서드를 재정의할 수 있습니다. 이때 부모 클래스의 메서드와 동일한 이름과 매개변수를 사용해야 합니다. 만약 다르다면 Dart 에서 에러를 발생시킵니다.
+
+해당 class 는 super.turnOn() 을 호출하여 부모 class 의 메서드를 실행하고 그 이후 자신만의 고유 동작을 추가하는 코드 입니다.
+
+
+
+## 멤버 오버라이딩
