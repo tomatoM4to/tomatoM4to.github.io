@@ -43,4 +43,86 @@ class SmartTelevision extends Television {
 
 
 
-## 멤버 오버라이딩
+## Overriding members
+
+서브클래스에서는 부모 클래스의 메서드나 getter/setter를 재정의할 수 있습니다.
+이걸 **오버라이딩(Overriding)**이라고 해요.
+
+```dart:overriding
+class Television {
+  set contrast(int value) {
+    print('Setting contrast to $value (int)');
+  }
+}
+
+class SmartTelevision extends Television {
+  @override
+  set contrast(num value) {
+    print('Setting smart contrast to $value (num)');
+  }
+}
+```
+
+이 예제에서 SmartTelevision은 Television의 contrast setter를
+int → num으로 타입을 넓혀서 오버라이딩하고 있어요.
+
+
+오버라이딩할 때 주의할 점
+* 리턴 타입은 **같거나 더 좁은 타입(subtype)**이어야 함
+
+* 파라미터 타입은 **같거나 더 넓은 타입(supertype)**이어야 함
+
+* 위치 매개변수 개수는 반드시 동일해야 함
+
+* 제네릭 메서드는 제네릭끼리만, 일반 메서드는 일반 메서드끼리만 오버라이딩 가능
+
+Dart는 이 조건을 강하게 검사해서, 런타임이 아닌 컴파일 타임에 오류를 잡아줘요.
+
+### 참고: convariant
+어쩔 때는 오히려 파라미터 타입을 더 **좁게(covariant)** 하고 싶을 수도 있어요.
+이건 Dart의 기본 규칙엔 어긋나지만, `covariant` 키워드를 사용하면 명시적으로 허용할 수 있습니다.
+
+```dart:covariant
+class Animal {}
+class Dog extends Animal {}
+
+class PetTrainer {
+  void train(covariant Dog dog) {
+    print('Training a dog!');
+  }
+}
+```
+
+
+## noSuchMethod
+
+Dart에는 꽤 흥미로운 기능이 하나 있어요:
+객체에서 존재하지 않는 메서드나 변수에 접근하려고 할 때
+그걸 잡아서 처리할 수 있게 해주는 게 바로 `noSuchMethod()` 입니다.
+
+
+```dart:noSuchMethod
+class A {
+  @override
+  void noSuchMethod(Invocation invocation) {
+    print('존재하지 않는 멤버를 호출했습니다: ${invocation.memberName}');
+  }
+}
+```
+
+> 이 메서드를 오버라이딩하면, 객체에 실제 없는 메서드나 변수를 호출해도 **런타임에서 커스터마이징된 처리**가 가능합니다.
+
+단, 이 기능이 동작하기 위해선 조건이 있어요:
+
+* 호출 대상의 **정적 타입이 dynamic**일 경우
+
+* 혹은 정적 타입에 없는 멤버라도, 동적 타입 객체가 noSuchMethod()를 오버라이드하고 있어야 함
+
+예를 들어 아래처럼 호출하면 작동합니다:
+
+```dart:noSuchMethod-usage
+void main() {
+  dynamic a = A();
+  a.doSomething();  // doSomething()은 없지만, noSuchMethod가 잡아냄
+}
+```
