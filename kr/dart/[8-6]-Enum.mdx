@@ -1,0 +1,140 @@
+# Enum
+
+**열거형(enum)**은 이름 그대로, 정해진 개수의 고정된 값들을 나열해서 이 값들만 쓸 수 있도록 제한하는 특수한 타입입니다.
+
+다른 언어에서도 흔히 등장하는 개념이지만, Dart의 enum은 단순한 상수 집합을 넘어서 클래스처럼 필드와 메서드도 가질 수 있는 구조로 확장되었습니다.
+
+## Enum 선언하기
+Dart에서 `enum` 을 정의할 때는 `enum` 키워드를 사용하고, 열거할 값을 중괄호 안에 나열하면 됩니다.
+
+```dart:enum
+enum Color { red, green, blue }
+```
+
+이제 C`olor.red`, `Color.green`, `Color.blue` 처럼 사용할 수 있고, 각 값은 해당 **enum 타입의 인스턴스**로 취급됩니다. 또 `.index` 속성을 사용하면 값이 enum 에서 선언된 순서대로 몇 번째인지 확인할 수 있어요.
+
+```dart:enum
+final favorite = Color.blue;
+
+if (favorite == Color.blue) {
+    print('Your favorite color is blue!');
+}
+
+assert(Color,red,index == 0);
+assert(Color.green.index == 1);
+assert(Color.blue.index == 2);
+```
+
+## 전체 목록 가져오기
+
+모든 enum 은 자동으로 `values` 라는 정적 getter 를 가집니다. 이를 통해 모든 enum 값을 리스트 형태로 순회할 수 있어요.
+
+```dart:전체-목록-가져오기
+List<Color> colors = Color.values;
+print(colors);  // [Color.red, Color.green, Color.blue]
+```
+
+`values` 는 반복문, 드롭다운 메뉴, switch 문 등에서 자주 사용됩니다.
+
+## switch 문과 함께 쓰기
+
+모통 enum 은 `switch` 문과 함께 쓸 때 특히 유용합니다.
+
+```dart:switch-with-enum
+switch (favorite) {
+    case Color.red:
+        print('Red as roses!');
+    case Color.green:
+        print('Green as grass!');
+    default:
+        print('Other color!');
+}
+```
+
+Dart는 switch 문에서 모든 enum 값을 다루지 않으면 경고를 줍니다. **예외 없이 안전하게 처리할 수 있도록 도와주는 기능**이죠.
+
+## 문자열 이름 얻기
+
+enum 값의 이름을 문자열로 얻고 싶다면, `.name` 속성을 사용하면 됩니다.
+```dart:문자열-이름-얻기
+print(Color.blue.name); // 'blue'
+```
+
+UI 내에서 enum 이름을 그대로 출력하거나, 로그 출력에 유용합니다.
+
+***
+
+# enum 예제
+
+enum 을 사용하면 실수를 줄이고, 더 안전하게 사용 가능하단 점이 있지만, class 나 함수처럼 와닫지 않을수 있기 때문에 예제를 몇가지 다뤄보겠습니다.
+
+여기서 말하는 타입 안정성 강화는 다음과 같은 의미를 가집니다.
+
+* 잘못된 문자열이나 숫자를 enum 값으로 잘못 변환하는 오류를 막기
+* null이나 범위 밖의 값에 대해 명확하게 처리
+* IDE와 컴파일러가 모든 케이스를 인지하고, 경고를 줄 수 있도록 작성
+
+## 사용자 권한(Role) 처리
+
+```dart:❌-잘못된-방식
+String role = 'admin';
+
+if (role == 'admin') {
+    // ...
+} else if (role == 'guest') {
+    // ...
+}
+```
+
+* 문자열 기반 비교는 오타, 자동완성 없음, 런타임 오류 가능성 존재
+* 실수로 'admn'처럼 잘못 입력해도 아무 경고 없음
+
+```dart:✅-개선된-방식
+enum UserRole { admin, guest, user }
+
+void handleRole(UserRole role) {
+    switch (role) {
+        case UserRole.admin:
+            print('관리자 권한');
+            break;
+        case UserRole.guest:
+            print('게스트 권한');
+            break;
+        case UserRole.user:
+            print('일반 사용자 권한');
+            break;
+    }
+}
+```
+
+* `UserRole` 로 명시적인 타입 지정 → IDE 자동완성 + 컴파일 오류 가능
+* `switch` 문에서 모든 케이스를 강제 처리
+* `default` 없이 작성하면 누락된 케이스에 대해 경고 발생
+
+## enum 안전하게 파싱하기
+
+```dart:파싱
+enum UserRole { admin, guest, user }
+
+UserRole? parseUserRole(String input) {
+  return UserRole.values.firstWhere(
+    (e) => e.name == input,
+    orElse: () => null,
+  );
+}
+
+void main() {
+  String roleFromApi = 'admin';
+  UserRole? role = parseUserRole(roleFromApi);
+
+  if (role != null) {
+    handleRole(role);
+  } else {
+    print('올바르지 않은 역할입니다.');
+  }
+}
+```
+
+* `.name` 을 이용한 안전한 문자열 매핑
+* `orElse` 로 잘못된 입력값에 대해 null 처리 가능 → 런타임 예외 방지
+* 리턴 타입이 `UserRole?` 이라서 **nullable 체크**도 강제됨

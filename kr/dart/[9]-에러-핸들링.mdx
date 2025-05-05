@@ -1,0 +1,100 @@
+# 에외 처리
+Dart에서도 예외(Exception)를 사용할 수 있어요. 예외는 프로그램 실행 도중 예상치 못한 상황이 발생했을 때 사용하는 대표적인 에러 처리 방법입니다.
+
+예외를 잘 활용하면, 프로그램을 강제로 종료시키지 않고 부드럽게 문제를 인지하고 대응하는 코드를 만들 수 있어요.
+
+## [throw] - 예외를 던지기
+
+Dart에서 예외를 던지는 방법은 아주 간단합니다:
+
+```dart:예외-던지기
+throw FormatException('올바르지 않은 포맷입니다.');
+```
+
+심지어 문자열이나 다른 객체도 던질 수 있어요.
+
+```dart:예외-던지기-2
+throw '라마가 부족해요!';
+```
+
+하지만 `Exception` 혹은 `Error` 타입을 던지는 게 더 바람직합니다. 라이브러리나 팀 프로젝트에서 협업할 땐 특히 중요해요.
+
+## [try-catch] - 예외 잡기
+
+예외가 발생할 수 있는 코드 블록은 try로 감싸고, catch 혹은 on 키워드로 예외를 처리할 수 있어요.
+
+
+```dart:예외-잡기-1
+try {
+  breedMoreLlamas();
+} on OutOfLlamasException {
+  buyMoreLlamas();
+}
+```
+
+예외 타입을 모르는 경우엔 이렇게 쓸 수 있어요:
+
+```dart:예외-잡기-2
+try {
+  doSomethingRisky();
+} catch (e) {
+  print('에러 발생: $e');
+}
+```
+
+예외 + 스택 트레이스를 함께 받는 법
+```dart:예외-잡기-3
+try {
+  throw SomeError();
+} catch (e, stack) {
+  print('에러: $e');
+  print('위치: $stack');
+}
+```
+
+## [rethrow] - 예외 다시 던지기
+
+예외를 잠깐 잡아서 로그만 남기고, 다시 상위 함수에 예외를 넘길 수 있습니다.
+
+```dart:rethrow
+void risky() {
+  try {
+    throw FormatException('문제 발생');
+  } catch (e) {
+    print('로그 남기기: $e');
+    rethrow;
+  }
+}
+
+void main() {
+  try {
+    risky();
+  } catch (e) {
+    print('메인에서 최종 처리: $e');
+  }
+}
+```
+
+## [finally] - 무조건 실행되는 블록
+
+에러가 발생하든 말든, 마지막에 항상 실행하고 싶은 코드가 있다면 finally 블록을 쓰세요.
+
+```dart:finally
+try {
+  readFile();
+} catch (e) {
+  print('파일 에러: $e');
+} finally {
+  closeFile(); // 무조건 실행
+}
+```
+
+***
+
+# assert
+
+`assert()` 는 디버깅할 때만 작동하는 검사 도구예요. 런타임 중에 조건이 false이면 바로 에러를 던져서 프로그램을 멈춥니다. 하지만 release 모드에선 무시되기 때문에 성능 걱정 없이 사용할 수 있어요. 그리고 두번째 인자로 메시지를 작성할 수 있습니다.
+
+```dart:assert
+assert(price >= 0, '가격은 음수가 될 수 없음');
+```
