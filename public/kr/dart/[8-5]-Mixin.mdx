@@ -1,0 +1,174 @@
+* https://stackoverflow.com/questions/45901297/when-to-use-mixins-and-when-to-use-interfaces-in-dart
+
+# Mixin
+이전에 클래스 상속에 대해 다뤘었죠. Dart는 상속 구조를 단순화하기 위해 다중 상속을 허용하지 않습니다. 이 덕분에 클래스 구조가 더 예측 가능하고 유지보수도 쉬워지긴 했지만, 때때로 여러 클래스로부터 기능을 재사용하고 싶을 때 제약처럼 느껴질 수 있어요.
+
+이 문제를 해결하기 위해 Dart가 제공하는 게 바로 Mixin 입니다.
+
+## What is Mixin?
+
+Mixin은 클래스의 기능(메서드와 필드)을 다른 클래스에 조합하여 추가할 수 있는 기능입니다. 상속처럼 보일 수 있지만, 진짜 상속은 아니에요.
+
+> 상속은 단 하나지만, 믹스인은 여러 개.
+
+즉, 여러 개의 Mixin을 하나의 **클래스에 중첩하여 재사용**할 수 있다는 게 핵심입니다.
+
+```dart:mixin
+class Performer {}
+
+mixin Musical {
+    void play() => print('Playing music!');
+}
+
+class Musician extends Performer with Musical {}
+
+void main() {
+    Musician().play(); // 출력: Playing music!
+}
+```
+
+## Extend vs Mixin
+
+Mixin 은 이 클래스가 무엇인지 보단, 어떻게 동작하는지에 초점을 둔 조합 방식 입니다.
+
+| 개념 | 설명 |
+|---|---|
+| `extents` | 클래스를 하나만 상속, 모든 멤버 사용 가능 |
+| `mixin` | 여러 `mixin` 을 조합, 구체적인 구현도 함께 가져옴 |
+
+
+## Mixin 작성하기
+
+Dartr2.1 이상에선 Mixin 을 명확하게 작성하기 위해 `mixin` 키워드를 사용합니다. 또 Mixin 은 Constructor 를 가질 수 없습니다. 상태를 직접 초기화 하기 위해선 추상 getter 등을 통해 위임해야 합니다.
+
+```dart:mixin
+mixin Musical {
+    bool canPlay = true;
+
+    void entertainMe() {
+        if (canPlay) print('🎶 Playing something cool!');
+    }
+}
+```
+
+## Mixin 에 추상 멤버 선언하기
+
+Mixin 이 어떤 동작을 정의하려면, 필요한 필드나 메서드가 대상 클래스에 있다고 가저정해야 할 때 가 있습니다. 이때는 추상멤버로 선언해두면, Mixin 을 사용하는 클래스가 그걸 구현하도록 강제할 수 있습니다.
+
+```dart:mixin에-추상-멤버-선언하기
+mixin Musician {
+  void playInstrument(String name); // 추상 메서드
+
+  void playPiano() => playInstrument('Piano');
+}
+
+class Virtuoso with Musician {
+  @override
+  void playInstrument(String name) {
+    print('Plays the $name masterfully.');
+  }
+}
+```
+
+## on 절로 superclass 제약 주기
+
+Mixin 안에서 super 를 사용해야 할 경우, 해당 `mixin` 이 어떤 클래스에만 붙을 수 있는지 지정해야 합니다. 이때 사용하는 게 `on` keyword 입니다.
+
+```dart:mixin-on-절로-superclass-제약-주기
+class Musician {
+  void warmUp() => print('Warming up...');
+}
+
+mixin Performer on Musician {
+  void perform() {
+    super.warmUp(); // 가능한 이유: on Musician
+    print('Performing!');
+  }
+}
+
+class Singer extends Musician with Performer {}
+```
+
+`on` 키워드는 **이 mixin 은 Musician 을 상속한 클래스에만 적용 가능하다** 는 의미에요.
+
+## mixin class
+
+Dart 3.0부터는 `mixin class` 라는 선언도 지원합니다. 이건 클래스처럼 상속도 되고, `mixin`처럼 `with`로도 사용할 수 있는 **혼합형**이에요.
+
+```dart:mixin-class
+mixin class Logger {
+  void log(String msg) => print('[LOG] $msg');
+}
+
+class Service with Logger {}   // mixin처럼 사용
+class BaseLogger extends Logger {} // 클래스처럼 사용
+```
+
+## mixin은 타입이 아니다
+
+Mixin은 타입이 아닙니다!
+
+`ListMixin`, `MapMixin` 같이 타입처럼 보이더라도, 그 자체를 변수 타입으로 쓴느건 권장되지 않아요.
+
+예를 들어 아래는 지양해야 합니다.
+
+```dart:잘못된-사용
+ListMixin<int> myList = MyList<int>();
+```
+
+Mixin 은 구현 재사용을 위한 수단일 뿐, 타입으로써의 interface 를 표현하고 싶다면, `implements` 나 추상클래스 사용이 적절합니다.
+
+## Mixin 은 겹쳐쌓인다
+
+Dart의 Mixin은 클래스를 **"옆에 붙이는(side composition)"** 방식이 아니라, **"위에 덧씌우는(top layering)"** 방식입니다.
+
+```dart
+class A {}
+mixin B {}
+mixin C {}
+class D extends A with B, C {}
+```
+
+위 코드는 실제로 이렇게 계층이 생깁니다.
+
+```bash
+A → $AwithB → $AwithBwithC → D
+```
+
+이렇게 쌓이기 때문에 메서드 충돌 시 마지막에 쌓인 쪽이 우선합니다. 이러한걸 Method Resolution Order 라고 불러요.
+
+***
+
+# 마무리 정리
+
+| Keyword | 역할 |
+|---|---|
+| with | mixin 적용 |
+| mixin | 재사용 가능한 구현 정의 |
+| on | mixin 사용 제약 조건 |
+| mixin class | 클래스 + mixin 하이브리드 |
+| implements | 타입 시그니처 계약 |
+
+
+***
+
+# 실전 예시: 상태 공유
+```dart:상태-공유
+mixin Counter {
+  int _count = 0;
+  int next() => ++_count;
+}
+
+class Timer {
+  void start(int step) => print('Step: $step');
+}
+
+class AutoTimer extends Timer with Counter {
+  void autoStart() {
+    start(next());
+  }
+}
+```
+
+`AutoTimer`는 `Timer`의 기능을 상속받으면서, `Counter` 믹스를 통해 **상태 공유 기능**까지 갖게 됩니다.
+
