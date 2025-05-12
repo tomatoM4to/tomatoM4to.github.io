@@ -193,7 +193,7 @@ export const flutter: ThemeType = {
             list: [
                 "소개",
             ],
-            link: "./flutter/[1]-소개-소개",
+            link: "./flutter/[1]-소개",
         }
     ],
 }
