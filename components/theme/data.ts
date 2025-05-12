@@ -186,5 +186,14 @@ export const flutter: ThemeType = {
             ],
             link: "./dart/[1]-Dart-소개",
         },
+        {
+            header: "Flutter",
+            explanation:
+                "Flutter 를 다루기 위한 기초적인 문법과 Flutter 의 기본적인 구조를 익혀봅시다.",
+            list: [
+                "소개",
+            ],
+            link: "./flutter/[1]-소개-소개",
+        }
     ],
 }
