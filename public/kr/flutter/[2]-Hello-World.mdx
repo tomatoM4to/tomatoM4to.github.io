@@ -1,0 +1,130 @@
+# runApp
+
+`main()` 이외의 코드는 전부 지워주자
+
+이제 flutter 가 아닌 dart 의 기능밖에 안남아 시작하기 편함
+
+이 안에는 `runapp(Widget app)` 이 있음 마우스를 올려놓으면 알 수 있는데 Widget 이란 타입의 argument 를 하나 필요로 함 그리고 `runapp` 은 `import 'package:flutter/material.dart';` 에서 가져온 것
+
+참고로 flutter 의 모든것은 Widget 라 봐도 됨 Widget 들을 합치는 방식으로 앱을 빌드하게 됨
+
+처음 화면을 예로 들면 text Widget 과 오른쪽 아래 button Widget 이 있는걸 볼 수 있음
+
+이러한 Widget 을 만드는건 그냥 class 를 만드는거랑 똑같음
+
+하지만 그냥 일반적으로 `class myApp {}` 로 작성한다 해서 바로 Widget 이 되는건 아님, flutter SDK 에 있는 3개의 core Widget 중 하나를 extend 해야 함
+
+가장 기초적인 Widget 이라 하면 StatelessWidget 이 있음, 이를 extend 해보자, 그러면 vscode 에서 빨간줄의 위치가 바로 바뀔거임, 이제부터 이건 widget 이니까 이제 main 함수가 아닌 `class App {}` 내부에 에러가 있다고 알려주는것
+
+에러 메세지를 보면, 우리의 App class 가 build 메소드를 구현하지 않았다고 예기 하고 있음, 모든 widget 은 build 라는 메소드를 구현해야 함
+
+build 메소드가 무슨일을 하냐면, widget 의 UI 를 만드는 메소드라 생각하면 됨
+
+`control + click` 을 하면 build 메소드가 StatelessWidget 에 어떻게 구현되어 있는지 볼 수 있음
+
+
+
+
+
+***
+
+# build 메소드
+
+build 메소드를 자동완성을 통해 완성해보면 이러할 것임
+
+```dart:build
+class App extends StatelessWidget {
+    @override
+    Widget build(BuildContext context) {
+        throw UnimplementedError();
+    }
+}
+```
+
+아는것만 확인해보면 StatelessWidget 에 있는 build 를 `@override` 하는걸 볼수 있고 해당 build 메소드는 Widget 을 반환하는걸 관찰할 수 있다.
+
+이전에 말했다 시피, build 는 flutter 가 실행시키는데 어떤걸 return 하던 그걸 화면에 띄어주게 된다. 그래서 Widget 을 return 해야 하는것임, Widget 을 return 하는 Widget 을 만드는게 조금 어색할 순 있는데 맞게 가고 있으니 걱정 ㄴㄴ
+
+나머지 부분인 `BuildContext context` 와 `throw` 부분은 일단 나중에 다루겠다. 지금은 그냥 Hello World 부터 제대로 화면에 출력해보자.
+
+다시 돌아와 build 는 Widget 을 return 하는데 어떤 Widget 을 return 하는지가 이제 문제다.
+
+하지만 여기서 중요한 포인트가 있다. 전체 코드를 살펴보자.
+
+```dart:전체-코드
+import 'package:flutter/material.dart';
+
+void main() {
+  	runApp(const App());
+}
+
+class App extends StatelessWidget {
+  	const App({super.key});
+  	@override
+  	Widget build(BuildContext context) {
+    	throw Exception('This is a test exception');
+  	}
+}
+```
+
+이때 `runApp(const App());` 에서 runApp 의 인자로 App() 이 온다. 그러므로 App Widget 은 우리가 만들 앱의 root 라고 볼수 있다. 그러기에 모든 화면과 버튼등 모든것들이 App Widget 로부터 올것이다. App 이 root 이기 때문
+
+이러한 root Widget 2개의 위젯중 하나를 return 해야 한다. meterial 과 cupertino 가 그 정체다. 각각은 순서대로 구글과 애플의 디자인 시스템이다.
+
+우리 앱이 전체적으로 구글틱하게 혹은 apple 틱하게 보이고 싶다고 flutter 에게 말해주는거다.
+
+flutter 은 구글이 만들었기에 여기선 MeterialApp 이라는 Widget 을 return 하겠다.
+
+> 어떤 사람은 구글도 애플도 싫고 내 커스텀 디자인을 적용하고 싶다 생각할 수 있다. 물론 가능하고 스타일에 구글이나 애플의 느낌을 빼는 데 그렇게 오래 걸리지 않지만, 그럼에도 불구하고 2가지 중 하나의 테마를 선택해 줘야 한다.
+
+
+```dart:Hello-World!
+import 'package:flutter/material.dart';
+
+void main() {
+  	runApp(const App());
+}
+
+class App extends StatelessWidget {
+  	const App({super.key});
+  	@override
+  	Widget build(BuildContext context) {
+    	return MaterialApp(
+	  		home: Text('Hello, World!'),
+		);
+  	}
+}
+```
+
+
+## meterial app class
+
+마우스를 올려보면 이것또한 하나의 class 란걸 볼 수 있다. 그리고 엄청나게 많은 member 들이 있다. 하지만 이 페이지에서 쓸건 `Widget? home` 이란 property 에 집중할거다.
+
+TODO: 사진들
+
+그렇다면 home 엔 어떤 Widget 을 넣을까? 여기선 아주 기본적인 Widget 인 `Text('Hello, World!')` 를 넣어 보겠다. 이또한 마우스를 올려보고 설명을 보면 심플하게 Creates a text widget. 라 적힌걸 볼 수 있다.
+
+이제 저장하고 화면을 보면 꽤나 흉측하게 생긴 결과를 볼 수 있을거다.
+
+## scaffold
+
+Hello World! 를 출력하는덴 성공했지만 하나만 더 추가해 보자.
+
+flutter 엔 scaffold 라는게 있다. 구글에 검색해보면 건물의 뼈대 같은게 나올거다. 이는 우리가 보는 화면의 구조를 제공해 준다. 모바일 앱의 모든 화면엔 scaffold 가 필요하다.
+
+scaffold 를 통해 navigation bar 를 구현할 수 있게 해주고 상단 버튼, 화면 중앙 정렬 등.. 을 할 수 있다.
+
+사용하기 위해 이전에 작성했던 Text 를 지우고 새롭게 Scaffold 를 작성해주자, 그리고 마우스를 올려보면 여러 옵션들을 볼 수 있는데 이중 body 를 써볼거다.
+
+그리고 타입을 확인해보면 body 도 `Widget?` 타입을 가지고 있단걸 볼 수 있다. Dart 는 특이하게 Center 란 Widget 도 존재한다. 이 Center 란 위젯 에 child 란 프로퍼티에 Text('Hello world!) 를 작성해주면 Hello world 가 중앙게 오도록 할 수있다.
+
+그리고 추가적으로 appBar 도 써보도록 하자 여기엔 그대로 AppBar 를 작성해 주겠다. 이 AppBar 에서도 여러 property 를 가지고 있는데 title 이란게 보인다.
+
+이또한 원하는걸 적어주면 최종 화면은 다음과 같을거다.
+
+아주 심플한 화면인데 여기서 flutter 의 단점을.. 볼수 있다. 코드의 들여쓰기가 괴랄해져서 코드가 무슨 아치형 다리철머 보인다. 이건 어쩔수 없으니 참자..
+
+여기서 멈추지 말고 AppBar 내부에 여러 가지 옵션들을 실험해보자.
+
+전혀 어렵게 생각할 필요 없다. 그저 named parameter 를 사용하는 여러 class 들을 다루는것 뿐이니
