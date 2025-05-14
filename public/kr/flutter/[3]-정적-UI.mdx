@@ -1,0 +1,342 @@
+어떻게 하면  flutter 를 사용하야 custom UI 를 만들수 있는지 보유주는 섹션
+
+하지만 핵심은 flutter 의 Widget 을 만들고, 점검하고, 무슨 options 들이 있는지 보는데에 익숙해 지는것이 핵심
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(App());
+}
+
+class App extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        backgroundColor: Color(0xFF181818),
+        body: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: 40,
+          ),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 80,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        'Hey, Selena',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      Text(
+                        'Welcome back',
+                        style: TextStyle(
+                          color: Color.fromRGBO(255, 255, 255, 0.8),
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+***
+
+재사용 가능 위젯, 키보드 단축키, 코드를 보면, 세로로 점점 쌓아가는데 한 엘리먼트에서 padding-top: 15px 이렇게가 아니라 그냥 SizedBox 라는 Widget 을 사용해서 쌓아가고 있음
+
+Container 는 html 의 div 같은 존재, 그저 child 를 가지고 있는 단순한 Box
+
+Padding 과 같이 쓰면 좋은것: EdgeInsets 라는걸 쓰면 좋음
+
+```dart:버튼-섹션
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(App());
+}
+
+class App extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        backgroundColor: Color(0xFF181818),
+        body: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: 40,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 80,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        'Hey, Selena',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      Text(
+                        'Welcome back',
+                        style: TextStyle(
+                          color: Color.fromRGBO(255, 255, 255, 0.8),
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+              SizedBox(
+                height: 120,
+              ),
+              Text(
+                'Total Balance',
+                style: TextStyle(
+                  fontSize: 22,
+                  color: Colors.white.withOpacity(0.8),
+                ),
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Text(
+                '\$5 194 482',
+                style: TextStyle(
+                  fontSize: 48,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(
+                height: 30,
+              ),
+              Row(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.amber,
+                      borderRadius: BorderRadius.circular(45),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 20,
+                        horizontal: 50,
+                      ),
+                      child: Text(
+                        'Transfer',
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+***
+
+vscode 세팅 팁
+
+설정 -> 세팅 -> code actions on save 검색 후 settings.json 이렇게 수정
+
+```json:settings.json
+"editor.codeActionsOnSave": {
+  "source.fixAll": "explicit",
+  "source.organizeImports": "explicit",
+  "source.sort.json": "explicit",
+  "source.sortMembers": "explicit"
+},
+```
+
+설정 -> 세팅 -> Preview flutter ui guides 체크
+
+설정 -> 세팅 -> format on save 체크
+
+설정 -> 세팅 -> format on type 체크
+
+***
+
+위젯 재사용
+
+이때도 왼쪽의 전구를 클릭하여서 위젯을 외부로 꺼내줄 수 있음, NewWidget 라고 새로운 위젯을 어떤 이름으로 세팅할건지도 나옴
+
+하지만 직접 작성해 보자, 일단 class 기 때문에 내부에 멤버변수를 선언하고 생성자를 만들어 주는걸로 재사용 할 수 있는 Widget 을 만들수 있다.
+
+```dart:재사용-버튼
+import 'package:flutter/material.dart';
+
+class Button extends StatelessWidget {
+  final String text;
+  final Color bgColor;
+  final Color textColor;
+
+  const Button({
+    super.key,
+    required this.text,
+    required this.bgColor,
+    required this.textColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(45),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 20,
+          horizontal: 50,
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: textColor,
+            fontSize: 20,
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+***
+
+Card 는 Container 와 비슷함, 근데 그림자가 있고 테두리에 각이 져 있는 Metrial design 인것 뿐임
+
+icon 도 기본으로 제공해 줌, 다운로드 할 필요가 없음, flutter 의 장점
+
+Transform 이란걸 자주 쓰게 될거 같음, 내부에 있는 요소만 키우고(외부에 있는 박스에 영향을 주지 않으면서) 그리고 Transform.translate 의 offset 으로 마치 absoulate 처럼 쓸 수가 있었
+
+그리고 최상단 Container 에 clipBehavior: Clip.hardEdge 옵션으로 오버플로우 된 요소를 가리는것도 가능
+
+```dart:카드-디자인
+import 'package:flutter/material.dart';
+
+class CurrencyCard extends StatelessWidget {
+  final String name, code, amount;
+  final IconData icon;
+  final bool isInverted;
+
+  final _blackColor = const Color(0xFF1F2123);
+
+  const CurrencyCard({
+    super.key,
+    required this.name,
+    required this.code,
+    required this.amount,
+    required this.icon,
+    required this.isInverted,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      clipBehavior: Clip.hardEdge,
+      decoration: BoxDecoration(
+        color: isInverted ? Colors.white : _blackColor,
+        borderRadius: BorderRadius.circular(25),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(30),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: TextStyle(
+                    color: isInverted ? _blackColor : Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  children: [
+                    Text(
+                      amount,
+                      style: TextStyle(
+                        color: isInverted ? _blackColor : Colors.white,
+                        fontSize: 20,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      code,
+                      style: TextStyle(
+                        color: isInverted
+                            ? _blackColor
+                            : Colors.white.withOpacity(0.8),
+                        fontSize: 20,
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+            Transform.scale(
+              scale: 2.2,
+              child: Transform.translate(
+                offset: const Offset(
+                  -5,
+                  12,
+                ),
+                child: Icon(
+                  icon,
+                  color: isInverted ? _blackColor : Colors.white,
+                  size: 88,
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
