@@ -1,0 +1,59 @@
+# uv
+
+***
+
+# FastAPI 설치하기
+
+```bash
+uv add fastapi --extra standard
+```
+
+해생 옵션은 현재 관리하고 있는 프로젝트에 FastAPI 와 FastAPI 와 함께 자주 사용되는 추가 패키지들을 설치하는 명령어 입니다.
+
+해당 결과로 나오는 pyproject.toml 파일을 확인해보면 아래와 비슷하게 나와야 합니다.
+
+```toml:pyproject.toml
+[project]
+name = "example"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi[standard]>=0.115.12",
+]
+```
+
+그런다음 app 디렉토리를 생성하고 그 안에 main.py 파일을 생성줍시다. 기존 root 디렉토리에 있던 main.py 파일은 삭제해도 됩니다.
+
+그리고 나서 아래와 같이 코드를 작성해 줍니다.
+
+```python:main.py
+from typing import Union
+
+from fastapi import FastAPI
+
+app = FastAPI()
+
+
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
+
+
+@app.get("/items/{item_id}")
+def read_item(item_id: int, q: Union[str, None] = None):
+    return {"item_id": item_id, "q": q}
+```
+
+저장한 다음 커멘드에 아래와 같은 명령어를 입력해 줍니다.
+
+```bash:서버-실행
+uv run fastapi dev
+```
+
+그러면 여러 텍스트가 뜰텐데 그중 `Server started at http://127.0.0.1:8000` 이라는 문구가 보이면 성공입니다! 웹 브라우저를 이용해 해당 주소로 접속해 보세요. 그러면 `{"Hello":"World"}` 라는 문구만 외롭게 보인다면 성공입니다!
+
+그리고 FastAPI 의 장점중 하나라고 할 수 있는 docs 페이지도 확인해 보세요. `http://127.0.0.1:8000/docs` 주소로 접속하면 FastAPI 가 자동으로 생성해주는 API 문서 페이지를 확인할 수 있습니다. 아래와 같은 화면이 보일겁니다.
+
+![fastapi-docs](public/kr/fastapi/img/fastapi-docs.png)
