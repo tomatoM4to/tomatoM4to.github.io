@@ -1,15 +1,12 @@
 import { Hamburger } from "@/components/hamburger/hamburger";
 import {
-    operatingSystem,
-    database,
-    network,
     ai,
-    linux,
-    git,
     algorithm,
-    computerStructure,
-    dev,
-    flutter
+    backend,
+    database,
+    flutter,
+    network,
+    operatingSystem
 } from "@/components/theme/data";
 import { Layout, Theme } from "@/components/theme/main";
 
@@ -27,6 +24,7 @@ export default async function Home() {
             {/* <Theme theme={computerStructure} /> */}
             {/* <Theme theme={dev} /> */}
             <Theme theme={flutter} />
+            <Theme theme={backend} />
         </Layout>
     );
 }
