@@ -197,3 +197,23 @@ export const flutter: ThemeType = {
         }
     ],
 }
+
+export const backend: ThemeType = {
+    header: "Backend",
+    subTheme: [
+        {
+            header: "FastAPI",
+            explanation: "FastAPI 를 사용하여 Python 기반의 웹 애플리케이션을 개발하는 방법을 배웁니다. RESTful API 설계, 데이터베이스 연동, 인증 및 인가 등 다양한 기능을 구현해봅니다.",
+            list: [
+                "FastAPI 소개",
+                "FastAPI 설치",
+                "FastAPI 기본 문법",
+                "FastAPI 라우팅",
+                "FastAPI 데이터베이스 연동",
+                "FastAPI 인증 및 인가",
+                "FastAPI 배포",
+            ],
+            link: "./fastapi/[1]-FastAPI-소개",
+        }
+    ]
+}
