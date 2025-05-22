@@ -1,4 +1,21 @@
 # uv
+```bash:uv-프로젝트-생성
+uv init b_beginner
+```
+
+그럼 아래와 같은 디렉토리 구조가 생성됩니다.
+
+```bash
+b_beginner
+├── .gitignore
+├── .python-version
+├── main.py
+├── pyproject.toml
+└── README.md
+```
+
+
+
 
 ***
 
@@ -8,13 +25,25 @@
 uv add fastapi --extra standard
 ```
 
-해생 옵션은 현재 관리하고 있는 프로젝트에 FastAPI 와 FastAPI 와 함께 자주 사용되는 추가 패키지들을 설치하는 명령어 입니다.
+해당 옵션은 현재 관리하고 있는 프로젝트에 FastAPI 와 FastAPI 가 의존하고 있는 패키지들을 추가 설치 해 주는 명령어 입니다. 기존 `pip install fastapi[standard]` 명령어와 동일한 역할을 합니다.
 
-해당 결과로 나오는 pyproject.toml 파일을 확인해보면 아래와 비슷하게 나와야 합니다.
+결과적으로 추가적으로 설치되는 종속성 패키지들은 아래와 같습니다.
+
+* email-validator
+* httpx
+* jinja2
+* python-multipart
+* fast-cli
+
+자세한 사항은 아래 문서를 참고하세요.
+
+> [https://fastapi.tiangolo.com/#dependencies](https://fastapi.tiangolo.com/#dependencies)
+
+해당 결과로 나오는 pyproject.toml 파일을 확인해보면 아래와 나오게 됩니다. 향후 uv 나 fastapi 가 업데이트 되면서 조금 변경될 수 있습니다.
 
 ```toml:pyproject.toml
 [project]
-name = "example"
+name = "b-beginner"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -24,9 +53,19 @@ dependencies = [
 ]
 ```
 
-그런다음 app 디렉토리를 생성하고 그 안에 main.py 파일을 생성줍시다. 기존 root 디렉토리에 있던 main.py 파일은 삭제해도 됩니다.
+그런다음 기존 root 에 있는 `main.py` 파일을 삭제하고, app 디렉토리를 새로 만든다음 `main.py` 파일을 생성해 줍니다. 그럼 아래와 같은 디렉토리 구조가 됩니다.
 
-그리고 나서 아래와 같이 코드를 작성해 줍니다.
+```bash
+b_beginner
+├── .gitignore
+├── .python-version
+├── app
+│   └── main.py
+├── pyproject.toml
+└── README.md
+```
+
+그리고 나서 `main.py` 에 아래와 같이 코드를 작성해 줍니다.
 
 ```python:main.py
 from typing import Union
@@ -50,6 +89,48 @@ def read_item(item_id: int, q: Union[str, None] = None):
 
 ```bash:서버-실행
 uv run fastapi dev
+```
+
+결과적으로 터미널에 여러 메시지들이 찍힐텐데 간략히 설명해 드리면 아래와 같습니다.
+
+```bash
+# 개발 모드로 FastAPI 서버 부팅
+FastAPI Starting development server 🚀
+
+# 프로젝트 루트 결정, main.py 파일을 앱 엔트리포인트 모듈로 선택
+Searching for package file structure from directories with __init__.py files
+Importing from C:\Users\b_beginner\app
+module 🐍 main.py
+
+# FastAPI가 import할 모듈과 그 안의 app 객체를 확정
+code Importing the FastAPI app object from the module with the following code: from main import app
+
+# uvicorn-스타일 import 경로(모듈:변수)로 치환한 결과
+app Using import string: main:app
+
+# 소켓 8000 포트를 사용해 FastAPI 서버를 실행
+server Server started at http://127.0.0.1:8000
+server Documentation at http://127.0.0.1:8000/docs
+
+
+# 현재는 --reload 기반 개발 모드. 운영 배포 시에는 fastapi run ... 형태로 실행하라는 권장사항
+tip Running in development mode, for production use: fastapi run
+
+# watchfiles 리로더가 변경 감시할 디렉토토리 목록을 출력
+INFO Will watch for changes in these directories: ['C:\\Users\\b_beginner']
+
+# 실제 ASGI 서버(uvicorn)가 기동 완료. Ctrl+C 로 전체 프로세스를 종료 가능
+INFO Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+
+# 코드 변경 감시용 리로더 프로세스의 PID가 19120임을 표시
+INFO Started reloader process [19120] using WatchFiles
+
+# 실제 요청을 처리할 메인 uvicorn 워커 PID가 7736
+INFO Started server process [7736]
+
+# 모든 startup 훅과 background task 초기화가 끝났다는 신호
+INFO   Waiting for application startup.
+INFO Application startup complete.
 ```
 
 그러면 여러 텍스트가 뜰텐데 그중 `Server started at http://127.0.0.1:8000` 이라는 문구가 보이면 성공입니다! 웹 브라우저를 이용해 해당 주소로 접속해 보세요. 그러면 `{"Hello":"World"}` 라는 문구만 외롭게 보인다면 성공입니다!
