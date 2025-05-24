@@ -1,0 +1,32 @@
+현재 프로젝트 구조
+
+```bash
+b_beginner
+├── .gitignore
+├── .python-version
+├── app
+│   └── main.py
+├── pyproject.toml
+└── README.md
+```
+
+변경 하려는 파일 구조
+```bash
+b_beginner
+├── .gitignore
+├── .python-version
+├── app
+|   ├── database
+│   ├── router
+│   └── common
+│       ├── config.py
+│       └── consts.py
+│   └── main.py
+├── pyproject.toml
+└── README.md
+```
+
+* config.py : 보통 개발환경, 운영환경에 따라 달라지는 설정값을 정의하는 파일
+* consts.py : 개발환경, 운영환경에 상관없이 고정적으로 사용되는 상수값을 정의하는 파일
+
+Django 에서 settings.py 와 비슷한 역할을 함, 근데 Django 를 해보면 알겠지만 이러한 설정값들이 1000줄이 넘거가는 경우도 많아짐, 그래서 config.py 와 consts.py 로 나누어 관리하는 것을 선택
