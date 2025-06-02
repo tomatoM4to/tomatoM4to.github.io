@@ -4,6 +4,7 @@ import {
     algorithm,
     backend,
     database,
+    docker,
     flutter,
     network,
     operatingSystem
@@ -25,6 +26,7 @@ export default async function Home() {
             {/* <Theme theme={dev} /> */}
             <Theme theme={flutter} />
             <Theme theme={backend} />
+            <Theme theme={docker} />
         </Layout>
     );
 }

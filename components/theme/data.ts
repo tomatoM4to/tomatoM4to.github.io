@@ -217,3 +217,23 @@ export const backend: ThemeType = {
         }
     ]
 }
+
+export const docker: ThemeType = {
+    header: "Docker",
+    subTheme: [
+        {
+            header: "Docker",
+            explanation:
+                "Docker를 사용하여 애플리케이션을 컨테이너화하고, 배포 및 관리를 효율적으로 수행하는 방법을 배웁니다. Docker의 기본 개념부터 이미지 생성, 컨테이너 관리, Docker Compose 등을 실습합니다.",
+            list: [
+                "Docker 소개",
+                "Docker 설치",
+                "Docker 이미지",
+                "Docker 컨테이너",
+                "Docker Compose",
+                "Dockerfile 작성법",
+            ],
+            link: "./docker/[1]-도커-의-등장-배경",
+        },
+    ],
+}
