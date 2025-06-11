@@ -87,8 +87,9 @@ IETF 에서 정의한 Private IP 대역
 * PublicIP 와 Security List 를 통해 Inbound 트래픽을 제어 가능
 
 # Gateway
-* Public Subnet 을 만들어도 Outbound 트래픽을 허용하지 않으면 외부로 나갈 수 없어, 통신이 불가능
 * Internet Gateway 는 외부 인터넷 간에 통신할 수 있게 해주는 장치
+* Public Subnet 을 만들어도 Outbound 트래픽을 제어하지 않으면 외부로 나갈 수 없어, 통신이 불가능
+* Gateway 를 만들고 Port 를 열어 놔도 Security List 를 통해 Inbound 트래픽을 제어 필수
 
 Gateway 는 Compartment 에 하나씩 할당해도 충분
 
@@ -99,6 +100,11 @@ Gateway 는 Compartment 에 하나씩 할당해도 충분
 * Routing Table 은 트래픽을 어디로 전송해야 하는지 경로를 알려주는 테이블
 * Route Table 을 통해 Outbound 트래픽 흐름을 조정해야 완전한 인터넷 연결이 가능
 * Route Table 은 Subnet 을 만들때 선택 가능
+
+![Routing Table](./img/route.png)
+
+해당 그림에 대한 설명
+1. 
 
 
 # OCI 아키텍처 정리
