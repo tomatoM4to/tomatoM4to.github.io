@@ -86,3 +86,14 @@ PING 10.0.8.888 (10.0.8.888) 56(84) bytes of data.
 26 packets transmitted, 26 received, 0% packet loss, time 25609ms
 rtt min/avg/max/mdev = 0.406/0.456/0.896/0.092 ms
 ```
+
+# Bastion Host
+이러한 Private Instance 에 접근하기 위해선 Bastion Host 를 사용 해야 함
+
+기본적으로 Public Instance 에서 다시 Private Instance 로 ssh 접속을 하는 방식, 이때 Public Instance 를 Bastion Host 라고 부름
+
+Private Instance 에 접근 하기 위해서도 key 가 필요하기 때문에 `scp` 명령어를 통해 key 를 Bastion Host 에 복사 한 후, ssh 접속을 함
+
+하지만 귀찮으니 termius 같은 툴을 사용하면 원클릭으로 일허나 구조를 생성할 수 있음
+
+Basting Host 에서 ssh 연결할 땐, private ip 를 그대로 사용하면 됨
