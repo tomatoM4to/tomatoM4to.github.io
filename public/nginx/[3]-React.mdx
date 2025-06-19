@@ -1,0 +1,69 @@
+# Docker
+
+```docker
+# 1단계: 빌드
+FROM node:18 AS builder
+
+# 작업 디렉토리 생성
+WORKDIR /app
+
+# 종속성 설치 및 빌드
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+RUN npm run build
+
+# 2단계: nginx를 사용해 정적 파일 서빙
+FROM nginx:latest
+
+# 빌드된 정적 파일 복사
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# 포트 노출
+EXPOSE 80
+
+# Nginx 실행
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+```bash
+docker build -t my-react .
+docker container run -d --name my-react -p 8888:80 my-react
+```
+
+Nginx 에서 기본적이로 세팅되어 있는 `/usr/share/nginx/html` 디렉토리에 React 앱을 빌드한 결과물을 넣고, Nginx를 실행
+
+결과적으로 React 앱이 Nginx를 통해 서비스, 이제 `http://localhost:8888` 에 접속하면 React 앱이 정상적으로 표시되어야 함
+
+***
+
+# 추가적인 설정
+
+Nginx 는 SPA 를 지원하기 위해 추가적인 설정을 해야 할 수도 있음
+
+일단 React 앱의 빌드 결과를 보면 `assets` 와 `index.html` 파일이 생성됨, 그리고 SPA 의 특성상 이러한 문제가 생길 수 있음
+
+1. 브라우저 주소창에 `/about` 같은 경로를 직접 입력하거나 새로고침하면
+2. Nginx는 `/usr/share/nginx/html/about` 이라는 실제 파일/디렉토리를 찾으려고 함
+3. 하지만 실제로는 그런 파일이 없고, React 앱 내부 라우터가 처리해야 하는 경로
+4. 이때 404 오류가 발생
+
+이는 `index.html` 파일이 모든 요청에 대해 응답해야 하는 SPA의 특성 때문임
+
+그래서 모든 요청에 대해 `index.html` 파일을 반환하도록 Nginx 설정을 추가해야 함
+
+```nginx
+location / {
+    root /usr/share/nginx/html;
+    index index.html index.htm;
+    try_files $uri $uri/ /index.html;
+}
+```
+
+해당 옵션은
+1. 요청된 URI가 실제 파일로 존재하는지 확인
+2. 존재하지 않으면 디렉토리로서 존재하는지 확인
+3. 둘 다 존재하지 않으면 `index.html` 파일을 반환, SPA 진입점
+
+이렇게 설정하면 React 앱의 라우팅이 정상적으로 작동함
