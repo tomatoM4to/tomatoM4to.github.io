@@ -1,0 +1,29 @@
+# Path Parameter
+
+```python
+from fastapi import FastAPI
+
+app = FastAPI()
+
+
+@app.get("/items/{item_id}")
+async def read_item(item_id):
+    return {"item_id": item_id}
+```
+
+타입도 함께 작성 가능
+
+```python
+from fastapi import FastAPI
+
+app = FastAPI()
+
+
+@app.get("/items/{item_id}")
+async def read_item(item_id: int):
+    return {"item_id": item_id}
+```
+
+아웃풋은 `{"item_id":3}` 인데 주의할 점은 문자열 `"3"` 이 아닌 파이썬 정수 `3`이란 점
+
+만약 `item_id` 가 정수가 아닌 다른 타입이라면 FastAPI 는 `int_parsing` 에러 발생, 해당 오류는 `4.2` 같은 float 값 또한 동일한 에러가 발생
