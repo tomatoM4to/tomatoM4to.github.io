@@ -1,4 +1,4 @@
-개발시 utils 의 `getPostParams()` 수정하고 개발, 배포시 다시 수정해고 배포
+개발시 utils 의 `getPostParams()` 수정하고 개발, 배포시 다시 수정
 
 ***
 
