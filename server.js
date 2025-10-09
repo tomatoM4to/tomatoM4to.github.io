@@ -8,7 +8,7 @@ const base = process.env.BASE || '/'
 
 // Cached production assets
 const templateHtml = isProduction
-  ? await fs.readFile('./dist/client/index.html', 'utf-8')
+  ? await fs.readFile('./dist/client/template.html', 'utf-8')
   : ''
 
 // Create http server
