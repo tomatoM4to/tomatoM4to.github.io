@@ -1,13 +1,16 @@
 import fs from "fs";
 import path from "path";
+import { pathToFileURL } from "url";
+
+const projectRoot = path.resolve(process.cwd());
 const pages = [
   "", // Home page
   "about", // About page
 ]; // Define the pages for pre-rendering
 
-const distPath = path.resolve("dist");
+const distPath = path.join(projectRoot, 'dist');
 const template = fs.readFileSync(
-  path.resolve(distPath, "client/index.html"),
+  path.resolve(distPath, "client", "index.html"),
   "utf-8"
 );
 // artifical delay fn
@@ -15,7 +18,8 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const generatePage = async (route) => {
   const cleanRoute = route.replace(/\?/g, "_").replace(/%20/g, "-"); // Replace "?" with "_" for filenames
-  const render = (await import("./dist/server/entry-server.js")).render;
+  const entryUrl = pathToFileURL(path.join(distPath, "server", "entry-server.js")).href;
+  const render = (await import(entryUrl)).render;
   const html = await render(route);
 
   // clone the template with template.html [this file if that page not required SSG then SSR will use]
