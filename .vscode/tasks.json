@@ -1,0 +1,16 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build Client & Server",
+      "type": "shell",
+      "command": "npm run build:client && npm run build:server",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "detail": "Runs the client and server builds."
+    }
+  ]
+}
