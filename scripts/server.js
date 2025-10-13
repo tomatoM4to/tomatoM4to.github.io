@@ -9,9 +9,9 @@ const port = process.env.PORT || 5173
 const base = process.env.BASE || '/'
 
 // Cached production assets
-const projectRoot = path.resolve(process.cwd());
+const projectRoot = process.cwd()
 const templateHtml = isProduction
-  ? await fs.readFile(path.join(projectRoot, 'dist', 'client', 'template.html'), 'utf-8')
+  ? await fs.readFile(path.join(projectRoot, "dist", "client", "index.html"), "utf-8")
   : ''
 
 // Create http server
@@ -32,7 +32,7 @@ if (!isProduction) {
   const compression = (await import('compression')).default
   const sirv = (await import('sirv')).default
   app.use(compression())
-  app.use(base, sirv('./dist/client', { extensions: [] }))
+  app.use(base, sirv(path.join(projectRoot, "dist", "client"), { extensions: [] }))
 }
 
 // Serve HTML
@@ -46,9 +46,10 @@ app.use('*all', async (req, res) => {
     let render
     if (!isProduction) {
       // Always read fresh template in development
-      template = await fs.readFile('./index.html', 'utf-8')
+      template = await fs.readFile(path.join(projectRoot, "index.html"), 'utf-8')
       template = await vite.transformIndexHtml(url, template)
-      render = (await vite.ssrLoadModule('/src/entry-server.tsx')).render
+      const entryUrl = path.join(projectRoot, 'src', 'entry-server.tsx');
+      render = (await vite.ssrLoadModule(entryUrl)).render
     } else {
       template = templateHtml;
       const entryUrl = pathToFileURL(path.join(projectRoot, 'dist', 'server', 'entry-server.js')).href;

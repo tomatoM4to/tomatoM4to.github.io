@@ -1,6 +1,6 @@
-import fs from "fs";
-import path from "path";
-import { pathToFileURL } from "url";
+import fs from "node:fs";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
 
 const projectRoot = path.resolve(process.cwd());
 const pages = [
@@ -24,7 +24,7 @@ const generatePage = async (route) => {
 
   // clone the template with template.html [this file if that page not required SSG then SSR will use]
   if (route === "") {
-    const filePath = path.join(`${distPath}/client`, "template.html");
+    const filePath = path.join(distPath, "client", "template.html");
     console.log(`✅ Generated: ${filePath}`);
     fs.writeFileSync(filePath, template, "utf-8");
   }
@@ -39,13 +39,14 @@ const generatePage = async (route) => {
   // console.log(outputHtml, 'output23123');
 
   // Ensure directory exists before writing file
-  const outputDir = path.join(`${distPath}/client`, path.dirname(cleanRoute));
+  const outputDir = path.join(distPath, "client", path.dirname(cleanRoute));
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true }); // Create parent directories if needed
   }
 
   const filePath = path.join(
-    `${distPath}/client`,
+    distPath,
+    "client",
     route === "/" || route === "" ? "index.html" : `${cleanRoute}.html`
   );
 
