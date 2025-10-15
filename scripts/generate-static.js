@@ -34,7 +34,11 @@ const generatePage = async (route) => {
   // Inject head and body content properly
   const outputHtml = template
     .replace("<!--app-head-->", html.head ?? "") // Inject head content
-    .replace("<!--app-html-->", html.html ?? ""); // Inject body content
+    .replace("<!--app-html-->", html.html ?? "") // Inject body content
+    .replace(
+      "<!--app-window-->",
+      `<script>window.__INITIAL_DATA__ = ${JSON.stringify(html.initialData)}</script>`
+    )
 
   // console.log(outputHtml, 'output23123');
 

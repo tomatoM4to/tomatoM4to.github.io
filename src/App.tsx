@@ -1,8 +1,9 @@
 import './App.css';
 import { useState } from 'react';
 import { Link, Route, Routes } from 'react-router';
+import Markdown from 'react-markdown';
 
-function App({ someProps = "" }) {
+function App({ someProps = "", markdown = "" }) {
   const [count, setCount] = useState(0);
 
   console.log(someProps);
@@ -17,7 +18,9 @@ function App({ someProps = "" }) {
         <Route path="/about" element={<About />} />
       </Routes>
 
-      <h1>Vite + React</h1>
+      <Markdown>
+        {markdown}
+      </Markdown>
 
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
