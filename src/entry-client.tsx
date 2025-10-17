@@ -8,7 +8,7 @@ import { BrowserRouter } from 'react-router';
 let initialData = window.__INITIAL_DATA__;
 
 if (initialData === undefined) {
-  initialData = "# 클라이언트에서 렌더링됨!";
+  initialData = "# Hydrate Error";
 }
 
 hydrateRoot(

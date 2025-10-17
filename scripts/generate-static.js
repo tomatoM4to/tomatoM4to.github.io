@@ -4,8 +4,10 @@ import { pathToFileURL } from "node:url";
 
 const projectRoot = path.resolve(process.cwd());
 const pages = [
-  "", // Home page
-  "about", // About page
+  "",
+  "posts/database",
+  "posts/docker",
+  "posts/network",
 ]; // Define the pages for pre-rendering
 
 const distPath = path.join(projectRoot, 'dist');

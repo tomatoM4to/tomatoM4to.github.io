@@ -10,12 +10,14 @@ function App({ someProps = "", markdown = "" }) {
   return (
     <>
       <nav>
-        <Link to="/">Home</Link> | <Link to="/about">About</Link>
+        <Link to="/">Home</Link> | <Link to="/posts/database">Database</Link> | <Link to="/posts/docker">Docker</Link> | <Link to="/posts/network">Network</Link>
       </nav>
 
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
+        <Route path="/posts/database" element={<Post name="database" />} />
+        <Route path="/posts/docker" element={<Post name="docker" />} />
+        <Route path="/posts/network" element={<Post name="network" />} />
       </Routes>
 
       <Markdown>
@@ -40,9 +42,13 @@ function App({ someProps = "", markdown = "" }) {
 export default App;
 
 const Home = () => {
-  return <h1>I am Home</h1>;
+  return <h1>Home</h1>;
 };
 
-const About = () => {
-  return <h1>I am About</h1>;
-};
+const Post = ({
+  name
+}: {
+  name: string
+}) => {
+  return <h1>{name}</h1>
+}
