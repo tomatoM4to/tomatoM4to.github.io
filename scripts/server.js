@@ -3,19 +3,34 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import express from 'express';
 
-// Constants
 const isProduction = process.env.NODE_ENV === 'production'
 const port = process.env.PORT || 5173
 const base = process.env.BASE || '/'
 
-// Cached production assets
 const projectRoot = process.cwd()
 const templateHtml = isProduction
   ? await fs.readFile(path.join(projectRoot, "dist", "client", "index.html"), "utf-8")
   : ''
 
-// Create http server
 const app = express()
+/**
+'/api/:postname.md' 로 하면 req.params 에 .md 가 포함되지 않음
+*/
+app.get('/api/:postname', async (req, res) => {
+  const { postname } = req.params;
+
+  const postPath = path.join(projectRoot, 'content', 'posts', postname);
+  const postData = await fs.readFile(postPath, 'utf-8');
+
+  res.status(200).set({
+    'Content-Type': 'text/plain'
+  }).send(postData)
+});
+
+app.get('/api', (req, res) => {
+  console.log('api call route');
+  res.status(200).json({ message: 'API root endpoint' });
+});
 
 // Add Vite or respective production middlewares
 /** @type {import('vite').ViteDevServer | undefined} */
@@ -35,7 +50,6 @@ if (!isProduction) {
   app.use(base, sirv(path.join(projectRoot, "dist", "client"), { extensions: [] }))
 }
 
-// Serve HTML
 app.use('*all', async (req, res) => {
   try {
     const url = req.originalUrl.replace(base, '')
@@ -74,7 +88,6 @@ app.use('*all', async (req, res) => {
   }
 })
 
-// Start http server
 app.listen(port, () => {
   console.log(`Server started at http://localhost:${port}`)
 })

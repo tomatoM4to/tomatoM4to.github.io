@@ -60,7 +60,20 @@ const generatePage = async (route) => {
   console.log(`✅ Generated: ${filePath}`);
 };
 
+const copyContentToDistDirectory = () => {
+  const sourcePath = path.join(projectRoot, 'content', 'posts');
+  const destPath = path.join(projectRoot, 'dist', 'client', 'api');
+
+  if (fs.existsSync(sourcePath)) {
+    fs.cpSync(sourcePath, destPath, { recursive: true });
+    console.log(`✅ Copied content directory to: ${destPath}`);
+  } else {
+    console.log(`⚠️ Content directory not found: ${sourcePath}`);
+  }
+};
+
 async function generatePagesSequentially() {
+  copyContentToDistDirectory();
   for (const route of pages) {
     await generatePage(route);
     await delay(100); // Wait for 0.1 second before processing the next page (Not req)
@@ -68,3 +81,4 @@ async function generatePagesSequentially() {
 }
 
 generatePagesSequentially();
+

@@ -15,7 +15,7 @@ hydrateRoot(
   document.getElementById('root') as HTMLElement,
   <StrictMode>
     <BrowserRouter>
-      <App someProps={"Hello Client-Side"} markdown={initialData} />
+      <App markdown={initialData} />
     </BrowserRouter>
   </StrictMode>,
 );

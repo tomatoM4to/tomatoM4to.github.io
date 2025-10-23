@@ -1,12 +1,12 @@
 import './App.css';
-import { useState } from 'react';
-import { Link, Route, Routes } from 'react-router';
+import { useEffect, useState } from 'react';
+import { Link, Route, Routes, useParams } from 'react-router';
 import Markdown from 'react-markdown';
 
-function App({ someProps = "", markdown = "" }) {
+function App({ markdown = "" }) {
   const [count, setCount] = useState(0);
+  const [initialMount, setInitialMount] = useState(true);
 
-  console.log(someProps);
   return (
     <>
       <nav>
@@ -14,15 +14,9 @@ function App({ someProps = "", markdown = "" }) {
       </nav>
 
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/posts/database" element={<Post name="database" />} />
-        <Route path="/posts/docker" element={<Post name="docker" />} />
-        <Route path="/posts/network" element={<Post name="network" />} />
+        <Route path="/" element={<Home setInitialMount={setInitialMount} />} />
+        <Route path="/posts/:post" element={<Post markdown={markdown} initialMount={initialMount} setInitialMount={setInitialMount} />} />
       </Routes>
-
-      <Markdown>
-        {markdown}
-      </Markdown>
 
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
@@ -41,14 +35,64 @@ function App({ someProps = "", markdown = "" }) {
 
 export default App;
 
-const Home = () => {
-  return <h1>Home</h1>;
+const Home = ({
+  setInitialMount,
+}: {
+  setInitialMount: Function
+}) => {
+  useEffect(() => {
+    setInitialMount(false);
+  }, [])
+  return (
+    <h1>
+      Home
+    </h1>
+  )
 };
 
 const Post = ({
-  name
+  markdown,
+  initialMount,
+  setInitialMount
 }: {
-  name: string
+  markdown: string,
+  initialMount: boolean,
+  setInitialMount: Function
 }) => {
-  return <h1>{name}</h1>
+  const { post } = useParams();
+  const [content, setContent] = useState(markdown);
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const response = await fetch(`/api/${post}.md`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.text();
+        setContent(result);
+      }
+      catch (err) {
+        console.error(err);
+      }
+    }
+    if (initialMount) {
+      setInitialMount(false);
+      console.log(`!!! no network event !!!`);
+    }
+    else {
+      getData();
+      console.log(`!!! network event success !!!`)
+    }
+  }, [post])
+  return (
+    <>
+      <h1>
+        {post}
+      </h1>
+      <Markdown>
+        {content}
+      </Markdown>
+    </>
+  )
 }

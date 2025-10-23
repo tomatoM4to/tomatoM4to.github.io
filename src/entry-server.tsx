@@ -18,7 +18,7 @@ export async function render(_url: string) {
   const html = renderToString(
     <StrictMode>
       <StaticRouter location={`/${_url}`}>
-        <App someProps="Hello from the server" markdown={initialData} />
+        <App markdown={initialData} />
       </StaticRouter>
     </StrictMode>,
   )
