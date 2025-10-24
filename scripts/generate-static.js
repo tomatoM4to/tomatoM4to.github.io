@@ -1,7 +1,7 @@
 import fs from "node:fs";
-import fsp from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import { getMarkdown } from './utils.js';
 
 const PROJECT_ROOT = process.cwd();
 const pages = [
@@ -21,12 +21,7 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const generatePage = async (route) => {
   /** @type {string} */
-  let initialData = JSON.stringify('');
-  if (route !== '') {
-    const initialDataPath = path.join(PROJECT_ROOT, "content", `${route}.md`);
-    initialData = await fsp.readFile(initialDataPath, 'utf-8');
-    initialData = JSON.stringify(initialData);
-  }
+  const initialData = await getMarkdown(route);
 
   const cleanRoute = route.replace(/\?/g, "_").replace(/%20/g, "-"); // Replace "?" with "_" for filenames
   const entryUrl = pathToFileURL(path.join(distPath, "server", "entry-server.js")).href;

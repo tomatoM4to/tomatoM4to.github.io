@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import express from 'express';
+import { getMarkdown } from './utils.js';
 
 const isProduction = process.env.NODE_ENV === 'production'
 const port = process.env.PORT || 5173
@@ -56,12 +57,7 @@ app.use('*all', async (req, res) => {
     const url = req.originalUrl.replace(base, '')
 
     /** @type {string} */
-    let initialData = JSON.stringify('');
-    if (url !== '') {
-      const initialDataPath = path.join(PROJECT_ROOT, "content", `${url}.md`);
-      initialData = await fs.readFile(initialDataPath, 'utf-8');
-      initialData = JSON.stringify(initialData);
-    }
+    const initialData = await getMarkdown(url);
 
     /** @type {string} */
     let template
