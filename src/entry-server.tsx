@@ -2,19 +2,9 @@ import { StrictMode } from 'react';
 import { renderToString } from 'react-dom/server';
 import App from './App';
 import { StaticRouter } from 'react-router';
-import path from 'node:path';
-import fs from 'node:fs/promises';
 
-export async function render(_url: string) {
-  let contentPath: string;
-  if (_url === "") {
-    contentPath = path.join(process.cwd(), "content", "index.md")
-  }
-  else {
-    contentPath = path.join(process.cwd(), "content", `${_url}.md`);
-  }
-  const initialData = await fs.readFile(contentPath, 'utf8');
 
+export async function render(_url: string, initialData: string) {
   const html = renderToString(
     <StrictMode>
       <StaticRouter location={`/${_url}`}>
@@ -22,5 +12,5 @@ export async function render(_url: string) {
       </StaticRouter>
     </StrictMode>,
   )
-  return { html, initialData }
+  return { html }
 };

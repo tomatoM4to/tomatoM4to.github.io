@@ -1,8 +1,9 @@
 import fs from "node:fs";
+import fsp from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-const projectRoot = path.resolve(process.cwd());
+const PROJECT_ROOT = process.cwd();
 const pages = [
   "",
   "posts/database",
@@ -10,7 +11,7 @@ const pages = [
   "posts/network",
 ]; // Define the pages for pre-rendering
 
-const distPath = path.join(projectRoot, 'dist');
+const distPath = path.join(PROJECT_ROOT, 'dist');
 const template = fs.readFileSync(
   path.resolve(distPath, "client", "index.html"),
   "utf-8"
@@ -19,10 +20,18 @@ const template = fs.readFileSync(
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const generatePage = async (route) => {
+  /** @type {string} */
+  let initialData = JSON.stringify('');
+  if (route !== '') {
+    const initialDataPath = path.join(PROJECT_ROOT, "content", `${route}.md`);
+    initialData = await fsp.readFile(initialDataPath, 'utf-8');
+    initialData = JSON.stringify(initialData);
+  }
+
   const cleanRoute = route.replace(/\?/g, "_").replace(/%20/g, "-"); // Replace "?" with "_" for filenames
   const entryUrl = pathToFileURL(path.join(distPath, "server", "entry-server.js")).href;
   const render = (await import(entryUrl)).render;
-  const html = await render(route);
+  const html = await render(route, initialData);
 
   // clone the template with template.html [this file if that page not required SSG then SSR will use]
   if (route === "") {
@@ -39,7 +48,7 @@ const generatePage = async (route) => {
     .replace("<!--app-html-->", html.html ?? "") // Inject body content
     .replace(
       "<!--app-window-->",
-      `<script>window.__INITIAL_DATA__ = ${JSON.stringify(html.initialData)}</script>`
+      `<script>window.__INITIAL_DATA__ = ${initialData}</script>`
     )
 
   // console.log(outputHtml, 'output23123');
@@ -61,8 +70,8 @@ const generatePage = async (route) => {
 };
 
 const copyContentToDistDirectory = () => {
-  const sourcePath = path.join(projectRoot, 'content', 'posts');
-  const destPath = path.join(projectRoot, 'dist', 'client', 'api');
+  const sourcePath = path.join(PROJECT_ROOT, 'content', 'posts');
+  const destPath = path.join(PROJECT_ROOT, 'dist', 'client', 'api');
 
   if (fs.existsSync(sourcePath)) {
     fs.cpSync(sourcePath, destPath, { recursive: true });

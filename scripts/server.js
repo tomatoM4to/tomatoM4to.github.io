@@ -7,19 +7,20 @@ const isProduction = process.env.NODE_ENV === 'production'
 const port = process.env.PORT || 5173
 const base = process.env.BASE || '/'
 
-const projectRoot = process.cwd()
+const PROJECT_ROOT = process.cwd()
 const templateHtml = isProduction
-  ? await fs.readFile(path.join(projectRoot, "dist", "client", "index.html"), "utf-8")
+  ? await fs.readFile(path.join(PROJECT_ROOT, "dist", "client", "index.html"), "utf-8")
   : ''
 
-const app = express()
+const app = express();
+
 /**
 '/api/:postname.md' 로 하면 req.params 에 .md 가 포함되지 않음
 */
 app.get('/api/:postname', async (req, res) => {
   const { postname } = req.params;
 
-  const postPath = path.join(projectRoot, 'content', 'posts', postname);
+  const postPath = path.join(PROJECT_ROOT, 'content', 'posts', postname);
   const postData = await fs.readFile(postPath, 'utf-8');
 
   res.status(200).set({
@@ -47,7 +48,7 @@ if (!isProduction) {
   const compression = (await import('compression')).default
   const sirv = (await import('sirv')).default
   app.use(compression())
-  app.use(base, sirv(path.join(projectRoot, "dist", "client"), { extensions: [] }))
+  app.use(base, sirv(path.join(PROJECT_ROOT, "dist", "client"), { extensions: [] }))
 }
 
 app.use('*all', async (req, res) => {
@@ -55,29 +56,37 @@ app.use('*all', async (req, res) => {
     const url = req.originalUrl.replace(base, '')
 
     /** @type {string} */
+    let initialData = JSON.stringify('');
+    if (url !== '') {
+      const initialDataPath = path.join(PROJECT_ROOT, "content", `${url}.md`);
+      initialData = await fs.readFile(initialDataPath, 'utf-8');
+      initialData = JSON.stringify(initialData);
+    }
+
+    /** @type {string} */
     let template
     /** @type {import('../src/entry-server.tsx').render} */
     let render
     if (!isProduction) {
       // Always read fresh template in development
-      template = await fs.readFile(path.join(projectRoot, "index.html"), 'utf-8')
+      template = await fs.readFile(path.join(PROJECT_ROOT, "index.html"), 'utf-8')
       template = await vite.transformIndexHtml(url, template)
-      const entryUrl = path.join(projectRoot, 'src', 'entry-server.tsx');
+      const entryUrl = path.join(PROJECT_ROOT, 'src', 'entry-server.tsx');
       render = (await vite.ssrLoadModule(entryUrl)).render
     } else {
       template = templateHtml;
-      const entryUrl = pathToFileURL(path.join(projectRoot, 'dist', 'server', 'entry-server.js')).href;
+      const entryUrl = pathToFileURL(path.join(PROJECT_ROOT, 'dist', 'server', 'entry-server.js')).href;
       render = (await import(entryUrl)).render
     }
 
-    const rendered = await render(url)
+    const rendered = await render(url, initialData);
 
     const html = template
       .replace(`<!--app-head-->`, rendered.head ?? '')
       .replace(`<!--app-html-->`, rendered.html ?? '')
       .replace(
         '<!--app-window-->',
-        `<script>window.__INITIAL_DATA__ = ${JSON.stringify(rendered.initialData)}</script>`
+        `<script>window.__INITIAL_DATA__ = ${initialData}</script>`
       );
 
     res.status(200).set({ 'Content-Type': 'text/html' }).send(html)
