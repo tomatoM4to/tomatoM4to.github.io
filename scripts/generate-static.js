@@ -1,15 +1,16 @@
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { getMarkdown } from './utils.js';
+import { getMarkdownFromUrl } from './utils.js';
 
 const PROJECT_ROOT = process.cwd();
+
 const pages = [
   "",
   "posts/database",
   "posts/docker",
   "posts/network",
-]; // Define the pages for pre-rendering
+];
 
 const distPath = path.join(PROJECT_ROOT, 'dist');
 const template = fs.readFileSync(
@@ -21,7 +22,7 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const generatePage = async (route) => {
   /** @type {string} */
-  const initialData = await getMarkdown(route);
+  const initialData = await getMarkdownFromUrl(route);
 
   const cleanRoute = route.replace(/\?/g, "_").replace(/%20/g, "-"); // Replace "?" with "_" for filenames
   const entryUrl = pathToFileURL(path.join(distPath, "server", "entry-server.js")).href;

@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import express from 'express';
-import { getMarkdown } from './utils.js';
+import { getMarkdownFromUrl, getMarkdownFromName } from './utils.js';
 
 const isProduction = process.env.NODE_ENV === 'production'
 const port = process.env.PORT || 5173
@@ -18,15 +18,14 @@ const app = express();
 /**
 '/api/:postname.md' 로 하면 req.params 에 .md 가 포함되지 않음
 */
-app.get('/api/:postname', async (req, res) => {
+app.get('/api/:postname/index.md', async (req, res) => {
   const { postname } = req.params;
 
-  const postPath = path.join(PROJECT_ROOT, 'content', 'posts', postname);
-  const postData = await fs.readFile(postPath, 'utf-8');
+  const markdown = await getMarkdownFromName(postname);
 
   res.status(200).set({
     'Content-Type': 'text/plain'
-  }).send(postData)
+  }).send(markdown)
 });
 
 app.get('/api', (req, res) => {
@@ -57,7 +56,7 @@ app.use('*all', async (req, res) => {
     const url = req.originalUrl.replace(base, '')
 
     /** @type {string} */
-    const initialData = await getMarkdown(url);
+    const initialData = await getMarkdownFromUrl(url);
 
     /** @type {string} */
     let template

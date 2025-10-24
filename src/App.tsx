@@ -65,7 +65,7 @@ const Post = ({
   useEffect(() => {
     const getData = async () => {
       try {
-        const response = await fetch(`/api/${post}.md`);
+        const response = await fetch(`/api/${post}/index.md`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
