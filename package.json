@@ -30,6 +30,7 @@
     "cross-env": "^10.0.0",
     "serve": "^14.2.5",
     "typescript": "~5.9.2",
-    "vite": "^7.1.5"
+    "vite": "^7.1.5",
+    "vite-plugin-devtools-json": "^1.0.0"
   }
 }
