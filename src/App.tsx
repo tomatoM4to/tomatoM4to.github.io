@@ -1,4 +1,4 @@
-import './App.css';
+import './assets/App.css';
 import { useEffect, useState } from 'react';
 import { Link, Route, Routes, useParams } from 'react-router';
 import Markdown from 'react-markdown';
