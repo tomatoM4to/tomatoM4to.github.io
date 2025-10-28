@@ -1,17 +1,17 @@
 import './assets/App.css';
-import { useEffect, useState } from 'react';
-import { Link, Route, Routes, useParams } from 'react-router';
-import Markdown from 'react-markdown';
+import { useState } from 'react';
+import { Route, Routes } from 'react-router';
+import Nav from './components/Nav';
+import Home from './components/Home';
+import Post from './components/Post';
 
-function App({ markdown = "" }) {
+export default function App({ markdown = "" }) {
   const [count, setCount] = useState(0);
   const [initialMount, setInitialMount] = useState(true);
 
   return (
     <>
-      <nav>
-        <Link to="/">Home</Link> | <Link to="/posts/database">Database</Link> | <Link to="/posts/docker">Docker</Link> | <Link to="/posts/network">Network</Link> | <Link to="/posts/linux">linux</Link>
-      </nav>
+      <Nav />
 
       <Routes>
         <Route path="/" element={<Home setInitialMount={setInitialMount} />} />
@@ -32,67 +32,3 @@ function App({ markdown = "" }) {
     </>
   )
 };
-
-export default App;
-
-const Home = ({
-  setInitialMount,
-}: {
-  setInitialMount: Function
-}) => {
-  useEffect(() => {
-    setInitialMount(false);
-  }, [])
-  return (
-    <h1>
-      Home
-    </h1>
-  )
-};
-
-const Post = ({
-  markdown,
-  initialMount,
-  setInitialMount
-}: {
-  markdown: string,
-  initialMount: boolean,
-  setInitialMount: Function
-}) => {
-  const { post } = useParams();
-  const [content, setContent] = useState(markdown);
-
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const response = await fetch(`/api/${post}/index.md`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const result = await response.text();
-        setContent(result);
-      }
-      catch (err) {
-        console.error(err);
-      }
-    }
-    if (initialMount) {
-      setInitialMount(false);
-      console.log(`!!! no network event !!!`);
-    }
-    else {
-      getData();
-      console.log(`!!! network event success !!!`)
-    }
-  }, [post])
-  return (
-    <>
-      <h1>
-        {post}
-      </h1>
-      <Markdown>
-        {content}
-      </Markdown>
-    </>
-  )
-}
