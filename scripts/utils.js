@@ -9,7 +9,6 @@ const PROJECT_ROOT = process.cwd();
  * @returns {Promise<string>} JSON으로 직렬화된 마크다운 내용 또는 빈 문자열
  * @throws {Error} 파일 읽기에 실패한 경우 File not found 문자열 반환
  */
-
 export async function getMarkdownFromUrl(url) {
   let initialData = '';
   const initialDataPath = path.join(PROJECT_ROOT, "content", url, 'index.md');

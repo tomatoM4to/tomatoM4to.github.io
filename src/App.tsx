@@ -13,8 +13,16 @@ import Post from './components/Post';
 import Search from './components/Search';
 import Tag from './components/Tag';
 
-export default function App({ markdown = "" }) {
+function useMount() {
   const [initialMount, setInitialMount] = useState(true);
+  function mount() {
+    setInitialMount(false);
+  }
+  return { initialMount, mount };
+}
+
+export default function App({ markdown = "" }) {
+  const { initialMount, mount } = useMount();
 
   return (
     <>
@@ -22,14 +30,14 @@ export default function App({ markdown = "" }) {
       <Routes>
         <Route
           path="/"
-          element={<Home setInitialMount={setInitialMount} />}
+          element={<Home setInitialMount={mount} />}
         />
         <Route
           path="/posts/:post"
-          element={<Post markdown={markdown} initialMount={initialMount} setInitialMount={setInitialMount} />}
+          element={<Post markdown={markdown} initialMount={initialMount} mount={mount} />}
         />
-        <Route path='/search' element={<Search setInitialMount={setInitialMount} />} />
-        <Route path='/tags' element={<Tag setInitialMount={setInitialMount} />} />
+        <Route path='/search' element={<Search mount={mount} />} />
+        <Route path='/tags' element={<Tag mount={mount} />} />
       </Routes>
     </>
   )

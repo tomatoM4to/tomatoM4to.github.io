@@ -5,17 +5,17 @@ import { useParams } from "react-router";
 export default function Post({
   markdown,
   initialMount,
-  setInitialMount
+  mount
 }: {
   markdown: string,
   initialMount: boolean,
-  setInitialMount: Function
+  mount: Function
 }) {
   const { post } = useParams();
   const [content, setContent] = useState(markdown);
 
   useEffect(() => {
-    const getData = async () => {
+    async function getData() {
       try {
         const response = await fetch(`/api/${post}/index.md`);
         if (!response.ok) {
@@ -29,7 +29,7 @@ export default function Post({
       }
     }
     if (initialMount) {
-      setInitialMount(false);
+      mount();
       console.log(`!!! no network event !!!`);
     }
     else {

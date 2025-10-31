@@ -18,14 +18,13 @@ const allTags: Tag[] = [
 ];
 
 export default function Tag({
-  setInitialMount
+  mount
 }: {
-  setInitialMount: Function
+  mount: Function
 }) {
   const [tag, setTag] = useState<string | null>(null);
-
   useEffect(() => {
-    setInitialMount(false);
+    mount();
   }, []);
   return (
     <div className="tag-container">
@@ -34,7 +33,11 @@ export default function Tag({
       <div className="tag-cloud">
         {
           allTags.map((t) => (
-            <button key={t.tag} className={`tag-item ${tag === t.tag ? 'active' : ''}`} onClick={() => setTag(t.tag)}>
+            <button
+              key={t.tag}
+              className={`tag-item ${tag === t.tag ? 'active' : ''}`}
+              onClick={() => setTag(t.tag)}
+            >
               {t.tag} ({t.count})
             </button>
           ))
