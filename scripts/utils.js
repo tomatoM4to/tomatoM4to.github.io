@@ -11,10 +11,7 @@ const PROJECT_ROOT = process.cwd();
  */
 
 export async function getMarkdownFromUrl(url) {
-  let initialData = JSON.stringify('');
-  if (url === '') {
-    return initialData;
-  }
+  let initialData = '';
   const initialDataPath = path.join(PROJECT_ROOT, "content", url, 'index.md');
   try {
     initialData = await fs.readFile(initialDataPath, 'utf-8');
@@ -26,9 +23,9 @@ export async function getMarkdownFromUrl(url) {
 }
 
 /**
- * 포스트 이름으로 index.md 를 읽고 반환
+ * 포스트 이름을 기반으로 Markdown 파일을 plaintext 로 반환
  * @param {string} name - 포스트 디렉토리 이름
- * @returns {Promise<string>} 마크다운 파일의 내용
+ * @returns {Promise<string>} plaintext
  * @throws {Error} 파일 읽기에 실패한 경우 File not found 문자열 반환
  */
 export async function getMarkdownFromName(name) {

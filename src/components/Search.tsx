@@ -1,4 +1,13 @@
-export default function Search() {
+import { useEffect } from "react"
+
+export default function Search({
+  setInitialMount
+}: {
+  setInitialMount: Function
+}) {
+  useEffect(() => {
+    setInitialMount(false);
+  }, []);
   return (
     <div className="search-container">
       <h1 className="search-title">검색</h1>

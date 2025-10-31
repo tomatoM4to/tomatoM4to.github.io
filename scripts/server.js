@@ -55,8 +55,10 @@ app.use('*all', async (req, res) => {
   try {
     const url = req.originalUrl.replace(base, '')
 
-    /** @type {string} */
-    const initialData = await getMarkdownFromUrl(url);
+    let initialData = JSON.stringify('No initial data');
+    if (url.includes('posts')) {
+      initialData = await getMarkdownFromUrl(url);
+    }
 
     /** @type {string} */
     let template

@@ -24,8 +24,10 @@ async function delay(ms) {
 
 
 async function generatePage(route) {
-  /** @type {string} */
-  const initialData = await getMarkdownFromUrl(route);
+  let initialData = JSON.stringify('No initial data');
+  if (route.includes('posts')) {
+    initialData = await getMarkdownFromUrl(route);
+  }
 
   // Replace "?" with "_" for filenames
   const cleanRoute = route.replace(/\?/g, "_").replace(/%20/g, "-");

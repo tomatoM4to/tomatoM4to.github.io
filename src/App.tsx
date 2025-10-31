@@ -28,8 +28,8 @@ export default function App({ markdown = "" }) {
           path="/posts/:post"
           element={<Post markdown={markdown} initialMount={initialMount} setInitialMount={setInitialMount} />}
         />
-        <Route path='/search' element={<Search />} />
-        <Route path='/tags' element={<Tag />} />
+        <Route path='/search' element={<Search setInitialMount={setInitialMount} />} />
+        <Route path='/tags' element={<Tag setInitialMount={setInitialMount} />} />
       </Routes>
     </>
   )
