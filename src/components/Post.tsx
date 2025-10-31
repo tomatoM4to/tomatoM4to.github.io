@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
-import { useParams } from "react-router"
+import { useParams } from "react-router";
 
 export default function Post({
   markdown,
@@ -38,9 +38,18 @@ export default function Post({
     }
   }, [post]);
   return (
-    <>
-      <h1>{post}</h1>
-      <Markdown>{content}</Markdown>
-    </>
+    <div className="post-container">
+      <div className="post-header">
+        <h1 className="post-title">{post}</h1>
+        <div className="post-meta">
+          <span className="post-date">2024-01-15</span>
+          <span className="post-author">tomatoM4to</span>
+          <span className="post-reading-time">5분 읽기</span>
+        </div>
+      </div>
+      <div className="post-content">
+        <Markdown>{content}</Markdown>
+      </div>
+    </div>
   )
 }
