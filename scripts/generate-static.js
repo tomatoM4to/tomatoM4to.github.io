@@ -7,6 +7,8 @@ const PROJECT_ROOT = process.cwd();
 
 const pages = [
   "",
+  "search",
+  "tags",
   ...fs.readdirSync(path.join(PROJECT_ROOT, 'content', 'posts')).map((postname) => `posts/${postname}`),
 ];
 
