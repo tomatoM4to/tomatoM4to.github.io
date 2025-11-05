@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "node server/server.js",
     "build:ssr": "npm run build:client && npm run build:server",
-    "build:ssg": "npm run build:client && npm run build:server && node server/gen-static.js",
+    "build:ssg": "npm run build:ssr && node server/gen-static.js",
     "build:client": "vite build --outDir dist/client",
+    "build:api": "node server/gen-api-resource.js",
     "build:server": "vite build --ssr src/entry-server.tsx --outDir dist/server",
     "start:ssr": "cross-env NODE_ENV=production node server/server.js",
     "start:ssg": "serve dist/client"

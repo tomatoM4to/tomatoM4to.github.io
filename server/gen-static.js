@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { getMarkdownFromUrl } from './utils.js';
+import { createHTML, createTemplate, getMarkdownFromUrl } from './utils.js';
 
 const PROJECT_ROOT = process.cwd();
 
@@ -13,10 +13,7 @@ const pages = [
 ];
 
 const DIST_PATH = path.join(PROJECT_ROOT, 'dist');
-const template = fs.readFileSync(
-  path.resolve(DIST_PATH, "client", "index.html"),
-  "utf-8"
-);
+const template = await createTemplate();
 
 async function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -42,14 +39,12 @@ async function generatePage(route) {
     fs.writeFileSync(filePath, template, "utf-8");
   }
 
-  // Inject head and body content properly
-  const outputHtml = template
-    .replace("<!--app-head-->", html.head ?? "")
-    .replace("<!--app-html-->", html.html ?? "")
-    .replace(
-      "<!--app-window-->",
-      `<script>window.__INITIAL_DATA__ = ${initialData}</script>`
-    )
+  const outputHtml = createHTML(
+    template,
+    html.head ?? '',
+    html.html ?? '',
+    initialData
+  );
 
   // Ensure directory exists before writing file
   const outputDir = path.join(DIST_PATH, "client", path.dirname(cleanRoute));

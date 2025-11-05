@@ -37,3 +37,32 @@ export async function getMarkdownFromName(name) {
     return `ERROR : File not found : ${markdownPath}`;
   }
 }
+
+
+/**
+ * build:client 이후 생성된 dist/client/index.html 을 비동기적으로 읽어드리는 함수
+ * @returns {Promise<string>}
+ */
+export async function createTemplate() {
+  const p = path.join(PROJECT_ROOT, "dist", 'client', 'index.html');
+  return await fs.readFile(p, 'utf-8');
+}
+
+
+/**
+ * 템플릿에 선언된 <!--app-xxxx--> 을 각 값에 맞게 교체해주는 함수
+ * @param {String} template
+ * @param {String} head
+ * @param {String} body
+ * @param {String} initialData
+ */
+export function createHTML(template, head, body, initialData) {
+  const html = template
+    .replace(`<!--app-head-->`, head)
+    .replace(`<!--app-html-->`, body)
+    .replace(
+      `<!--app-window-->`,
+      `<script>window.__INITIAL_DATA__ = ${initialData}</script>`
+    );
+    return html;
+}

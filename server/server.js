@@ -2,16 +2,13 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import express from 'express';
-import { getMarkdownFromUrl, getMarkdownFromName } from './utils.js';
+import { getMarkdownFromUrl, getMarkdownFromName, createTemplate, createHTML } from './utils.js';
 
 const isProduction = process.env.NODE_ENV === 'production'
 const port = process.env.PORT || 5173
 const base = process.env.BASE || '/'
 
-const PROJECT_ROOT = process.cwd()
-const templateHtml = isProduction
-  ? await fs.readFile(path.join(PROJECT_ROOT, "dist", "client", "index.html"), "utf-8")
-  : ''
+const PROJECT_ROOT = process.cwd();
 
 const app = express();
 
@@ -68,24 +65,25 @@ app.use('*all', async (req, res) => {
       template = await vite.transformIndexHtml(url, template)
       const entryUrl = path.join(PROJECT_ROOT, 'src', 'entry-server.tsx');
       render = (await vite.ssrLoadModule(entryUrl)).render
-    } else {
-      template = templateHtml;
+    }
+    else {
+      template = await createTemplate();
       const entryUrl = pathToFileURL(path.join(PROJECT_ROOT, 'dist', 'server', 'entry-server.js')).href;
       render = (await import(entryUrl)).render
     }
 
     const rendered = await render(url, initialData);
 
-    const html = template
-      .replace(`<!--app-head-->`, rendered.head ?? '')
-      .replace(`<!--app-html-->`, rendered.html ?? '')
-      .replace(
-        '<!--app-window-->',
-        `<script>window.__INITIAL_DATA__ = ${initialData}</script>`
-      );
+    const html = createHTML(
+      template,
+      rendered.head ?? '',
+      rendered.html ?? '',
+      initialData
+    );
 
     res.status(200).set({ 'Content-Type': 'text/html' }).send(html)
-  } catch (e) {
+  }
+  catch (e) {
     vite?.ssrFixStacktrace(e)
     console.log(e.stack)
     res.status(500).end(e.stack)
