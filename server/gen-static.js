@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { createHTML, createTemplate, getMarkdownFromUrl } from './utils.js';
+import { createHTML, createTemplate, createInitialData } from './utils.js';
 
 const PROJECT_ROOT = process.cwd();
 
@@ -21,10 +21,7 @@ async function delay(ms) {
 
 
 async function generatePage(route) {
-  let initialData = JSON.stringify('No initial data');
-  if (route.includes('posts')) {
-    initialData = await getMarkdownFromUrl(route);
-  }
+  const initialData = await createInitialData(route);
 
   // Replace "?" with "_" for filenames
   const cleanRoute = route.replace(/\?/g, "_").replace(/%20/g, "-");
@@ -42,8 +39,8 @@ async function generatePage(route) {
   const outputHtml = createHTML(
     template,
     html.head ?? '',
-    html.html ?? '',
-    initialData
+    html.body ?? '',
+    JSON.stringify(initialData.content)
   );
 
   // Ensure directory exists before writing file

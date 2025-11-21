@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import express from 'express';
-import { getMarkdownFromUrl, getMarkdownFromName, createTemplate, createHTML } from './utils.js';
+import { createInitialData, getMarkdown, createTemplate, createHTML } from './utils.js';
 
 const isProduction = process.env.NODE_ENV === 'production'
 const port = process.env.PORT || 5173
@@ -16,7 +16,7 @@ const app = express();
 app.get('/api/:postname/index.md', async (req, res) => {
   const { postname } = req.params;
 
-  const markdown = await getMarkdownFromName(postname);
+  const markdown = await getMarkdown(postname);
 
   res.status(200).set({
     'Content-Type': 'text/plain'
@@ -39,7 +39,8 @@ if (!isProduction) {
     base,
   })
   app.use(vite.middlewares)
-} else {
+}
+else {
   const compression = (await import('compression')).default
   const sirv = (await import('sirv')).default
   app.use(compression())
@@ -48,12 +49,11 @@ if (!isProduction) {
 
 app.use('*all', async (req, res) => {
   try {
+    // ex) '', 'tags', 'search', 'posts/postname'
     const url = req.originalUrl.replace(base, '')
 
-    let initialData = JSON.stringify('No initial data');
-    if (url.includes('posts')) {
-      initialData = await getMarkdownFromUrl(url);
-    }
+    /** @type {Promise<matter.GrayMatterFile<string>> | null} */
+    const initialData = await createInitialData(url);
 
     /** @type {string} */
     let template
@@ -77,8 +77,8 @@ app.use('*all', async (req, res) => {
     const html = createHTML(
       template,
       rendered.head ?? '',
-      rendered.html ?? '',
-      initialData
+      rendered.body ?? '',
+      JSON.stringify(initialData.content)
     );
 
     res.status(200).set({ 'Content-Type': 'text/html' }).send(html)
