@@ -35,23 +35,23 @@ function generateMeta({
   const defaultDesc: string = '웹, 시스템 아키텍처, 그리고 컴퓨터 과학(CS) 원리를 깊이 있게 탐구합니다.';
   const defaultKeywords: string = '백엔드, 프론트 엔드, Nodejs, Backend, CS, 컴퓨터과학, 서버개발, 아키텍처';
   const defaultImage: string = makeURL('vite.svg');
-  return `
-  <title>${title ?? defaultTitle}</title>
-  <meta name="description" content="${desc ?? defaultDesc}" />
-  <meta name="keywords" content="${keywords ?? defaultKeywords}" />
-  <meta property="og:title" content="${title ?? defaultTitle}" />
-  <meta property="og:description" content="${desc ?? defaultDesc}" />
-  <meta property="og:type" content="${type}" />
-  <meta property="og:url" content="${makeURL(url)}" />
-  <meta property="og:image" content="${image ? makeURL(image) : defaultImage}" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="${title ?? defaultTitle}" />
-  <meta name="twitter:description" content="${desc ?? defaultDesc}" />
-  <meta name="twitter:image" content="${image ? makeURL(image) : defaultImage}" />
-  ${date ? `<meta property="article:published_time" content="${date}" />` : ''}
-  <meta name="author" content="tomatoM4to" />
-  <link rel="canonical" href="${makeURL(url)}" />
-  `;
+  return (
+    `<title>${title ?? defaultTitle}</title>
+    <meta name="description" content="${desc ?? defaultDesc}" />
+    <meta name="keywords" content="${keywords ?? defaultKeywords}" />
+    <meta property="og:title" content="${title ?? defaultTitle}" />
+    <meta property="og:description" content="${desc ?? defaultDesc}" />
+    <meta property="og:type" content="${type}" />
+    <meta property="og:url" content="${makeURL(url)}" />
+    <meta property="og:image" content="${image ? makeURL(image) : defaultImage}" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${title ?? defaultTitle}" />
+    <meta name="twitter:description" content="${desc ?? defaultDesc}" />
+    <meta name="twitter:image" content="${image ? makeURL(image) : defaultImage}" />${date ? `
+    <meta property="article:published_time" content="${date}" />` : ''}
+    <meta name="author" content="tomatoM4to" />
+    <link rel="canonical" href="${makeURL(url)}" />`
+  );
 }
 
 export async function render(url: string, initialData: GrayMatterFile<string> | null) {
