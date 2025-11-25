@@ -8,7 +8,7 @@
     "allowImportingTsExtensions": true,
     "composite": true,
 
-    "noEmit": true,
+    "noEmit": false,
     "emitDeclarationOnly": true,
     "declaration": true,
     "declarationDir": "./dist/server/.tmp",
