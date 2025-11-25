@@ -11,7 +11,7 @@
     "noEmit": false,
     "emitDeclarationOnly": true,
     "declaration": true,
-    "declarationDir": "./node_modules/.tmp/server-types",
+    "declarationDir": "./dist/server/.tmp",
 
     "isolatedModules": true,
     "esModuleInterop": true,

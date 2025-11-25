@@ -4,13 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node server/server.js",
+    "dev": "tsx watch --tsconfig tsconfig.server.json server/server.ts",
     "build:ssr": "npm run build:client && npm run build:server",
-    "build:ssg": "npm run build:ssr && node server/gen-static.js",
+    "build:ssg": "npm run build:ssr && tsx --tsconfig tsconfig.server.json server/gen-static.ts",
     "build:client": "vite build --outDir dist/client",
-    "build:api": "node server/gen-api-resource.js",
     "build:server": "vite build --ssr src/entry-server.tsx --outDir dist/server",
-    "start:ssr": "cross-env NODE_ENV=production node server/server.js",
+    "start:ssr": "cross-env NODE_ENV=production tsx watch --tsconfig tsconfig.server.json server/server.ts",
     "start:ssg": "serve dist/client"
   },
   "dependencies": {
@@ -31,6 +30,7 @@
     "cross-env": "^10.0.0",
     "gray-matter": "^4.0.3",
     "serve": "^14.2.5",
+    "tsx": "^4.20.6",
     "typescript": "~5.9.2",
     "vite": "^7.1.5",
     "vite-plugin-devtools-json": "^1.0.0"

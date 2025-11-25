@@ -2,7 +2,9 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import express from 'express';
-import { createInitialData, getMarkdown, createTemplate, createHTML } from './utils.js';
+import { createInitialData, getMarkdown, createTemplate, createHTML } from './utils.ts';
+import type { GrayMatterFile } from 'gray-matter';
+import { ViteDevServer } from 'vite';
 
 const isProduction = process.env.NODE_ENV === 'production'
 const port = process.env.PORT || 5173
@@ -29,8 +31,7 @@ app.get('/api', (req, res) => {
 });
 
 // Add Vite or respective production middlewares
-/** @type {import('vite').ViteDevServer | undefined} */
-let vite
+let vite: ViteDevServer | undefined;
 if (!isProduction) {
   const { createServer } = await import('vite')
   vite = await createServer({
@@ -41,6 +42,7 @@ if (!isProduction) {
   app.use(vite.middlewares)
 }
 else {
+  // @ts-ignore
   const compression = (await import('compression')).default
   const sirv = (await import('sirv')).default
   app.use(compression())
@@ -52,14 +54,13 @@ app.use('*all', async (req, res) => {
     // ex) '', 'tags', 'search', 'posts/postname'
     const url = req.originalUrl.replace(base, '')
 
-    /** @type {Promise<matter.GrayMatterFile<string>> | null} */
-    const initialData = await createInitialData(url);
+    const initialData: GrayMatterFile<string> | null = await createInitialData(url);
 
     /** @type {string} */
-    let template
+    let template: string;
     /** @type {import('../src/entry-server.tsx').render} */
     let render
-    if (!isProduction) {
+    if (!isProduction && vite) {
       // Always read fresh template in development
       template = await fs.readFile(path.join(PROJECT_ROOT, "index.html"), 'utf-8')
       template = await vite.transformIndexHtml(url, template)
@@ -74,16 +75,16 @@ app.use('*all', async (req, res) => {
 
     const rendered = await render(url, initialData);
 
-    const html = createHTML(
-      template,
-      rendered.head ?? '',
-      rendered.body ?? '',
-      JSON.stringify(initialData.content)
-    );
+    const html = createHTML({
+      template: template,
+      head: rendered.head,
+      body: rendered.body,
+      initialData: initialData ? JSON.stringify(initialData.content) : JSON.stringify("")
+    })
 
     res.status(200).set({ 'Content-Type': 'text/html' }).send(html)
   }
-  catch (e) {
+  catch (e: any) {
     vite?.ssrFixStacktrace(e)
     console.log(e.stack)
     res.status(500).end(e.stack)

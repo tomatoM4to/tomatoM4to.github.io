@@ -1,11 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { createHTML, createTemplate, createInitialData } from './utils.js';
+import { createHTML, createTemplate, createInitialData } from './utils.ts';
 
 const PROJECT_ROOT = process.cwd();
 
-const pages = [
+const pages: string[] = [
   "",
   "search",
   "tags",
@@ -15,12 +15,12 @@ const pages = [
 const DIST_PATH = path.join(PROJECT_ROOT, 'dist');
 const template = await createTemplate();
 
-async function delay(ms) {
+async function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
 
-async function generatePage(route) {
+async function generatePage(route: string) {
   const initialData = await createInitialData(route);
 
   // Replace "?" with "_" for filenames
@@ -35,13 +35,12 @@ async function generatePage(route) {
     console.log(`✅ Generated: ${filePath}`);
     fs.writeFileSync(filePath, template, "utf-8");
   }
-
-  const outputHtml = createHTML(
-    template,
-    html.head ?? '',
-    html.body ?? '',
-    JSON.stringify(initialData.content)
-  );
+  const outputHtml = createHTML({
+    template: template,
+    head: html.head,
+    body: html.body,
+    initialData: initialData ? JSON.stringify(initialData.content) : JSON.stringify("")
+  });
 
   // Ensure directory exists before writing file
   const outputDir = path.join(DIST_PATH, "client", path.dirname(cleanRoute));

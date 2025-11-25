@@ -1,29 +1,19 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "node",
+      "type": "node-terminal",
       "request": "launch",
-      "name": "SSR Dev",
-      "cwd": "${workspaceFolder}",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "program": "${workspaceFolder}\\server\\server.js"
+      "name": "npm run dev",
+      "command": "npm run dev",
+      "cwd": "${workspaceFolder}"
     },
     {
-      "type": "node",
+      "type": "node-terminal",
       "request": "launch",
-      "name": "Gen static files",
-      "cwd": "${workspaceFolder}",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "program": "${workspaceFolder}\\server\\gen-static.js",
-      "preLaunchTask": "Build Client & Server"
-    },
+      "name": "npm run build:ssg",
+      "command": "npm run build:ssg",
+      "cwd": "${workspaceFolder}"
+    }
   ]
 }
