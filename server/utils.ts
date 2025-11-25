@@ -22,15 +22,15 @@ export async function createInitialData(url: string): Promise<GrayMatterFile<str
 }
 
 
-export async function getMarkdown(name: string) {
-  const markdownPath = path.join(PROJECT_ROOT, 'content', 'posts', name, 'index.md');
+export async function getMarkdown(name: string): Promise<string> {
+  const filePath = path.join(PROJECT_ROOT, 'content', 'posts', name, 'index.md');
   try {
-    const markdown = await fs.readFile(markdownPath, 'utf-8');
-    return markdown;
+    const fileContent = await fs.readFile(filePath, 'utf-8');
+    return matter(fileContent).content;
   }
   catch (err) {
-    console.error(err);
-    return `ERROR : File not found : ${markdownPath}`;
+    console.error(`[ERROR] File not found or unreadable: ${filePath}`, err);
+    throw new Error(`File not found: ${filePath}`);
   }
 }
 

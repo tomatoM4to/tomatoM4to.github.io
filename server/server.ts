@@ -16,13 +16,18 @@ const app = express();
 
 // '/api/:postname.md' 로 하면 req.params 에 .md 가 포함되지 않음
 app.get('/api/:postname/index.md', async (req, res) => {
-  const { postname } = req.params;
-
-  const markdown = await getMarkdown(postname);
-
-  res.status(200).set({
-    'Content-Type': 'text/plain'
-  }).send(markdown)
+  try {
+    const { postname } = req.params;
+    const markdown = await getMarkdown(postname);
+    res.status(200).set({
+      'Content-Type': 'text/plain'
+    }).send(markdown);
+  }
+  catch (e: any) {
+    vite?.ssrFixStacktrace(e)
+    console.log(e.stack)
+    res.status(500).end(e.stack)
+  }
 });
 
 app.get('/api', (req, res) => {
