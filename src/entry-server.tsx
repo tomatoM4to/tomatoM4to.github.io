@@ -56,13 +56,11 @@ function generateMeta({
 
 export async function render(url: string, initialData: GrayMatterFile<string> | null) {
   let head = '';
-
   if (url === '') {
     head = generateMeta({
       url: url,
       type: 'website'
     });
-
   }
   if (url === 'tags') {
     head = generateMeta({
@@ -70,7 +68,6 @@ export async function render(url: string, initialData: GrayMatterFile<string> | 
       title: `${SITE_NAME} - tags`,
       type: 'website'
     });
-
   }
   if (url === 'search') {
     // 검색 페이지는 noindex 처리 유지
@@ -79,12 +76,10 @@ export async function render(url: string, initialData: GrayMatterFile<string> | 
       title: `${SITE_NAME} - search`,
       type: 'website',
     })
-
   }
   if (url.includes('posts') && initialData?.data) {
     // 개별 포스트 페이지
     const { title, description, image, keywords, date } = initialData.data;
-
     head = generateMeta({
       url: url,
       title: `${title} - ${SITE_NAME}`,
@@ -95,7 +90,6 @@ export async function render(url: string, initialData: GrayMatterFile<string> | 
       type: 'article',
     });
   }
-
   const body = renderToString(
     <StrictMode>
       <StaticRouter location={`/${url}`}>
@@ -103,6 +97,5 @@ export async function render(url: string, initialData: GrayMatterFile<string> | 
       </StaticRouter>
     </StrictMode>,
   );
-
   return { body, head };
 };
