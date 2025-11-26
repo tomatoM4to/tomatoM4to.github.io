@@ -2,18 +2,34 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "node-terminal",
+      "name": "Debug Server (Dev Mode)",
+      "type": "node",
       "request": "launch",
-      "name": "npm run dev",
-      "command": "npm run dev",
-      "cwd": "${workspaceFolder}"
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "restart": true,
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**", "node_modules/**"]
     },
     {
-      "type": "node-terminal",
+      "name": "Debug SSG Generator (Auto Build)",
+      "type": "node",
       "request": "launch",
-      "name": "npm run build:ssg",
-      "command": "npm run build:ssg",
-      "cwd": "${workspaceFolder}"
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/tsx",
+      "args": [
+        "--tsconfig",
+        "tsconfig.server.json",
+        "server/gen-static.ts"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**", "node_modules/**"],
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "preLaunchTask": "build-ssr-task"
     }
   ]
 }

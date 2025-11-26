@@ -1,0 +1,17 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build-ssr-task",
+      "type": "npm",
+      "script": "build:ssr",
+      "group": "build",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "detail": "SSG 디버깅 전 실행되는 SSR 빌드 작업"
+    }
+  ]
+}
