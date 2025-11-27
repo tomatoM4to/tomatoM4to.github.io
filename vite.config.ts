@@ -1,8 +1,18 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import devtoolsJson from 'vite-plugin-devtools-json'
+import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), devtoolsJson()],
+  plugins: [
+    react(),
+    devtoolsJson()
+  ],
+  resolve: {
+    alias: {
+      '@src': path.resolve(__dirname, './src'),
+      '@server': path.resolve(__dirname, './server')
+    }
+  }
 })

@@ -1,7 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { createHTML, createTemplate, createInitialData } from './utils.ts';
+import {
+  createHTML,
+  createTemplate,
+  createInitialData
+} from '@server/utils.ts';
 
 const PROJECT_ROOT = process.cwd();
 

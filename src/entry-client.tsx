@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { hydrateRoot } from 'react-dom/client';
-import App from './App';
 import { BrowserRouter } from 'react-router';
+import App from '@src/App';
 
 // @ts-ignore
 let initialData = window.__INITIAL_DATA__;

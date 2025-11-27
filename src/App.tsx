@@ -1,17 +1,17 @@
-import './assets/App.css';
-import './assets/Home.css';
-import './assets/Item.css';
-import './assets/Nav.css';
-import './assets/Post.css';
-import './assets/Search.css';
-import './assets/Tag.css';
+import '@src/assets/App.css';
+import '@src/assets/Home.css';
+import '@src/assets/Item.css';
+import '@src/assets/Nav.css';
+import '@src/assets/Post.css';
+import '@src/assets/Search.css';
+import '@src/assets/Tag.css';
 import { useState } from 'react';
 import { Route, Routes } from 'react-router';
-import Nav from './components/Nav';
-import Home from './components/Home';
-import Post from './components/Post';
-import Search from './components/Search';
-import Tag from './components/Tag';
+import Nav from '@src/components/Nav';
+import Home from '@src/components/Home';
+import Post from '@src/components/Post';
+import Search from '@src/components/Search';
+import Tag from '@src/components/Tag';
 
 function useMount() {
   const [initialMount, setInitialMount] = useState(true);

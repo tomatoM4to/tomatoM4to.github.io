@@ -2,9 +2,14 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import express from 'express';
-import { createInitialData, getMarkdown, createTemplate, createHTML } from './utils.ts';
 import type { GrayMatterFile } from 'gray-matter';
 import { ViteDevServer } from 'vite';
+import {
+  createInitialData,
+  getMarkdown,
+  createTemplate,
+  createHTML
+} from '@server/utils.ts';
 
 const isProduction = process.env.NODE_ENV === 'production'
 const port = process.env.PORT || 5173

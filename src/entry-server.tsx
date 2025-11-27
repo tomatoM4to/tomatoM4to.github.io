@@ -1,8 +1,8 @@
 import { StrictMode } from 'react';
 import { renderToString } from 'react-dom/server';
-import App from './App';
 import { StaticRouter } from 'react-router';
 import type { GrayMatterFile } from 'gray-matter';
+import App from '@src/App';
 
 const SITE_DOMAIN = 'https://tomatom4to.github.io';
 const SITE_NAME = "tomatoM4to 의 개발 블로그";

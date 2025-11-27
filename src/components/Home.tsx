@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { fakePosts, Item, ItemList } from "./Item";
+import { fakePosts, Item, ItemList } from "@src/components/Item";
 
 function Profile() {
   return (
