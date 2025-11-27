@@ -2,13 +2,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 2rem 0;
-  margin-bottom: 3rem;
+  padding: 3rem 0;
+  margin-bottom: 4rem;
   max-width: 100%;
 }
 
 .navbar-logo {
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   font-weight: 600;
   color: var(--text-primary);
   text-decoration: none;
@@ -22,14 +22,14 @@
 
 .navbar-link {
   display: flex;
-  gap: 2rem;
+  gap: 3rem;
   align-items: center;
 }
 
 .navbar-link a {
   color: var(--text-secondary);
   font-weight: 400;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   text-decoration: none;
   transition: color 0.2s ease;
   letter-spacing: -0.01em;
@@ -67,6 +67,27 @@
   outline-offset: 2px;
 }
 
+/* Laptop / Small Desktop */
+@media (max-width: 1440px) {
+  .navbar {
+    padding: 2rem 0;
+    margin-bottom: 3rem;
+  }
+
+  .navbar-logo {
+    font-size: 1.2rem;
+  }
+
+  .navbar-link {
+    gap: 2rem;
+  }
+
+  .navbar-link a {
+    font-size: 0.95rem;
+  }
+}
+
+/* Tablet Portrait */
 @media (max-width: 768px) {
   .navbar {
     padding: 1.5rem 0;
