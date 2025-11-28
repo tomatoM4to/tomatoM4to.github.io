@@ -1,28 +1,20 @@
-import '@src/assets/App.css';
-import '@src/assets/Home.css';
-import '@src/assets/Item.css';
-import '@src/assets/Nav.css';
-import '@src/assets/Post.css';
-import '@src/assets/Search.css';
-import '@src/assets/Tag.css';
-import { useState } from 'react';
 import { Route, Routes } from 'react-router';
+import '@src/styles/App.css';
+import '@src/styles/Home.css';
+import '@src/styles/Item.css';
+import '@src/styles/Nav.css';
+import '@src/styles/Post.css';
+import '@src/styles/Search.css';
+import '@src/styles/Tag.css';
 import Nav from '@src/components/Nav';
 import Home from '@src/components/Home';
 import Post from '@src/components/Post';
 import Search from '@src/components/Search';
 import Tag from '@src/components/Tag';
-
-function useMount() {
-  const [initialMount, setInitialMount] = useState(true);
-  function mount() {
-    setInitialMount(false);
-  }
-  return { initialMount, mount };
-}
+import { useMount } from '@src/hooks/useMount';
 
 export default function App({ markdown = "" }) {
-  const { initialMount, mount } = useMount();
+  const { mount, setMount } = useMount();
 
   return (
     <>
@@ -30,14 +22,14 @@ export default function App({ markdown = "" }) {
       <Routes>
         <Route
           path="/"
-          element={<Home setInitialMount={mount} />}
+          element={<Home setMount={setMount} />}
         />
         <Route
           path="/posts/:post"
-          element={<Post markdown={markdown} initialMount={initialMount} mount={mount} />}
+          element={<Post markdown={markdown} mount={mount} setMount={setMount} />}
         />
-        <Route path='/search' element={<Search mount={mount} />} />
-        <Route path='/tags' element={<Tag mount={mount} />} />
+        <Route path='/search' element={<Search setMount={setMount} />} />
+        <Route path='/tags' element={<Tag setMount={setMount} />} />
       </Routes>
     </>
   )

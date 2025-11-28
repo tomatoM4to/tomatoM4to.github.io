@@ -19,12 +19,12 @@ function Profile() {
 
 
 export default function Home({
-  setInitialMount
+  setMount
 }: {
-  setInitialMount: Function
+  setMount: () => void
 }) {
   useEffect(() => {
-    setInitialMount(false);
+    setMount();
   }, []);
   return (
     <div className="home-container">

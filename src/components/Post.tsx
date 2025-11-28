@@ -4,12 +4,12 @@ import { useParams } from "react-router";
 
 export default function Post({
   markdown,
-  initialMount,
-  mount
+  mount,
+  setMount
 }: {
   markdown: string,
-  initialMount: boolean,
-  mount: Function
+  mount: boolean,
+  setMount: () => void
 }) {
   const { post } = useParams();
   const [content, setContent] = useState(markdown);
@@ -28,8 +28,8 @@ export default function Post({
         console.error(err);
       }
     }
-    if (initialMount) {
-      mount();
+    if (mount) {
+      setMount();
       console.log(`!!! no network event !!!`);
     }
     else {
@@ -37,6 +37,7 @@ export default function Post({
       console.log(`!!! network event success !!!`)
     }
   }, [post]);
+
   return (
     <div className="post-container">
       <div className="post-header">

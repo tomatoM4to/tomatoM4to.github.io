@@ -18,13 +18,13 @@ const allTags: Tag[] = [
 ];
 
 export default function Tag({
-  mount
+  setMount
 }: {
-  mount: Function
+  setMount: () => void
 }) {
   const [tag, setTag] = useState<string | null>(null);
   useEffect(() => {
-    mount();
+    setMount();
   }, []);
   return (
     <div className="tag-container">

@@ -1,12 +1,12 @@
 import { useEffect } from "react"
 
 export default function Search({
-  mount
+  setMount
 }: {
-  mount: Function
+  setMount: () => void
 }) {
   useEffect(() => {
-    mount();
+    setMount();
   }, []);
   return (
     <div className="search-container">

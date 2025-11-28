@@ -1,50 +1,16 @@
 import { Link } from 'react-router';
-import { useState } from 'react';
-
-type Theme = 'light' | 'dark';
-
-function useTheme() {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === 'undefined') {
-      return 'light';
-    }
-
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    if (currentTheme !== 'light' && currentTheme !== 'dark') {
-      return 'light';
-    }
-
-    return currentTheme;
-  })
-
-  function toggleTheme() {
-    setTheme((pre) => {
-      const newTheme = pre === 'light' ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', newTheme);
-
-      if (newTheme === 'light') {
-        localStorage.removeItem('theme');
-      }
-      else {
-        localStorage.setItem('theme', newTheme);
-      }
-      return newTheme;
-    })
-  }
-
-  return { theme, toggleTheme };
-}
+import { Theme, useTheme } from '@src/hooks/useTheme';
 
 function ThemeToggle() {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   return (
     <button
       className="theme-toggle"
-      onClick={toggleTheme}
-      aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-      title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+      onClick={setTheme}
+      aria-label={`Switch to ${theme === Theme.Light ? Theme.Dark : Theme.Light} mode`}
+      title={`Switch to ${theme === Theme.Light ? Theme.Dark : Theme.Light} mode`}
     >
-      {theme === 'light' ? '🌙' : '☀️'}
+      {theme === Theme.Light ? '🌙' : '☀️'}
     </button>
   );
 }
