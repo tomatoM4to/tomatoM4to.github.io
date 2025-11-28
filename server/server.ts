@@ -20,13 +20,13 @@ const PROJECT_ROOT = process.cwd();
 const app = express();
 
 // '/api/:postname.md' 로 하면 req.params 에 .md 가 포함되지 않음
-app.get('/api/:postname/index.md', async (req, res) => {
+app.get('/api/:postname/index.json', async (req, res) => {
   try {
     const { postname } = req.params;
-    const markdown = await getMarkdown(postname);
+    const markdown: GrayMatterFile<string> = await getMarkdown(postname);
     res.status(200).set({
-      'Content-Type': 'text/plain'
-    }).send(markdown);
+      'Content-Type': 'application/json'
+    }).send(JSON.stringify(markdown));
   }
   catch (e: any) {
     vite?.ssrFixStacktrace(e)

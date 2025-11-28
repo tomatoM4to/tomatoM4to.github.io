@@ -75,7 +75,7 @@ function copyContentToDistDirectory() {
 };
 
 async function generatePagesSequentially() {
-  copyContentToDistDirectory();
+  // copyContentToDistDirectory();
   for (const route of pages) {
     await generatePage(route);
     await delay(100); // Wait for 0.1 second before processing the next page (Not req)

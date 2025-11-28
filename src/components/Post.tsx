@@ -17,12 +17,12 @@ export default function Post({
   useEffect(() => {
     async function getData() {
       try {
-        const response = await fetch(`/api/${post}/index.md`);
+        const response = await fetch(`/api/${post}/index.json`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const result = await response.text();
-        setContent(result);
+        const result = await response.json();
+        setContent(result.content);
       }
       catch (err) {
         console.error(err);
