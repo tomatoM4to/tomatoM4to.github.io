@@ -5,7 +5,7 @@ import type { GrayMatterFile } from 'gray-matter';
 import App from '@src/App';
 
 const SITE_DOMAIN = 'https://tomatom4to.github.io';
-const SITE_NAME = "tomatoM4to 의 개발 블로그";
+const SITE_NAME = "tomatoM4to Tech Log";
 
 function makeURL(url: string): string {
   if (url.length > 0 && url[0] === '/') {
@@ -31,21 +31,20 @@ function generateMeta({
   type: 'website' | 'article',  // website: 메인 페이지, 목록, article: 블로그 포스트, 뉴스 기사 등 구체적인 콘텐츠
   date?: string,                // ISO 8601 형식 권장
 }): string {
-  const defaultTitle: string = 'tomatoM4to Tech Log';
   const defaultDesc: string = '웹, 시스템 아키텍처, 그리고 컴퓨터 과학(CS) 원리를 깊이 있게 탐구합니다.';
   const defaultKeywords: string = '백엔드, 프론트 엔드, Nodejs, Backend, CS, 컴퓨터과학, 서버개발, 아키텍처';
   const defaultImage: string = makeURL('vite.svg');
   return (
-    `<title>${title ?? defaultTitle}</title>
+    `<title>${title ?? SITE_NAME}</title>
     <meta name="description" content="${desc ?? defaultDesc}" />
     <meta name="keywords" content="${keywords ?? defaultKeywords}" />
-    <meta property="og:title" content="${title ?? defaultTitle}" />
+    <meta property="og:title" content="${title ?? SITE_NAME}" />
     <meta property="og:description" content="${desc ?? defaultDesc}" />
     <meta property="og:type" content="${type}" />
     <meta property="og:url" content="${makeURL(url)}" />
     <meta property="og:image" content="${image ? makeURL(image) : defaultImage}" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="${title ?? defaultTitle}" />
+    <meta name="twitter:title" content="${title ?? SITE_NAME}" />
     <meta name="twitter:description" content="${desc ?? defaultDesc}" />
     <meta name="twitter:image" content="${image ? makeURL(image) : defaultImage}" />${date ? `
     <meta property="article:published_time" content="${date}" />` : ''}
@@ -82,7 +81,7 @@ export async function render(url: string, initialData: GrayMatterFile<string> | 
     const { title, description, image, keywords, date } = initialData.data;
     head = generateMeta({
       url: url,
-      title: `${title} - ${SITE_NAME}`,
+      title: `${title}`,
       desc: description,
       keywords: keywords,
       date: date,
