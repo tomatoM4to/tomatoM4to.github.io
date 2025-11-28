@@ -35,7 +35,7 @@ async function generatePage(route: string) {
 
   // clone the template with template.html [this file if that page not required SSG then SSR will use]
   if (route === "") {
-    const filePath = path.join(DIST_PATH, "client", "template.html");
+    const filePath = path.join(DIST_PATH, "template.html");
     console.log(`✅ Generated: ${filePath}`);
     fs.writeFileSync(filePath, template, "utf-8");
   }
@@ -47,14 +47,13 @@ async function generatePage(route: string) {
   });
 
   // Ensure directory exists before writing file
-  const outputDir = path.join(DIST_PATH, "client", path.dirname(cleanRoute));
+  const outputDir = path.join(DIST_PATH, path.dirname(cleanRoute));
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true }); // Create parent directories if needed
   }
 
   const filePath = path.join(
     DIST_PATH,
-    "client",
     route === "/" || route === "" ? "index.html" : `${cleanRoute}.html`
   );
 
@@ -64,7 +63,7 @@ async function generatePage(route: string) {
 
 function copyContentToDistDirectory() {
   const sourcePath = path.join(PROJECT_ROOT, 'content', 'posts');
-  const destPath = path.join(PROJECT_ROOT, 'dist', 'client', 'api');
+  const destPath = path.join(PROJECT_ROOT, 'dist', 'api');
 
   if (fs.existsSync(sourcePath)) {
     fs.cpSync(sourcePath, destPath, { recursive: true });

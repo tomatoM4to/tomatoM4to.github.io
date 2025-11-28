@@ -56,7 +56,7 @@ else {
   const compression = (await import('compression')).default
   const sirv = (await import('sirv')).default
   app.use(compression())
-  app.use(base, sirv(path.join(PROJECT_ROOT, "dist", "client"), { extensions: [] }))
+  app.use(base, sirv(path.join(PROJECT_ROOT, "dist"), { extensions: [] }))
 }
 
 app.use('*all', async (req, res) => {

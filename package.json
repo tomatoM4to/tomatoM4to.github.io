@@ -7,10 +7,10 @@
     "dev": "tsx watch --tsconfig tsconfig.server.json server/server.ts",
     "build:ssr": "npm run build:client && npm run build:server",
     "build:ssg": "npm run build:ssr && tsx --tsconfig tsconfig.server.json server/gen-static.ts",
-    "build:client": "vite build --outDir dist/client",
+    "build:client": "vite build --outDir dist",
     "build:server": "vite build --ssr src/entry-server.tsx --outDir dist/server",
     "start:ssr": "cross-env NODE_ENV=production tsx watch --tsconfig tsconfig.server.json server/server.ts",
-    "start:ssg": "serve dist/client"
+    "start:ssg": "serve dist"
   },
   "dependencies": {
     "compression": "^1.8.1",

@@ -36,7 +36,7 @@ export async function getMarkdown(name: string): Promise<string> {
 
 
 export async function createTemplate(): Promise<string> {
-  const p = path.join(PROJECT_ROOT, "dist", 'client', 'index.html');
+  const p = path.join(PROJECT_ROOT, "dist", 'index.html');
   return await fs.readFile(p, 'utf-8');
 }
 
