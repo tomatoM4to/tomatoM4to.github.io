@@ -18,7 +18,7 @@ export default function App({ markdown = "" }) {
 
   return (
     <>
-      <Nav />
+      <Nav mount={mount} />
       <Routes>
         <Route
           path="/"
