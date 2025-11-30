@@ -1,3 +1,4 @@
+import { useMount } from "@src/hooks/useMount";
 import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import { useParams } from "react-router";
@@ -5,6 +6,8 @@ import { useParams } from "react-router";
 export default function Post({ markdown }: { markdown: string, }) {
   const { post } = useParams();
   const [content, setContent] = useState(markdown);
+  const { isMount } = useMount();
+
 
   useEffect(() => {
     async function getData() {
@@ -20,8 +23,10 @@ export default function Post({ markdown }: { markdown: string, }) {
         console.error(err);
       }
     }
-    getData();
-    console.log(`!!! network event success !!!`);
+    if (isMount) {
+      getData();
+      console.log(`!!! network event !!!`);
+    }
   }, [post]);
 
   return (
