@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { MountContext } from "@src/context/Mount";
+import { useContext } from "react";
 
 export function useMount() {
-  const [mount, _setMount] = useState<boolean>(true);
-  function setMount() {
-    _setMount(false);
+  const context = useContext(MountContext);
+
+  if (context === null) {
+    throw new Error(`useMount must be used within a MountProvider`);
   }
-  return { mount, setMount };
+
+  return context;
 }

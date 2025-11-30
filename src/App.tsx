@@ -11,26 +11,19 @@ import Home from '@src/components/Home';
 import Post from '@src/components/Post';
 import Search from '@src/components/Search';
 import Tag from '@src/components/Tag';
-import { useMount } from '@src/hooks/useMount';
+import { MountProvider } from '@src/context/Mount';
 
-export default function App({ markdown = "" }) {
-  const { mount, setMount } = useMount();
 
+export default function App({ markdown }: { markdown: string }) {
   return (
-    <>
-      <Nav mount={mount} />
+    <MountProvider>
+      <Nav />
       <Routes>
-        <Route
-          path="/"
-          element={<Home setMount={setMount} />}
-        />
-        <Route
-          path="/posts/:post"
-          element={<Post markdown={markdown} mount={mount} setMount={setMount} />}
-        />
-        <Route path='/search' element={<Search setMount={setMount} />} />
-        <Route path='/tags' element={<Tag setMount={setMount} />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/posts/:post" element={<Post markdown={markdown} />} />
+        <Route path='/search' element={<Search />} />
+        <Route path='/tags' element={<Tag />} />
       </Routes>
-    </>
+    </MountProvider>
   )
 };

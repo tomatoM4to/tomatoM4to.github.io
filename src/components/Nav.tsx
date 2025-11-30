@@ -1,13 +1,17 @@
 import { Link } from 'react-router';
 import { Theme, useTheme } from '@src/hooks/useTheme';
+import { useMount } from '@src/hooks/useMount';
 
-function ThemeToggle({ mount }: { mount: boolean }) {
+function ThemeToggle() {
   const { theme, setTheme } = useTheme();
+  const { isMount } = useMount();
 
-  if (mount) {
+  if (!isMount) {
+    // server side component
     return <button className="theme-toggle"></button>;
   }
 
+  // client side component
   return (
     <button
       className="theme-toggle"
@@ -28,14 +32,14 @@ function Logo() {
   )
 }
 
-export default function Nav({ mount }: { mount: boolean }) {
+export default function Nav() {
   return (
     <nav className='navbar'>
       <Logo />
       <div className='navbar-link'>
         <Link to='/tags'>태그</Link>
         <Link to='/search'>검색</Link>
-        <ThemeToggle mount={mount} />
+        <ThemeToggle />
       </div>
     </nav>
   )

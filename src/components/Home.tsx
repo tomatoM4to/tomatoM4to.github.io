@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { fakePosts, Item, ItemList } from "@src/components/Item";
 
 function Profile() {
@@ -7,25 +6,18 @@ function Profile() {
       <img
         className="profile-image"
         src="GOAT.jpg"
-        alt="2D 역사상 GOAT"
+        alt="역사상 최고 미녀"
         loading="lazy"
       />
       <p>
-        웹개발을 주로 다루는 개발 블로그 입니다. 그 외 운영체제와 같은 CS 적인 지식도 추가적으로 다룹니다.
+        웹개발을 주로 다루는 개발 블로그 입니다. 그 외 운영체제와 같은 CS 적인 지식도 다룹니다.
       </p>
     </div>
   )
 }
 
 
-export default function Home({
-  setMount
-}: {
-  setMount: () => void
-}) {
-  useEffect(() => {
-    setMount();
-  }, []);
+export default function Home() {
   return (
     <div className="home-container">
       <Profile />

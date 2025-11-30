@@ -2,15 +2,7 @@ import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import { useParams } from "react-router";
 
-export default function Post({
-  markdown,
-  mount,
-  setMount
-}: {
-  markdown: string,
-  mount: boolean,
-  setMount: () => void
-}) {
+export default function Post({ markdown }: { markdown: string, }) {
   const { post } = useParams();
   const [content, setContent] = useState(markdown);
 
@@ -28,14 +20,8 @@ export default function Post({
         console.error(err);
       }
     }
-    if (mount) {
-      setMount();
-      console.log(`!!! no network event !!!`);
-    }
-    else {
-      getData();
-      console.log(`!!! network event success !!!`)
-    }
+    getData();
+    console.log(`!!! network event success !!!`);
   }, [post]);
 
   return (

@@ -1,5 +1,5 @@
 import { Item, fakePosts, ItemList } from "@src/components/Item";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 type Tag = {
   tag: string,
@@ -17,15 +17,8 @@ const allTags: Tag[] = [
   {tag: 'python', count: 1},
 ];
 
-export default function Tag({
-  setMount
-}: {
-  setMount: () => void
-}) {
+export default function Tag() {
   const [tag, setTag] = useState<string | null>(null);
-  useEffect(() => {
-    setMount();
-  }, []);
   return (
     <div className="tag-container">
       <h1 className="tag-title">태그</h1>

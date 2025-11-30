@@ -1,13 +1,4 @@
-import { useEffect } from "react"
-
-export default function Search({
-  setMount
-}: {
-  setMount: () => void
-}) {
-  useEffect(() => {
-    setMount();
-  }, []);
+export default function Search() {
   return (
     <div className="search-container">
       <h1 className="search-title">검색</h1>
