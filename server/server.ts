@@ -64,7 +64,7 @@ app.use('*all', async (req, res) => {
     // ex) '', 'tags', 'search', 'posts/postname'
     const url = req.originalUrl.replace(base, '')
 
-    const initialData: GrayMatterFile<string> | null = await createInitialData(url);
+    const initialData: GrayMatterFile<string> | null = await createInitialData(decodeURIComponent(url));
 
     /** @type {string} */
     let template: string;

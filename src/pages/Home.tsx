@@ -11,15 +11,15 @@ export type Post = {
 
 export const fakePosts = [
   {
-    id: 'database',
-    title: 'Database',
+    id: 'database (1)',
+    title: 'database (1)',
     excerpt: '데이터베이스 관련 글들을 모아놓았습니다.',
     date: '2024-01-15',
     tags: ['DB', 'SQL']
   },
   {
-    id: 'docker',
-    title: 'Docker',
+    id: '도커',
+    title: '도커',
     excerpt: 'Docker 컨테이너 기술에 대한 내용입니다.',
     date: '2024-01-14',
     tags: ['Docker', 'Container']
