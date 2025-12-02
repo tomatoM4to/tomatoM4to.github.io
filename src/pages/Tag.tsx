@@ -1,4 +1,4 @@
-import { Item, fakePosts, ItemList } from "@src/components/Item";
+import { Item, fakePosts, ItemList } from "@src/pages/Home";
 import { useState } from "react";
 
 type Tag = {
