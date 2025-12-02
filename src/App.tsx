@@ -5,7 +5,7 @@ import '@src/styles/Nav.css';
 import '@src/styles/Post.css';
 import '@src/styles/Search.css';
 import '@src/styles/Tag.css';
-import Nav from '@src/pages/Nav';
+import Nav from '@src/components/Nav';
 import Home from '@src/pages/Home';
 import Post from '@src/pages/Post';
 import Search from '@src/pages/Search';
