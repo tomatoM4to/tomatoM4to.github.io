@@ -47,10 +47,7 @@ function generateMeta({
     <meta property="og:type" content="${type}" />
     <meta property="og:url" content="${makeURL(url)}" />
     <meta property="og:image" content="${image ? makeURL(image) : defaultImage}" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="${title ?? SITE_NAME}" />
-    <meta name="twitter:description" content="${desc ?? defaultDesc}" />
-    <meta name="twitter:image" content="${image ? makeURL(image) : defaultImage}" />${date ? `
+    <meta name="twitter:card" content="summary_large_image" />${date ? `
     <meta property="article:published_time" content="${date}" />` : ''}
     <meta name="author" content="tomatoM4to" />
     <link rel="canonical" href="${makeURL(url)}" />`
