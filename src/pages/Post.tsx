@@ -2,6 +2,9 @@ import { useNetworkMount } from "@src/hooks/useMount";
 import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import { useParams } from "react-router";
+import { type GrayMatterFile } from "gray-matter";
+import { updateHead } from "@src/hooks/useHead";
+import { makeURL } from "@src/entry-server";
 
 export default function Post({ markdown }: { markdown: string, }) {
   const { post } = useParams();
@@ -19,8 +22,16 @@ export default function Post({ markdown }: { markdown: string, }) {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const result = await response.json();
+        const result: GrayMatterFile<string> = await response.json();
         setContent(result.content);
+        updateHead({
+          title: result.data.title,
+          url: makeURL(`posts/${post}`),
+          desc: result.data.description,
+          keywords: result.data.keywords,
+          type: 'article',
+          date: result.data.date
+        })
       }
       catch (err) {
         console.error(err);

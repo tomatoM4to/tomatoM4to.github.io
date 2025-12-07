@@ -1,3 +1,5 @@
+import { makeURL, SITE_NAME } from "@src/entry-server";
+import { useHead } from "@src/hooks/useHead";
 import { Item, fakePosts, ItemList } from "@src/pages/Home";
 import { useState } from "react";
 
@@ -19,6 +21,10 @@ const allTags: Tag[] = [
 
 export default function Tag() {
   const [tag, setTag] = useState<string | null>(null);
+  useHead({
+    title: `${SITE_NAME} - tags`,
+    url: makeURL('tags'),
+  }, []);
   return (
     <div className="tag-container">
       <h1 className="tag-title">태그</h1>

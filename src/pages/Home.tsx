@@ -1,5 +1,7 @@
 import { Link } from 'react-router';
 import { ReactNode } from "react";
+import { useHead } from '@src/hooks/useHead';
+import { SITE_DOMAIN, SITE_NAME } from '@src/entry-server';
 
 export type Post = {
   id: string,
@@ -83,6 +85,11 @@ function Profile() {
 }
 
 export default function Home() {
+  useHead({
+    title: SITE_NAME,
+    url: SITE_DOMAIN
+  }, []);
+
   return (
     <div className="home-container">
       <Profile />

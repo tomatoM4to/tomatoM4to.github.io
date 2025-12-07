@@ -1,4 +1,4 @@
-import { MountContext, NetworkMountContext } from "@src/context/Mount";
+import { HeadMountContext, MountContext, NetworkMountContext } from "@src/context/Mount";
 import { useContext } from "react";
 
 export function useMount() {
@@ -16,6 +16,16 @@ export function useNetworkMount() {
 
   if (context === null) {
     throw new Error(`useNetworkMount must be used within a MountProvider`);
+  }
+
+  return context;
+}
+
+export function useHeadMount() {
+  const context = useContext(HeadMountContext);
+
+  if (context === null) {
+    throw new Error(`useHeadMount must be used within a MountProvider`);
   }
 
   return context;

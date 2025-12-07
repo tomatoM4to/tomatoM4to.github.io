@@ -1,4 +1,11 @@
+import { useHead } from "@src/hooks/useHead"
+import { SITE_NAME, makeURL } from "@src/entry-server"
 export default function Search() {
+  useHead({
+    title: `${SITE_NAME} - search`,
+    url: makeURL('search'),
+  }, [])
+
   return (
     <div className="search-container">
       <h1 className="search-title">검색</h1>
