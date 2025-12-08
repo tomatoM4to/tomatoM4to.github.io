@@ -24,9 +24,10 @@ export default function Post({ markdown }: { markdown: string, }) {
         }
         const result: GrayMatterFile<string> = await response.json();
         setContent(result.content);
+        const encodedPost = encodeURIComponent(`${post}`);
         updateHead({
           title: result.data.title,
-          url: makeURL(`posts/${post}`),
+          url: makeURL(encodedPost),
           desc: result.data.description,
           keywords: result.data.keywords,
           type: 'article',

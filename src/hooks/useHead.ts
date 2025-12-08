@@ -56,8 +56,6 @@ function updateMeta(selector: string, content?: string, qualifiedName: string = 
     }
   }
 
-  if (finalContent)
-
   if (finalContent) {
     element.setAttribute(qualifiedName, finalContent);
   }
