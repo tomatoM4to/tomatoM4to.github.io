@@ -18,7 +18,7 @@ export default function Post({ markdown }: { markdown: string, }) {
     }
     async function getData() {
       try {
-        const response = await fetch(`/api/${post}/index.json`);
+        const response = await fetch(`/api/posts/${post}/index.json`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

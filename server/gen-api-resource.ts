@@ -5,7 +5,7 @@ const PROJECT_ROOT = process.cwd();
 
 async function genMarkdownJSON(markdown: string) {
   const filePath = path.join(PROJECT_ROOT, 'content/posts', markdown, 'index.md');
-  const destPath = path.join(PROJECT_ROOT, 'dist', 'api', markdown);
+  const destPath = path.join(PROJECT_ROOT, 'dist/api/posts', markdown);
 
   let fileContent: string;
   try {
