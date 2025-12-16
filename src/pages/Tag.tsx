@@ -1,6 +1,6 @@
 import { makeURL, SITE_NAME } from "@src/entry-server";
 import { useHead } from "@src/hooks/useHead";
-import { Item, fakePosts, ItemList } from "@src/pages/Home";
+import { Item, ItemList } from "@src/pages/Home";
 import { useState } from "react";
 
 type Tag = {
@@ -46,11 +46,11 @@ export default function Tag() {
       <div className="tag-results-header">
         <h2>{tag} 태그의 포스터 1개</h2>
       </div>
-      <ItemList>
+      {/* <ItemList>
         {fakePosts.map(post => (
           <Item post={post} key={post.id} />
         ))}
-      </ItemList>
+      </ItemList> */}
     </div>
   )
 }

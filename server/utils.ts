@@ -61,3 +61,39 @@ export function createHTML({
     );
     return html;
 }
+
+export type Item = {
+  id: string
+  title: string,
+  description: string,
+  date: string,
+  image: string,
+  keywords: string,
+}
+
+export async function getSortedContentList(): Promise<Item[]> {
+  const contentList: string[] = [
+    ...(await fs.readdir(path.join(PROJECT_ROOT, 'content/posts')))
+  ]
+  const newContentList: Item[] = [];
+
+  for (const post of contentList) {
+    const filePath = path.join(PROJECT_ROOT, 'content/posts', post, 'index.md');
+    const fileContent = await fs.readFile(filePath, 'utf-8');
+    const meta = matter(fileContent);
+    newContentList.push({
+      id: post,
+      title: meta.data.title,
+      description: meta.data.description,
+      date: meta.data.date,
+      image: meta.data.image,
+      keywords: meta.data.keywords
+    });
+  }
+  newContentList.sort((a, b) => {
+    const dateA = new Date(a.date as string).getTime();
+    const dateB = new Date(b.date as string).getTime();
+    return dateB - dateA;
+  });
+  return newContentList;
+}

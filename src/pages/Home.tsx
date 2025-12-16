@@ -1,46 +1,16 @@
 import { Link } from 'react-router';
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useHead } from '@src/hooks/useHead';
 import { SITE_DOMAIN, SITE_NAME } from '@src/entry-server';
 
 export type Post = {
   id: string,
   title: string,
-  excerpt: string,
+  description: string,
   date: string,
-  tags: string[]
+  image: string,
+  keywords: string,
 }
-
-export const fakePosts = [
-  {
-    id: 'database (1)',
-    title: 'database (1)',
-    excerpt: '데이터베이스 관련 글들을 모아놓았습니다.',
-    date: '2024-01-15',
-    tags: ['DB', 'SQL']
-  },
-  {
-    id: '도커',
-    title: '도커',
-    excerpt: 'Docker 컨테이너 기술에 대한 내용입니다.',
-    date: '2024-01-14',
-    tags: ['Docker', 'Container']
-  },
-  {
-    id: 'network',
-    title: 'Network',
-    excerpt: '네트워크 개념과 실습 내용을 다룹니다.',
-    date: '2024-01-13',
-    tags: ['Network', 'TCP/IP']
-  },
-  {
-    id: 'linux',
-    title: 'Linux',
-    excerpt: '리눅스 시스템 관리와 명령어 사용법입니다.',
-    date: '2024-01-12',
-    tags: ['Linux', 'System']
-  }
-];
 
 export function Item({post}: {post: Post}) {
   return (
@@ -48,16 +18,12 @@ export function Item({post}: {post: Post}) {
         to={`/posts/${post.id}`}
         className="item"
     >
-      <h2 className="item-title">{post.title}</h2>
-      <p className="item-excerpt">{post.excerpt}</p>
+      <h2 className="item-title">{post.id}</h2>
+      <p className="item-excerpt">{post.description}</p>
       <div className="item-meta">
         <span className="item-date">{post.date}</span>
         <div className="item-tags">
-          {post.tags.map(tag => (
-            <span key={tag} className="item-tag">
-              {tag}
-            </span>
-          ))}
+          {post.keywords}
         </div>
       </div>
     </Link>
@@ -85,9 +51,28 @@ function Profile() {
 }
 
 export default function Home() {
+  const [postList, setPostList] = useState<Post[]>([]);
+
   useHead({
     title: SITE_NAME,
     url: SITE_DOMAIN
+  }, []);
+
+  useEffect(() => {
+    async function getData() {
+      try {
+        const response = await fetch(`/api/recent/${1}.json`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json();
+        setPostList(result);
+      }
+      catch (err) {
+        console.error(err);
+      }
+    }
+    getData();
   }, []);
 
   return (
@@ -96,7 +81,7 @@ export default function Home() {
       <h1 className="home-title">최근 포스트</h1>
       <div className="recent-posts-section">
         <ItemList>
-          {fakePosts.map(post => (
+          {postList.map(post => (
             <Item post={post} key={post.id} />
           ))}
         </ItemList>

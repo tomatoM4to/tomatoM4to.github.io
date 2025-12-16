@@ -8,7 +8,9 @@ import {
   createInitialData,
   getMarkdown,
   createTemplate,
-  createHTML
+  createHTML,
+  getSortedContentList,
+  Item
 } from '@server/utils.ts';
 
 const isProduction = process.env.NODE_ENV === 'production'
@@ -16,6 +18,8 @@ const port = process.env.PORT || 5173
 const base = process.env.BASE || '/'
 
 const PROJECT_ROOT = process.cwd();
+
+let recentContentList: Item[] | null = null;
 
 const app = express();
 
@@ -34,6 +38,23 @@ app.get('/api/posts/:postname/index.json', async (req, res) => {
     res.status(500).end(e.stack)
   }
 });
+
+app.get('/api/recent/:index.json', async (req, res) => {
+  try {
+    if (!recentContentList) {
+      recentContentList = await getSortedContentList();
+    }
+    const { index } = req.params;
+    const parsedIndex = (parseInt(index) - 1) * 4;
+
+    const posts = recentContentList.slice(parsedIndex, parsedIndex + 4);
+
+    res.status(200).json(posts);
+  }
+  catch (e: any) {
+
+  }
+})
 
 app.get('/api', (req, res) => {
   console.log('api call route');
