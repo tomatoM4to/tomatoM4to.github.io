@@ -1,38 +1,9 @@
-import { Link } from 'react-router';
-import { ReactNode, useEffect, useState } from "react";
+
+import { useEffect, useState } from "react";
 import { useHead } from '@src/hooks/useHead';
 import { SITE_DOMAIN, SITE_NAME } from '@src/entry-server';
+import { ItemType, Item, ItemList } from "@src/components/Item";
 
-export type Post = {
-  id: string,
-  title: string,
-  description: string,
-  date: string,
-  image: string,
-  keywords: string,
-}
-
-export function Item({post}: {post: Post}) {
-  return (
-    <Link
-        to={`/posts/${post.id}`}
-        className="item"
-    >
-      <h2 className="item-title">{post.id}</h2>
-      <p className="item-excerpt">{post.description}</p>
-      <div className="item-meta">
-        <span className="item-date">{post.date}</span>
-        <div className="item-tags">
-          {post.keywords}
-        </div>
-      </div>
-    </Link>
-  )
-}
-
-export function ItemList({children}: {children: ReactNode}) {
-  return <div className='item-list'>{children}</div>
-}
 
 function Profile() {
   return (
@@ -51,7 +22,7 @@ function Profile() {
 }
 
 export default function Home() {
-  const [postList, setPostList] = useState<Post[]>([]);
+  const [postList, setPostList] = useState<ItemType[]>([]);
 
   useHead({
     title: SITE_NAME,
@@ -65,7 +36,7 @@ export default function Home() {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const result = await response.json();
+        const result: ItemType[] = await response.json();
         setPostList(result);
       }
       catch (err) {
