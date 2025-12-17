@@ -10,6 +10,11 @@ export type ItemType = {
   keywords: string,
 }
 
+export type ContentList = {
+  len: number,
+  data: ItemType[]
+}
+
 export function Item({post}: {post: ItemType}) {
   return (
     <Link

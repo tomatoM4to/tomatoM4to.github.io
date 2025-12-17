@@ -51,7 +51,10 @@ async function genRecentPostList() {
       await fs.mkdir(destPath, { recursive: true });
       await fs.writeFile(
         path.join(destPath, `${index++}.json`),
-        JSON.stringify(buffer)
+        JSON.stringify({
+          len: newContentList.length,
+          data: buffer
+        })
       );
       buffer = [];
       console.log(`🎉 Created content JSON to: ${destPath}`);
@@ -63,10 +66,14 @@ async function genRecentPostList() {
     await fs.mkdir(destPath, { recursive: true });
     await fs.writeFile(
       path.join(destPath, `${index++}.json`),
-      JSON.stringify(buffer)
+      JSON.stringify({
+        len: newContentList.length,
+        data: buffer
+      })
     );
     console.log(`🎉 Created content JSON to: ${destPath}`);
   }
 }
 
 genRecentPostList();
+

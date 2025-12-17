@@ -1,6 +1,6 @@
 import { makeURL, SITE_NAME } from "@src/entry-server";
 import { useHead } from "@src/hooks/useHead";
-import { Item, ItemList } from "@src/pages/Home";
+// import { Item, ItemList } from "@src/pages/Home";
 import { useState } from "react";
 
 type Tag = {

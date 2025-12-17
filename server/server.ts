@@ -10,7 +10,8 @@ import {
   createTemplate,
   createHTML,
   getSortedContentList,
-  Item
+  Item,
+  ContentList
 } from '@server/utils.ts';
 
 const isProduction = process.env.NODE_ENV === 'production'
@@ -33,9 +34,9 @@ app.get('/api/posts/:postname/index.json', async (req, res) => {
     }).send(JSON.stringify(markdown));
   }
   catch (e: any) {
-    vite?.ssrFixStacktrace(e)
-    console.log(e.stack)
-    res.status(500).end(e.stack)
+    vite?.ssrFixStacktrace(e);
+    console.log(e.stack);
+    res.status(500).end(e.stack);
   }
 });
 
@@ -48,11 +49,16 @@ app.get('/api/recent/:index.json', async (req, res) => {
     const parsedIndex = (parseInt(index) - 1) * 4;
 
     const posts = recentContentList.slice(parsedIndex, parsedIndex + 4);
-
-    res.status(200).json(posts);
+    const contentList: ContentList = {
+      len: recentContentList.length,
+      data: posts
+    }
+    res.status(200).json(contentList);
   }
   catch (e: any) {
-
+    vite?.ssrFixStacktrace(e);
+    console.log(e.stack);
+    res.status(500).end(e.stack);
   }
 })
 

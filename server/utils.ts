@@ -71,6 +71,11 @@ export type Item = {
   keywords: string,
 }
 
+export type ContentList = {
+  len: number,
+  data: Item[]
+}
+
 export async function getSortedContentList(): Promise<Item[]> {
   const contentList: string[] = [
     ...(await fs.readdir(path.join(PROJECT_ROOT, 'content/posts')))

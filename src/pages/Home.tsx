@@ -2,7 +2,8 @@
 import { useEffect, useState } from "react";
 import { useHead } from '@src/hooks/useHead';
 import { SITE_DOMAIN, SITE_NAME } from '@src/entry-server';
-import { ItemType, Item, ItemList } from "@src/components/Item";
+import { ItemType, Item, ItemList, ContentList } from "@src/components/Item";
+import { Pagination } from "@src/components/Pagination";
 
 
 function Profile() {
@@ -23,6 +24,8 @@ function Profile() {
 
 export default function Home() {
   const [postList, setPostList] = useState<ItemType[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   useHead({
     title: SITE_NAME,
@@ -30,21 +33,22 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    async function getData() {
+    (async function getData() {
       try {
-        const response = await fetch(`/api/recent/${1}.json`);
+        const response = await fetch(`/api/recent/${currentPage}.json`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const result: ItemType[] = await response.json();
-        setPostList(result);
+        const result: ContentList = await response.json();
+        setPostList(result.data);
+        setTotalPages(Math.ceil(result.len / 4));
       }
       catch (err) {
+        console.log(postList);
         console.error(err);
       }
-    }
-    getData();
-  }, []);
+    })();
+  }, [currentPage]);
 
   return (
     <div className="home-container">
@@ -56,6 +60,11 @@ export default function Home() {
             <Item post={post} key={post.id} />
           ))}
         </ItemList>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </div>
   )
