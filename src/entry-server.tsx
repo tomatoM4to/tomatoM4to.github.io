@@ -2,21 +2,14 @@ import { StrictMode } from 'react';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router';
 import type { GrayMatterFile } from 'gray-matter';
+import {
+  SITE_NAME,
+  DEFAULT_DESC,
+  DEFAULT_KEYWORDS,
+  DEFAULT_IMAGE,
+  makeURL
+} from '@src/shared/common';
 import App from '@src/App';
-
-export const SITE_DOMAIN = 'https://tomatom4to.github.io';
-export const SITE_NAME = "tomatoM4to Tech Log";
-export const DEFAULT_DESC = '웹, 시스템 아키텍처, 그리고 컴퓨터 과학(CS) 원리를 깊이 있게 탐구합니다.';
-export const DEFAULT_KEYWORDS = '백엔드, 프론트 엔드, Nodejs, Backend, CS, 컴퓨터과학, 서버개발, 아키텍처';
-export const DEFAULT_IMAGE = 'https://tomatom4to.github.io/vite.svg'
-
-
-export function makeURL(url: string): string {
-  if (url.length > 0 && url[0] === '/') {
-    return `${SITE_DOMAIN}${url}`;
-  }
-  return `${SITE_DOMAIN}/${url}`;
-}
 
 function generateMeta({
   url,
@@ -35,18 +28,15 @@ function generateMeta({
   type: 'website' | 'article',  // website: 메인 페이지, 목록, article: 블로그 포스트, 뉴스 기사 등 구체적인 콘텐츠
   date?: string,                // ISO 8601 형식 권장
 }): string {
-  const defaultDesc: string = '웹, 시스템 아키텍처, 그리고 컴퓨터 과학(CS) 원리를 깊이 있게 탐구합니다.';
-  const defaultKeywords: string = '백엔드, 프론트 엔드, Nodejs, Backend, CS, 컴퓨터과학, 서버개발, 아키텍처';
-  const defaultImage: string = makeURL('vite.svg');
   return (
     `<title>${title ?? SITE_NAME}</title>
-    <meta name="description" content="${desc ?? defaultDesc}" />
-    <meta name="keywords" content="${keywords ?? defaultKeywords}" />
+    <meta name="description" content="${desc ?? DEFAULT_DESC}" />
+    <meta name="keywords" content="${keywords ?? DEFAULT_KEYWORDS}" />
     <meta property="og:title" content="${title ?? SITE_NAME}" />
-    <meta property="og:description" content="${desc ?? defaultDesc}" />
+    <meta property="og:description" content="${desc ?? DEFAULT_DESC}" />
     <meta property="og:type" content="${type}" />
     <meta property="og:url" content="${makeURL(url)}" />
-    <meta property="og:image" content="${image ? makeURL(image) : defaultImage}" />
+    <meta property="og:image" content="${image ? makeURL(image) : DEFAULT_IMAGE}" />
     <meta name="twitter:card" content="summary_large_image" />${date ? `
     <meta property="article:published_time" content="${date}" />` : ''}
     <meta name="author" content="tomatoM4to" />

@@ -1,12 +1,13 @@
-import { makeURL, SITE_NAME } from "@src/entry-server";
 import { useHead } from "@src/hooks/useHead";
-// import { Item, ItemList } from "@src/pages/Home";
 import { useState } from "react";
+import { makeURL, SITE_NAME } from "@src/shared/common";
+
 
 type Tag = {
   tag: string,
   count: number
 }
+
 
 const allTags: Tag[] = [
   {tag: 'database', count: 1},
@@ -18,6 +19,7 @@ const allTags: Tag[] = [
   {tag: 'TCP/IP', count: 1},
   {tag: 'python', count: 1},
 ];
+
 
 export default function Tag() {
   const [tag, setTag] = useState<string | null>(null);

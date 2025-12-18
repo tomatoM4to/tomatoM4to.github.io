@@ -1,16 +1,18 @@
 import { useNetworkMount } from "@src/hooks/useMount";
-import { useEffect, useState } from "react";
-import Markdown from "react-markdown";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { useParams } from "react-router";
 import { type GrayMatterFile } from "gray-matter";
 import { updateHead } from "@src/hooks/useHead";
-import { makeURL } from "@src/entry-server";
+import { makeURL } from "@src/shared/common";
+
+
+const Markdown = lazy(() => import("react-markdown"));
+
 
 export default function Post({ markdown }: { markdown: string, }) {
   const { post } = useParams();
   const [content, setContent] = useState(markdown);
   const { networkMountRef } = useNetworkMount();
-
 
   useEffect(() => {
     if (!networkMountRef.current) {
@@ -53,7 +55,9 @@ export default function Post({ markdown }: { markdown: string, }) {
         </div>
       </div>
       <div className="post-content">
-        <Markdown>{content}</Markdown>
+        <Suspense fallback={<div>...loading</div>}>
+          <Markdown>{content}</Markdown>
+        </Suspense>
       </div>
     </div>
   )

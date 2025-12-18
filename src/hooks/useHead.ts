@@ -1,6 +1,12 @@
 import { useEffect, type DependencyList } from "react";
 import { useHeadMount } from "./useMount";
-import { DEFAULT_DESC, DEFAULT_IMAGE, DEFAULT_KEYWORDS, SITE_DOMAIN } from "@src/entry-server";
+import {
+  DEFAULT_DESC,
+  DEFAULT_KEYWORDS,
+  DEFAULT_IMAGE,
+  SITE_DOMAIN,
+} from "@src/shared/common";
+
 
 type Meta = {
   title: string
@@ -61,10 +67,12 @@ function updateMeta(selector: string, content?: string, qualifiedName: string = 
   }
 }
 
+
 function updateTitle(content?: string) {
   if (!content) return;
   document.title = content;
 }
+
 
 function updateDate(content?: string) {
   let element = document.querySelector('meta[property="article:published_time"]');
@@ -82,6 +90,7 @@ function updateDate(content?: string) {
     element.remove();
   }
 }
+
 
 export function updateHead(meta: Meta) {
   const {
@@ -104,6 +113,7 @@ export function updateHead(meta: Meta) {
   updateMeta('link[rel="canonical"]', url, 'href');
   updateDate(date);
 }
+
 
 export function useHead(meta: Meta, deps?: DependencyList) {
   const { headMountRef } = useHeadMount();

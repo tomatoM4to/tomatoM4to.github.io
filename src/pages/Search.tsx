@@ -1,5 +1,6 @@
-import { useHead } from "@src/hooks/useHead"
-import { SITE_NAME, makeURL } from "@src/entry-server"
+import { useHead } from "@src/hooks/useHead";
+import { SITE_NAME, makeURL } from "@src/shared/common";
+
 export default function Search() {
   useHead({
     title: `${SITE_NAME} - search`,

@@ -1,9 +1,8 @@
-
 import { useEffect, useState } from "react";
 import { useHead } from '@src/hooks/useHead';
-import { SITE_DOMAIN, SITE_NAME } from '@src/entry-server';
 import { ItemType, Item, ItemList, ContentList } from "@src/components/Item";
 import { Pagination } from "@src/components/Pagination";
+import { SITE_NAME, SITE_DOMAIN } from "@src/shared/common";
 
 
 function Profile() {
