@@ -31,13 +31,6 @@ async function genMarkdownJSON(markdown: string) {
   console.log(`🎉 Created content JSON to: ${destPath}`);
 }
 
-const contentList: string[] = [
-  ...(await fs.readdir(path.join(PROJECT_ROOT, 'content/posts')))
-]
-
-for (const content of contentList) {
-  await genMarkdownJSON(content);
-}
 
 async function genRecentPostList() {
   const newContentList = await getSortedContentList();
@@ -57,7 +50,7 @@ async function genRecentPostList() {
         })
       );
       buffer = [];
-      console.log(`🎉 Created content JSON to: ${destPath}`);
+      console.log(`🐍 Created content JSON to: ${destPath}`);
     }
   }
 
@@ -71,9 +64,18 @@ async function genRecentPostList() {
         data: buffer
       })
     );
-    console.log(`🎉 Created content JSON to: ${destPath}`);
+    console.log(`🐍 Created content JSON to: ${destPath}`);
   }
 }
 
-genRecentPostList();
+(async function main() {
+  const contentList: string[] = [
+    ...(await fs.readdir(path.join(PROJECT_ROOT, 'content/posts')))
+  ]
+
+  for (const content of contentList) {
+    genMarkdownJSON(content);
+  }
+  genRecentPostList();
+})();
 
