@@ -45,7 +45,7 @@
   border: 1px solid var(--border-primary);
   color: var(--text-secondary);
   padding: 0.4rem;
-  border-radius: 6px;
+  border-radius: 0;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;

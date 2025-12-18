@@ -22,7 +22,7 @@
   font-size: 1.05rem;
   background-color: var(--bg-primary);
   border: 1px solid var(--border-primary);
-  border-radius: 6px;
+  border-radius: 0;
   color: var(--text-primary);
   transition: border-color 0.15s ease;
 }
