@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import matter from 'gray-matter';
-import { getSortedContentList, Item } from './utils.ts';
+import { getSortedContentList, getTags, Item } from './utils.ts';
 const PROJECT_ROOT = process.cwd();
 
 
@@ -68,6 +68,17 @@ async function genRecentPostList() {
   }
 }
 
+async function createAllTags() {
+  const allTags = await getTags();
+  const destPath = path.join(PROJECT_ROOT, 'dist/api/tags');
+  await fs.mkdir(destPath, { recursive: true });
+  await fs.writeFile(
+    path.join(destPath, 'all-tags.json'),
+    JSON.stringify(allTags)
+  );
+  console.log(`❄️ Created content JSON to: ${destPath}`);
+}
+
 (async function main() {
   const contentList: string[] = [
     ...(await fs.readdir(path.join(PROJECT_ROOT, 'content/posts')))
@@ -77,5 +88,6 @@ async function genRecentPostList() {
     genMarkdownJSON(content);
   }
   genRecentPostList();
+  createAllTags();
 })();
 

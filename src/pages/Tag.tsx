@@ -1,5 +1,5 @@
 import { useHead } from "@src/hooks/useHead";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { makeURL, SITE_NAME } from "@src/shared/common";
 
 
@@ -23,9 +23,25 @@ const allTags: Tag[] = [
 
 export default function Tag() {
   const [tag, setTag] = useState<string | null>(null);
+  const [allTags, setAllTags] = useState<Record<string, number> | null>(null);
   useHead({
     title: `${SITE_NAME} - tags`,
     url: makeURL('tags'),
+  }, []);
+  useEffect(() => {
+    (async function getData() {
+      try {
+        const response = await fetch('/api/tags/all-tags.json');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result: Record<string, number> = await response.json();
+        setAllTags(result);
+      }
+      catch (err) {
+        console.error(err);
+      }
+    })();
   }, []);
   return (
     <div className="tag-container">
@@ -33,20 +49,20 @@ export default function Tag() {
 
       <div className="tag-cloud">
         {
-          allTags.map((t) => (
+          allTags && Object.entries(allTags).map(([tagName, count]) => (
             <button
-              key={t.tag}
-              className={`tag-item ${tag === t.tag ? 'active' : ''}`}
-              onClick={() => setTag(t.tag)}
+              key={tagName}
+              className={`tag-item ${tag === tagName ? 'active' : ''}`}
+              onClick={() => setTag(tagName)}
             >
-              {t.tag} ({t.count})
+              {tagName} ({count})
             </button>
           ))
         }
       </div>
 
       <div className="tag-results-header">
-        <h2>{tag} 태그의 포스터 1개</h2>
+        {tag && <h2>{tag} 태그가 포함된 글</h2>}
       </div>
       {/* <ItemList>
         {fakePosts.map(post => (

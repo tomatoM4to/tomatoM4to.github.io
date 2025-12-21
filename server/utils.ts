@@ -79,7 +79,7 @@ export type ContentList = {
 export async function getSortedContentList(): Promise<Item[]> {
   const contentList: string[] = [
     ...(await fs.readdir(path.join(PROJECT_ROOT, 'content/posts')))
-  ]
+  ];
   const newContentList: Item[] = [];
 
   for (const post of contentList) {
@@ -114,3 +114,24 @@ export type Render = ({
   head: string;
 }>;
 
+export async function getTags(): Promise<Record<string, number>> {
+  const contentList: string[] = [
+    ...(await fs.readdir(path.join(PROJECT_ROOT, 'content/posts')))
+  ];
+
+  const tagCount: Record<string, number> = {};
+
+  for (const post of contentList) {
+    const filePath = path.join(PROJECT_ROOT, 'content/posts', post, 'index.md');
+    const fileContent = await fs.readFile(filePath, 'utf-8');
+    const meta = matter(fileContent);
+
+    if (meta.data.keywords) {
+      for (const keyword of meta.data.keywords.split(',')) {
+        const trimmed = keyword.trim();
+        tagCount[trimmed] = (tagCount[trimmed] || 0) + 1;
+      }
+    }
+  }
+  return tagCount;
+}

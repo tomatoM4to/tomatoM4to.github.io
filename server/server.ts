@@ -12,7 +12,8 @@ import {
   getSortedContentList,
   Item,
   ContentList,
-  type Render
+  type Render,
+  getTags
 } from '@server/utils.ts';
 
 const isProduction = process.env.NODE_ENV === 'production'
@@ -55,6 +56,18 @@ app.get('/api/recent/:index.json', async (req, res) => {
       data: posts
     }
     res.status(200).json(contentList);
+  }
+  catch (e: any) {
+    vite?.ssrFixStacktrace(e);
+    console.log(e.stack);
+    res.status(500).end(e.stack);
+  }
+})
+
+app.get('/api/tags/all-tags.json', async (req, res) => {
+  try {
+    const allTags = await getTags();
+    res.status(200).json(allTags);
   }
   catch (e: any) {
     vite?.ssrFixStacktrace(e);
