@@ -11,7 +11,8 @@ import {
   createHTML,
   getSortedContentList,
   Item,
-  ContentList
+  ContentList,
+  type Render
 } from '@server/utils.ts';
 
 const isProduction = process.env.NODE_ENV === 'production'
@@ -93,10 +94,9 @@ app.use('*all', async (req, res) => {
 
     const initialData: GrayMatterFile<string> | null = await createInitialData(decodeURIComponent(url));
 
-    /** @type {string} */
     let template: string;
     /** @type {import('../src/entry-server.tsx').render} */
-    let render
+    let render: Render;
     if (!isProduction && vite) {
       // Always read fresh template in development
       template = await fs.readFile(path.join(PROJECT_ROOT, "index.html"), 'utf-8')
@@ -110,7 +110,7 @@ app.use('*all', async (req, res) => {
       render = (await import(entryUrl)).render
     }
 
-    const rendered = await render(url, initialData);
+    const rendered = await render({url: url, initialData: initialData});
 
     const html = createHTML({
       template: template,

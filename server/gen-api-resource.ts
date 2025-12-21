@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import matter, { type GrayMatterFile } from 'gray-matter';
+import matter from 'gray-matter';
 import { getSortedContentList, Item } from './utils.ts';
 const PROJECT_ROOT = process.cwd();
 

@@ -44,7 +44,13 @@ function generateMeta({
   );
 }
 
-export async function render(url: string, initialData: GrayMatterFile<string> | null) {
+export async function render({
+  url,
+  initialData,
+}: {
+  url: string,
+  initialData: GrayMatterFile<string> | null,
+}): Promise<{ body: string; head: string; }> {
   let head = '';
   if (url === '') {
     head = generateMeta({

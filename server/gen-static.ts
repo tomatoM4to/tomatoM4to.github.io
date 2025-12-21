@@ -4,7 +4,8 @@ import { pathToFileURL } from "node:url";
 import {
   createHTML,
   createTemplate,
-  createInitialData
+  createInitialData,
+  type Render
 } from '@server/utils.ts';
 
 const PROJECT_ROOT = process.cwd();
@@ -30,8 +31,8 @@ async function generatePage(route: string) {
   // Replace "?" with "_" for filenames
   const cleanRoute = route.replace(/\?/g, "_").replace(/%20/g, "-");
   const entryUrl = pathToFileURL(path.join(DIST_PATH, "server", "entry-server.js")).href;
-  const render = (await import(entryUrl)).render;
-  const html = await render(route, initialData);
+  const render: Render = (await import(entryUrl)).render;
+  const html = await render({url: route, initialData: initialData});
 
   // clone the template with template.html [this file if that page not required SSG then SSR will use]
   if (route === "") {
@@ -61,18 +62,6 @@ async function generatePage(route: string) {
   console.log(`✅ Generated: ${filePath}`);
 };
 
-function copyContentToDistDirectory() {
-  const sourcePath = path.join(PROJECT_ROOT, 'content', 'posts');
-  const destPath = path.join(PROJECT_ROOT, 'dist', 'api');
-
-  if (fs.existsSync(sourcePath)) {
-    fs.cpSync(sourcePath, destPath, { recursive: true });
-    console.log(`✅ Copied content directory to: ${destPath}`);
-  }
-  else {
-    console.log(`⚠️ Content directory not found: ${sourcePath}`);
-  }
-};
 
 async function generatePagesSequentially() {
   // copyContentToDistDirectory();

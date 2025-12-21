@@ -102,3 +102,15 @@ export async function getSortedContentList(): Promise<Item[]> {
   });
   return newContentList;
 }
+
+export type Render = ({
+  url,
+  initialData
+}: {
+  url: string,
+  initialData: GrayMatterFile<string> | null
+}) => Promise<{
+  body: string;
+  head: string;
+}>;
+
