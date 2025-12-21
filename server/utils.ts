@@ -135,3 +135,19 @@ export async function getTags(): Promise<Record<string, number>> {
   }
   return tagCount;
 }
+
+
+export async function getItemFromTag(
+  sortedContentList: Item[], tag: string
+): Promise<ContentList> {
+  const filteredItems = sortedContentList.filter(item => {
+    if (!item.keywords) return false;
+    const keywords = item.keywords.split(',').map(k => k.trim());
+    return keywords.includes(tag);
+  });
+
+  return {
+    len: filteredItems.length,
+    data: filteredItems
+  };
+}

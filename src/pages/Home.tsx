@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useHead } from '@src/hooks/useHead';
-import { ItemType, Item, ItemList, ContentList } from "@src/components/Item";
+import { ItemType, Item, ItemList, type ContentList } from "@src/components/Item";
 import { Pagination } from "@src/components/Pagination";
 import { SITE_NAME, SITE_DOMAIN } from "@src/shared/common";
 

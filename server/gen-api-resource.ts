@@ -1,7 +1,9 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import matter from 'gray-matter';
-import { getSortedContentList, getTags, Item } from './utils.ts';
+import { getItemFromTag, getSortedContentList, getTags, type Item } from './utils.ts';
+
+
 const PROJECT_ROOT = process.cwd();
 
 
@@ -32,12 +34,10 @@ async function genMarkdownJSON(markdown: string) {
 }
 
 
-async function genRecentPostList() {
-  const newContentList = await getSortedContentList();
-
+async function genRecentPostList(sortedContentList: Item[]) {
   let buffer: Item[] = [];
   let index = 1;
-  for (const post of newContentList) {
+  for (const post of sortedContentList) {
     buffer.push(post);
     if (buffer.length >= 4) {
       const destPath = path.join(PROJECT_ROOT, 'dist/api/recent');
@@ -45,7 +45,7 @@ async function genRecentPostList() {
       await fs.writeFile(
         path.join(destPath, `${index++}.json`),
         JSON.stringify({
-          len: newContentList.length,
+          len: sortedContentList.length,
           data: buffer
         })
       );
@@ -60,7 +60,7 @@ async function genRecentPostList() {
     await fs.writeFile(
       path.join(destPath, `${index++}.json`),
       JSON.stringify({
-        len: newContentList.length,
+        len: sortedContentList.length,
         data: buffer
       })
     );
@@ -79,15 +79,30 @@ async function createAllTags() {
   console.log(`❄️ Created content JSON to: ${destPath}`);
 }
 
+async function createTagContentList(sortedContentList: Item[]) {
+  const allTags = await getTags();
+  const destPath = path.join(PROJECT_ROOT, 'dist/api/tags');
+  await fs.mkdir(destPath, { recursive: true });
+  for (const [tag, count] of Object.entries(allTags)) {
+    const tagContent = await getItemFromTag(sortedContentList, tag);
+    await fs.writeFile(
+      path.join(destPath, `${tag}.json`),
+      JSON.stringify(tagContent)
+    );
+    console.log(`❄️ Created content JSON to: ${destPath}`);
+  }
+}
+
 (async function main() {
+  const sortedContentList = await getSortedContentList();
   const contentList: string[] = [
     ...(await fs.readdir(path.join(PROJECT_ROOT, 'content/posts')))
   ]
-
   for (const content of contentList) {
     genMarkdownJSON(content);
   }
-  genRecentPostList();
+  genRecentPostList(sortedContentList);
   createAllTags();
+  createTagContentList(sortedContentList);
 })();
 
