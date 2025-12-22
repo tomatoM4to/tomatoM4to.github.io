@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 
 export function Pagination({
   currentPage,
@@ -7,6 +7,8 @@ export function Pagination({
   currentPage: number,
   totalPages: number,
 }) {
+  const [searchParams] = useSearchParams();
+
   function getPageNumbers(): number[] {
     const pages: number[] = [];
     const maxVisible = 5;
@@ -48,10 +50,21 @@ export function Pagination({
     return pages;
   };
 
+  function createPageLink(pageNumber: number) {
+    const newParams = new URLSearchParams(searchParams);
+    if (pageNumber === 1) {
+      newParams.delete('page');
+    }
+    else {
+      newParams.set('page', pageNumber.toString());
+    }
+    return `?${newParams.toString()}`;
+  }
+
   return (
     <nav className="pagination">
       <Link
-        to={`?page=${currentPage - 1}`}
+        to={createPageLink(currentPage - 1)}
         className={`pagination-btn pagination-arrow ${currentPage === 1 ? 'disabled' : ''}`}
         aria-label="Previous page"
         aria-disabled={currentPage === 1}
@@ -68,7 +81,7 @@ export function Pagination({
           ) : (
             <Link
               key={page}
-              to={`?page=${page}`}
+              to={createPageLink(page)}
               className={`pagination-btn pagination-number ${currentPage === page ? 'active' : ''}`}
               aria-current={currentPage === page ? 'page' : undefined}
             >
@@ -79,7 +92,7 @@ export function Pagination({
       </div>
 
       <Link
-        to={`?page=${currentPage + 1}`}
+        to={createPageLink(currentPage + 1)}
         className={`pagination-btn pagination-arrow ${currentPage === totalPages ? 'disabled' : ''}`}
         aria-label="Next page"
         aria-disabled={currentPage === totalPages}

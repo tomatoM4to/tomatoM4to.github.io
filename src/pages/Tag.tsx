@@ -3,13 +3,16 @@ import { useEffect, useState } from "react";
 import { makeURL, SITE_NAME } from "@src/shared/common";
 import { type ContentList, ItemList, Item } from "@src/components/Item";
 import { Link, useSearchParams } from "react-router";
+import { Pagination } from "@src/components/Pagination";
 
 
 export default function Tag() {
-  const [tagSearchParams] = useSearchParams();
-  const tag = tagSearchParams.get('tag') || null;
+  const [searchParams] = useSearchParams();
+  const tag = searchParams.get('tag');
+  const currentPage = parseInt(searchParams.get('page') || '1', 10);
   const [allTags, setAllTags] = useState<Record<string, number> | null>(null);
   const [contentList, setContentList] = useState<ContentList | null>(null);
+  const [totalPage, setTotalPage] = useState<number>(1);
 
   useHead({
     title: `${SITE_NAME} - tags`,
@@ -42,6 +45,7 @@ export default function Tag() {
         }
         const result: ContentList = await response.json();
         setContentList(result);
+        setTotalPage(Math.ceil(result.len / 4));
       }
       catch (err) {
         console.error(err);
@@ -72,11 +76,16 @@ export default function Tag() {
       </div>
       {
         contentList && tag && (
-          <ItemList>
-            {contentList.data.map(post => (
-              <Item post={post} key={post.id} />
-            ))}
-          </ItemList>
+          <>
+            <ItemList>
+              {
+                contentList.data.slice((currentPage - 1) * 4, currentPage * 4).map(post => (
+                  <Item post={post} key={post.id} />
+                ))
+              }
+            </ItemList>
+            <Pagination currentPage={currentPage} totalPages={totalPage} />
+          </>
         )
       }
     </div>
