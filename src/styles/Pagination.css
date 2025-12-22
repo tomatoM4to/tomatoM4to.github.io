@@ -28,17 +28,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  text-decoration: none;
 }
 
-.pagination-btn:hover:not(:disabled) {
+.pagination-btn:hover:not(.disabled):not(.active) {
   color: var(--text-primary);
   border-color: var(--text-secondary);
   background-color: var(--bg-hover);
 }
 
-.pagination-btn:disabled {
+.pagination-btn.disabled {
   opacity: 0.3;
   cursor: not-allowed;
+  pointer-events: none;
 }
 
 .pagination-btn.active {

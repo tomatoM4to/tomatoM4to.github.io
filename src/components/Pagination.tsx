@@ -1,11 +1,11 @@
+import { Link } from "react-router";
+
 export function Pagination({
   currentPage,
   totalPages,
-  onPageChange
 }: {
   currentPage: number,
   totalPages: number,
-  onPageChange: (page: number) => void;
 }) {
   function getPageNumbers(): number[] {
     const pages: number[] = [];
@@ -50,14 +50,14 @@ export function Pagination({
 
   return (
     <nav className="pagination">
-      <button
-        className="pagination-btn pagination-arrow"
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
+      <Link
+        to={`?page=${currentPage - 1}`}
+        className={`pagination-btn pagination-arrow ${currentPage === 1 ? 'disabled' : ''}`}
         aria-label="Previous page"
+        aria-disabled={currentPage === 1}
       >
         ←
-      </button>
+      </Link>
 
       <div className="pagination-numbers">
         {getPageNumbers().map((page, index) => (
@@ -66,25 +66,26 @@ export function Pagination({
               . . .
             </span>
           ) : (
-            <button
+            <Link
               key={page}
+              to={`?page=${page}`}
               className={`pagination-btn pagination-number ${currentPage === page ? 'active' : ''}`}
-              onClick={() => onPageChange(page)}
+              aria-current={currentPage === page ? 'page' : undefined}
             >
               {page}
-            </button>
+            </Link>
           )
         ))}
       </div>
 
-      <button
-        className="pagination-btn pagination-arrow"
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
+      <Link
+        to={`?page=${currentPage + 1}`}
+        className={`pagination-btn pagination-arrow ${currentPage === totalPages ? 'disabled' : ''}`}
         aria-label="Next page"
+        aria-disabled={currentPage === totalPages}
       >
         →
-      </button>
+      </Link>
     </nav>
   );
 }

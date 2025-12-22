@@ -3,6 +3,7 @@ import { useHead } from '@src/hooks/useHead';
 import { ItemType, Item, ItemList, type ContentList } from "@src/components/Item";
 import { Pagination } from "@src/components/Pagination";
 import { SITE_NAME, SITE_DOMAIN } from "@src/shared/common";
+import { useSearchParams } from "react-router";
 
 
 function Profile() {
@@ -23,8 +24,9 @@ function Profile() {
 
 export default function Home() {
   const [postList, setPostList] = useState<ItemType[]>([]);
-  const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [searchParams] = useSearchParams();
+  const currentPage = parseInt(searchParams.get('page') || '1', 10);
 
   useHead({
     title: SITE_NAME,
@@ -59,11 +61,7 @@ export default function Home() {
             <Item post={post} key={post.id} />
           ))}
         </ItemList>
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
+        <Pagination currentPage={currentPage} totalPages={totalPages} />
       </div>
     </div>
   )
