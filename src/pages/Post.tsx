@@ -4,6 +4,7 @@ import { useParams } from "react-router";
 import { type GrayMatterFile } from "gray-matter";
 import { updateHead } from "@src/hooks/useHead";
 import { makeURL } from "@src/shared/common";
+import remarkGfm from "remark-gfm";
 
 
 const Markdown = lazy(() => import("react-markdown"));
@@ -54,9 +55,9 @@ export default function Post({ markdown }: { markdown: string, }) {
           <span className="post-reading-time">5분 읽기</span>
         </div>
       </div>
-      <div className="post-content">
+      <div className="post-content markdown">
         <Suspense fallback={<div>...loading</div>}>
-          <Markdown>{content}</Markdown>
+          <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
         </Suspense>
       </div>
     </div>

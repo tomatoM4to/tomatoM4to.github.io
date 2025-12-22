@@ -3,6 +3,7 @@ import '@src/styles/App.css';
 import '@src/styles/Home.css';
 import '@src/styles/Nav.css';
 import '@src/styles/Post.css';
+import '@src/styles/Markdown.css';
 import '@src/styles/Search.css';
 import '@src/styles/Tag.css';
 import '@src/styles/Pagination.css';
