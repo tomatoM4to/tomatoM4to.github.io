@@ -2,10 +2,12 @@ import { useHead } from "@src/hooks/useHead";
 import { useEffect, useState } from "react";
 import { makeURL, SITE_NAME } from "@src/shared/common";
 import { type ContentList, ItemList, Item } from "@src/components/Item";
+import { Link, useSearchParams } from "react-router";
 
 
 export default function Tag() {
-  const [tag, setTag] = useState<string | null>(null);
+  const [tagSearchParams] = useSearchParams();
+  const tag = tagSearchParams.get('tag') || null;
   const [allTags, setAllTags] = useState<Record<string, number> | null>(null);
   const [contentList, setContentList] = useState<ContentList | null>(null);
 
@@ -54,13 +56,13 @@ export default function Tag() {
       <div className="tag-cloud">
         {
           allTags && Object.entries(allTags).map(([tagName, count]) => (
-            <button
+            <Link
+              to={`?tag=${tagName}`}
               key={tagName}
               className={`tag-item ${tag === tagName ? 'active' : ''}`}
-              onClick={() => setTag(tagName)}
             >
               {tagName} ({count})
-            </button>
+            </Link>
           ))
         }
       </div>
@@ -69,7 +71,7 @@ export default function Tag() {
         {tag && <h2>{tag} 태그가 포함된 글</h2>}
       </div>
       {
-        contentList && (
+        contentList && tag && (
           <ItemList>
             {contentList.data.map(post => (
               <Item post={post} key={post.id} />
