@@ -22,7 +22,7 @@ async function genMarkdownJSON(markdown: string) {
     throw err;
   }
 
-  const content = matter(fileContent);
+  const { orig, ...content } = matter(fileContent);
 
   await fs.mkdir(destPath, { recursive: true });
   await fs.writeFile(
