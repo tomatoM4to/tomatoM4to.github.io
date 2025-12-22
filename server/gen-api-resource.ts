@@ -76,7 +76,7 @@ async function createAllTags() {
     path.join(destPath, 'all-tags.json'),
     JSON.stringify(allTags)
   );
-  console.log(`❄️ Created content JSON to: ${destPath}`);
+  console.log(`🔥 Created All-Tags JSON to: ${path.join(destPath, 'all-tags.json')}`);
 }
 
 async function createTagContentList(sortedContentList: Item[]) {
@@ -85,11 +85,12 @@ async function createTagContentList(sortedContentList: Item[]) {
   await fs.mkdir(destPath, { recursive: true });
   for (const [tag, count] of Object.entries(allTags)) {
     const tagContent = await getItemFromTag(sortedContentList, tag);
+    const newDestPath = path.join(destPath, `${tag}.json`);
     await fs.writeFile(
-      path.join(destPath, `${tag}.json`),
+      newDestPath,
       JSON.stringify(tagContent)
     );
-    console.log(`❄️ Created content JSON to: ${destPath}`);
+    console.log(`❄️ Created Tag-Content JSON to: ${newDestPath}`);
   }
 }
 
@@ -101,8 +102,8 @@ async function createTagContentList(sortedContentList: Item[]) {
   for (const content of contentList) {
     genMarkdownJSON(content);
   }
-  genRecentPostList(sortedContentList);
-  createAllTags();
-  createTagContentList(sortedContentList);
+  await genRecentPostList(sortedContentList);
+  await createAllTags();
+  await createTagContentList(sortedContentList);
 })();
 
