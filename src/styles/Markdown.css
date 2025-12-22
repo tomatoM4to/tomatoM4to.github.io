@@ -120,19 +120,40 @@
 
 .markdown pre {
   margin: 1.5em 0;
+  padding: 0;
+  overflow-x: visible;
+  background-color: transparent;
+  border-radius: 8px;
+  border: none;
+}
+
+/* Reset styles for code inside pre (both plain and highlighted) */
+.markdown pre code {
+  background-color: transparent;
+  padding: 0;
+  color: inherit;
+  font-size: 100%;
+  vertical-align: baseline;
+  border: none;
+}
+
+/* Styles for plain code blocks (direct child of pre) */
+.markdown pre > code {
+  display: block;
   padding: 1.2em;
   overflow-x: auto;
   background-color: var(--bg-secondary);
   border-radius: 8px;
   border: 1px solid var(--border-primary);
-}
-
-.markdown pre code {
-  background-color: transparent;
-  padding: 0;
   color: var(--text-primary);
   font-size: 0.9em;
-  vertical-align: baseline;
+}
+
+/* Styles for SyntaxHighlighter container */
+.markdown pre > div {
+  margin: 0 !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--border-primary);
 }
 
 /* Images */

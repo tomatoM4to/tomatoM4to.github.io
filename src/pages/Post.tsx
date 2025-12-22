@@ -5,6 +5,8 @@ import { type GrayMatterFile } from "gray-matter";
 import { updateHead } from "@src/hooks/useHead";
 import { makeURL } from "@src/shared/common";
 import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 
 const Markdown = lazy(() => import("react-markdown"));
@@ -57,7 +59,30 @@ export default function Post({ markdown }: { markdown: string, }) {
       </div>
       <div className="post-content markdown">
         <Suspense fallback={<div>...loading</div>}>
-          <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
+          <Markdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              code(props: any) {
+                const { children, className, node, ...rest } = props
+                const match = /language-(\w+)/.exec(className || '')
+                return match ? (
+                  <SyntaxHighlighter
+                    {...rest}
+                    PreTag="div"
+                    children={String(children).replace(/\n$/, '')}
+                    language={match[1]}
+                    style={dracula}
+                  />
+                ) : (
+                  <code {...rest} className={className}>
+                    {children}
+                  </code>
+                )
+              }
+            }}
+          >
+            {content}
+          </Markdown>
         </Suspense>
       </div>
     </div>
