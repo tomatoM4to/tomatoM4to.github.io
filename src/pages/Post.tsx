@@ -6,7 +6,7 @@ import { updateHead } from "@src/hooks/useHead";
 import { makeURL } from "@src/shared/common";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import dracula from 'react-syntax-highlighter/dist/esm/styles/prism/dracula';
 
 
 const Markdown = lazy(() => import("react-markdown"));
