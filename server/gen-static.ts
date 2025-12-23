@@ -5,7 +5,8 @@ import {
   createHTML,
   createTemplate,
   createInitialData,
-  type Render
+  type Render,
+  delay
 } from '@server/utils.ts';
 
 const PROJECT_ROOT = process.cwd();
@@ -19,11 +20,6 @@ const pages: string[] = [
 
 const DIST_PATH = path.join(PROJECT_ROOT, 'dist');
 const template = await createTemplate();
-
-async function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-};
-
 
 async function generatePage(route: string) {
   const initialData = await createInitialData(route);

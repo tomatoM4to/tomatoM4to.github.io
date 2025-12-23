@@ -151,3 +151,7 @@ export async function getItemFromTag(
     data: filteredItems
   };
 }
+
+export async function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};

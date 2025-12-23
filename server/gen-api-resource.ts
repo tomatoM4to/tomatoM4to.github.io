@@ -1,7 +1,13 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import matter from 'gray-matter';
-import { getItemFromTag, getSortedContentList, getTags, type Item } from './utils.ts';
+import {
+  getItemFromTag,
+  getSortedContentList,
+  getTags,
+  type Item,
+  delay
+} from '@server/utils.ts';
 
 
 const PROJECT_ROOT = process.cwd();
@@ -102,8 +108,11 @@ async function createTagContentList(sortedContentList: Item[]) {
   for (const content of contentList) {
     genMarkdownJSON(content);
   }
+  await delay(100);
   await genRecentPostList(sortedContentList);
+  await delay(100);
   await createAllTags();
+  await delay(100);
   await createTagContentList(sortedContentList);
 })();
 
