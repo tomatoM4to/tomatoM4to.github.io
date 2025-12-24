@@ -1,9 +1,11 @@
 ---
-title: "백준 7576 토마토"
+title: "백준 7576 토마토 (3차원)"
 description: "백준 7569번 토마토 Python 코드"
 date: "2021-08-31"
 keywords: "백준"
 ---
+
+> [https://www.acmicpc.net/problem/7569](https://www.acmicpc.net/problem/7569)
 
 3차원 격자 위에서의 BFS 문제, 헷갈린다면 `7576` 번 부터 풀어보자.
 

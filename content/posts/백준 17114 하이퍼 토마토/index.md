@@ -5,6 +5,8 @@ date: "2021-09-25"
 keywords: "백준"
 ---
 
+> [https://www.acmicpc.net/problem/17114](https://www.acmicpc.net/problem/17114)
+
 마치 코드가 ⚡ 처럼 생겼다. 인터넷 밈에서나 보던 코드를 내가 직접 작성하게 되다니. 참고로 `pypy3` 가 아니면 시간 초과가 뜬다.
 
 ```python
