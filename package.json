@@ -12,7 +12,8 @@
     "build:api": "tsx --tsconfig tsconfig.server.json server/gen-api-resource.ts",
     "build": "npm run build:ssg && npm run build:api",
     "start:ssr": "cross-env NODE_ENV=production tsx watch --tsconfig tsconfig.server.json server/server.ts",
-    "start:ssg": "serve dist"
+    "start:ssg": "serve dist",
+    "convert": "node scripts/img-to-webp.js"
   },
   "dependencies": {
     "compression": "^1.8.1",
@@ -36,6 +37,7 @@
     "gray-matter": "^4.0.3",
     "rollup-plugin-visualizer": "^6.0.5",
     "serve": "^14.2.5",
+    "sharp": "^0.34.5",
     "tsx": "^4.20.6",
     "typescript": "~5.9.2",
     "vite": "^7.1.5",

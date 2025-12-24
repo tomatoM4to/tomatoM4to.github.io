@@ -1,6 +1,6 @@
 ---
 title: "Docker 의 등장 배경"
-description: "가상화 기술의 기초부터 Virtual Machine과 Container의 차이점을 비교하고, 이를 통해 Docker가 등장하게 된 배경과 핵심 개념을 정리합니다."
+description: "Virtual Machine과 Container의 차이점을 비교하고, 이를 통해 Docker가 등장하게 된 배경과 핵심 개념을 정리합니다."
 date: "2025-05-25"
 keywords: "Docker"
 ---
@@ -38,9 +38,12 @@ VM 이 확장성, 격리성 등 많은 장점을 가지곤 있지만, 애플리�
 
 그래서 전체 OS 를 가상화 하지 않고, 애플리케이션 실행에 필요한 최소한의 환경만을 추상화해서 독립된 실행 공간을 제공하는 아이디어가 등장했다. 이것이 바로 **컨테이너 (Container)** 기술이다.
 
-아래 그림은 VM 과 Container 의 차이를 잘 보여준다.
+![VM vs docker](/img/Docker/vm-vs-docker.webp)
 
-TODO: 사진
+위 그림을 통해 VM 과 컨테이너의 핵심 차이점을 알아보자
+1. Gust OS 제거: 컨테이너는 독립된 OS 대신 호스트 OS 의 커널을 공유
+2. Docker Engine: Hypervisor 를 대체하는 런타임
+3. 경량 패키징: 애플리케이션 실행에 필요한 최소한의 라이브러리(Bins/Libs)와 설정 파일만을 포함
 
 > 결과적으로 VM 에 비해 **압도적으로** 가볍고 빠른 실행 환경을 제공할 수 있게 된다.
 
