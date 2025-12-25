@@ -7,7 +7,9 @@ import '@src/styles/Markdown.css';
 import '@src/styles/Search.css';
 import '@src/styles/Tag.css';
 import '@src/styles/Pagination.css';
+import '@src/styles/Footer.css';
 import Nav from '@src/components/Nav';
+import Footer from '@src/components/Footer';
 import Home from '@src/pages/Home';
 import Post from '@src/pages/Post';
 import Search from '@src/pages/Search';
@@ -25,6 +27,7 @@ export default function App({ markdown }: { markdown: string }) {
         <Route path='/search' element={<Search />} />
         <Route path='/tags' element={<Tag />} />
       </Routes>
+      <Footer />
     </MountProvider>
   )
 };
