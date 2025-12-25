@@ -7,7 +7,7 @@ export default function Footer() {
         <div className='footer-links'>
           <a href="https://github.com/tomatoM4to" target="_blank" rel="noopener noreferrer">GitHub</a>
           <a href="https://github.com/tomatoM4to/tomatoM4to.github.io" target="_blank" rel="noopener noreferrer">Repo</a>
-          {/* <Link to="/tags">License</Link> */}
+          <Link to="/license">License</Link>
         </div>
         <p className='footer-copyright'>
           © {new Date().getFullYear()} tomatoM4to. Code is Open Source.
