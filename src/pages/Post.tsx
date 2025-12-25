@@ -4,9 +4,9 @@ import { useParams } from "react-router";
 import { type GrayMatterFile } from "gray-matter";
 import { updateHead } from "@src/hooks/useHead";
 import { makeURL } from "@src/shared/common";
-import Giscus from "@giscus/react";
 
 const LazyMarkdown = lazy(() => import("@src/components/LazyMarkdown"));
+const LazyGiscus = lazy(() => import("@giscus/react"));
 
 export default function Post({ markdown }: { markdown: string, }) {
   const { post } = useParams();
@@ -58,20 +58,22 @@ export default function Post({ markdown }: { markdown: string, }) {
           {content && <LazyMarkdown content={content} />}
         </Suspense>
       </div>
-      <Giscus
-        id="comments"
-        repo="tomatoM4to/tomatoM4to.github.io"
-        repoId="R_kgDOP_LjPw"
-        category="Announcements"
-        categoryId="DIC_kwDOP_LjP84C0Omy"
-        mapping="pathname"
-        reactionsEnabled="0"
-        emitMetadata="0"
-        inputPosition="top"
-        theme="dark"
-        lang="en"
-        loading="lazy"
-      />
+      <Suspense fallback={<></>}>
+        <LazyGiscus
+          id="comments"
+          repo="tomatoM4to/tomatoM4to.github.io"
+          repoId="R_kgDOP_LjPw"
+          category="Announcements"
+          categoryId="DIC_kwDOP_LjP84C0Omy"
+          mapping="pathname"
+          reactionsEnabled="0"
+          emitMetadata="0"
+          inputPosition="bottom"
+          theme="catppuccin_frappe"
+          lang="en"
+          loading="lazy"
+        />
+      </Suspense>
     </div>
   )
 }
