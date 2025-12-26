@@ -90,7 +90,7 @@ export default function Search() {
           {searchQuery.trim() === "" ? (
             <SearchResultSupport support="검색어를 입력해주세요." />
           ) : filteredList.length > 0 ? (
-            <ItemList>
+            <ItemList isLoading={false}>
               {filteredList.map((item) => (
                 <Item key={item.id} post={item} />
               ))}

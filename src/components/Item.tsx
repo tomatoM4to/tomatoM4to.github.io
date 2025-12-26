@@ -33,6 +33,17 @@ export function Item({post}: {post: ItemType}) {
   )
 }
 
-export function ItemList({children}: {children: ReactNode}) {
-  return <div className='item-list'>{children}</div>
+export function ItemList({
+  children,
+  isLoading
+}: {
+  children: ReactNode,
+  isLoading: boolean
+}) {
+  return (
+    <div className='item-list'>
+      {isLoading && <div className="loader"></div>}
+      {!isLoading && children}
+    </div>
+  )
 }

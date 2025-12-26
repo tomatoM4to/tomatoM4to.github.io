@@ -7,6 +7,7 @@ import { Pagination } from "@src/components/Pagination";
 import '@src/styles/Tag.css';
 
 export default function Tag() {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchParams] = useSearchParams();
   const tag = searchParams.get('tag');
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
@@ -39,6 +40,7 @@ export default function Tag() {
     if (!tag) return;
     (async function getData() {
       try {
+        setIsLoading(true);
         const response = await fetch(`/api/tags/${tag}.json`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -46,8 +48,10 @@ export default function Tag() {
         const result: ContentList = await response.json();
         setContentList(result);
         setTotalPage(Math.ceil(result.len / 4));
+        setIsLoading(false);
       }
       catch (err) {
+        setIsLoading(true);
         console.error(err);
       }
     })();
@@ -77,7 +81,7 @@ export default function Tag() {
       {
         contentList && tag && (
           <>
-            <ItemList>
+            <ItemList isLoading={isLoading}>
               {
                 contentList.data.slice((currentPage - 1) * 4, currentPage * 4).map(post => (
                   <Item post={post} key={post.id} />
