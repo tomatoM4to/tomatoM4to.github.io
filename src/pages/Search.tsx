@@ -7,7 +7,7 @@ import {
   Item,
   ItemList
 } from "@src/components/Item";
-
+import '@src/styles/Search.css';
 
 export default function Search() {
   const [searchList, setSearchList] = useState<ItemType[]>([]);

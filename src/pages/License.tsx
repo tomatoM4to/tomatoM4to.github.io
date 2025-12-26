@@ -1,5 +1,6 @@
 import { useHead } from '@src/hooks/useHead';
 import { SITE_NAME, SITE_DOMAIN } from '@src/shared/common';
+import '@src/styles/License.css';
 
 interface Dependency {
   name: string;

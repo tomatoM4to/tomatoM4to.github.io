@@ -4,7 +4,7 @@ import { makeURL, SITE_NAME } from "@src/shared/common";
 import { type ContentList, ItemList, Item } from "@src/components/Item";
 import { Link, useSearchParams } from "react-router";
 import { Pagination } from "@src/components/Pagination";
-
+import '@src/styles/Tag.css';
 
 export default function Tag() {
   const [searchParams] = useSearchParams();
