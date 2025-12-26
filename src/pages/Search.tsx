@@ -35,7 +35,7 @@ export default function Search() {
         setSearchList(result.data);
         setLoadProgress(1 / count * 100);
 
-        // await new Promise(resolve => setTimeout(resolve, 300));
+        await new Promise(resolve => setTimeout(resolve, 300));
 
         for (let i = 2; i <= count; i++) {
           const response = await fetch(`/api/recent/${i}.json`);
@@ -46,7 +46,7 @@ export default function Search() {
           setSearchList((pre) => [...pre, ...result.data]);
           setLoadProgress(i / count * 100);
 
-          // await new Promise(resolve => setTimeout(resolve, 200));
+          await new Promise(resolve => setTimeout(resolve, 200));
         }
 
         setIsLoading(false);
@@ -90,7 +90,7 @@ export default function Search() {
           {searchQuery.trim() === "" ? (
             <SearchResultSupport support="검색어를 입력해주세요." />
           ) : filteredList.length > 0 ? (
-            <ItemList isLoading={false}>
+            <ItemList>
               {filteredList.map((item) => (
                 <Item key={item.id} post={item} />
               ))}

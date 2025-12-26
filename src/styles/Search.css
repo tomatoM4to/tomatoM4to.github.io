@@ -54,12 +54,12 @@
 }
 
 .search-progress::-webkit-progress-value {
-  background-color: var(--accent-primary);
+  background-color: var(--text-primary);
   transition: width 0.3s ease;
 }
 
 .search-progress::-moz-progress-bar {
-  background-color: var(--accent-primary);
+  background-color: var(--text-primary);
 }
 
 .search-loading-text {

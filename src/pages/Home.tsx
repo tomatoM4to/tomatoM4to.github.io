@@ -23,7 +23,6 @@ function Profile() {
 }
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [postList, setPostList] = useState<ItemType[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [searchParams] = useSearchParams();
@@ -37,7 +36,6 @@ export default function Home() {
   useEffect(() => {
     (async function getData() {
       try {
-        setIsLoading(true);
         const response = await fetch(`/api/recent/${currentPage}.json`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -45,10 +43,8 @@ export default function Home() {
         const result: ContentList = await response.json();
         setPostList(result.data);
         setTotalPages(Math.ceil(result.len / 4));
-        setIsLoading(false);
       }
       catch (err) {
-        setIsLoading(true);
         console.error(err);
       }
     })();
@@ -59,7 +55,7 @@ export default function Home() {
       <Profile />
       <h1 className="home-title">최근 포스트</h1>
       <div className="recent-posts-section">
-        <ItemList isLoading={isLoading}>
+        <ItemList>
           {postList.map(post => (
             <Item post={post} key={post.id} />
           ))}
