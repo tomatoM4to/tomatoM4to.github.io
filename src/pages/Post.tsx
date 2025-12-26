@@ -57,7 +57,7 @@ export default function Post({ markdown }: { markdown: string, }) {
       </div>
       <div className="post-content markdown">
         <Suspense fallback={<div className="loader"></div>}>
-          {content && <LazyMarkdown content={content} />}
+          {content ? <LazyMarkdown content={content} /> : <div className="loader"></div>}
         </Suspense>
       </div>
       <Suspense fallback={<></>}>
