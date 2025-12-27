@@ -1,7 +1,8 @@
 import { Route, Routes } from 'react-router';
 import { lazy, Suspense } from 'react';
 import '@src/styles/App.css';
-import '@src/styles/Pagination.css';
+import '@src/styles/Components.css';
+import '@src/styles/Spinners.css';
 import Nav from '@src/components/Nav';
 import Footer from '@src/components/Footer';
 import { MountProvider } from '@src/context/Mount';

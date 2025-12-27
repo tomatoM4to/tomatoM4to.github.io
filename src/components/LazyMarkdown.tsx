@@ -5,10 +5,9 @@ import dracula from 'react-syntax-highlighter/dist/cjs/styles/prism/dracula';
 
 // 필요한 언어만 사용 (cjs 경로 유지)
 import ts from 'react-syntax-highlighter/dist/cjs/languages/prism/typescript';
-import js from 'react-syntax-highlighter/dist/cjs/languages/prism/javascript';
+import tsx from 'react-syntax-highlighter/dist/cjs/languages/prism/tsx';
 import bash from 'react-syntax-highlighter/dist/cjs/languages/prism/bash';
 import json from 'react-syntax-highlighter/dist/cjs/languages/prism/json';
-import tsx from 'react-syntax-highlighter/dist/cjs/languages/prism/tsx';
 import python from 'react-syntax-highlighter/dist/cjs/languages/prism/python';
 
 // 빌드 에러 방지를 위한 헬퍼 함수
@@ -19,7 +18,6 @@ function register(name: string, language: any) {
 }
 
 register('typescript', ts);
-register('javascript', js);
 register('bash', bash);
 register('json', json);
 register('tsx', tsx);
