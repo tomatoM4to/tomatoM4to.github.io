@@ -1,13 +1,13 @@
 ---
-title: "Docker 용어 정리"
+title: "Docker 를 이해하기 위한 핵심 요소"
 description: "Docker의 핵심인 Image, Container, Volume, Dockerfile 등의 기본 개념과 용어를 정리합니다."
 date: "2025-05-26"
 keywords: "Docker"
 ---
 
-# Docker 용어 정리
+# Docker 의 핵심 요소들
 
-간단히 알아볼 Docker 의 핵심 용어들에 대해 정리해보자.
+Docker 를 시작하기 전 알아야할 핵심 개념들과 용어들을 미리 정리해 보자.
 
 1. Container
 2. Image
@@ -18,6 +18,7 @@ keywords: "Docker"
 7. Docker Hub
 8. Docker Desktop
 
+> 5번 이후는 Docker 자체보단 주변 생태계에 관한 내용이다.
 
 ## Container
 

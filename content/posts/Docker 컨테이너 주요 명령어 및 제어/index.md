@@ -1,9 +1,35 @@
 ---
-title: "Docker 컨테이너 기본 명령어"
-description: "Docker Container를 생성, 실행, 종료, 삭제하는 필수 명령어들과 백그라운드 실행 옵션에 대해 알아봅니다."
+title: "Docker 컨테이너 주요 명령어 및 제어"
+description: "Docker 컨테이너 를 생성, 종료, 삭제, 관리 하는 필수 명령어들을 알아봅시다."
 date: "2025-05-27"
 keywords: "Docker"
 ---
+
+# Container 생성
+
+> 예전에는 `docker run` 명령어로 컨테이너를 생성하고 실행했지만, Docker 1.13 버전 이후로는 명시적으로 container 관련 명령어라는걸 구분하기 위해 `docker container run` 으로 사용하는걸 권장하고 있다. 그러므로 여기선 `docker container` 기준으로 설명하겠다.
+
+```bash
+docker container run -d IMAGE_NAME
+```
+
+해당 명령어는 새로운 컨테이너를 생성하고 실행하는데 사용된다. 지정한 이미지가 시스템에 존재하지 않을 경우, Docker Hub 에서 이미지를 다운로드 한다.
+
+터미널은 기본적으로 하나의 프로세스를 실행하고 대기하는 구조이기 때문에, 컨테이너가 종료되지 않는 이상 터미널 제어가 돌아오지 않는다. 이렇게 되면 터미널의 사용이 불가능해지므로, `-d` 옵션을 사용해 컨테이너를 백그라운드로 실행하도록 한다. 이러면 터미널이 차단되지 않는다. 대부분의 경우 `-d` 옵션을 사용해 실행하므로 습관적으로 붙여주자.
+
+# Container 목록 확인
+
+```bash
+docker container ls -a
+docker ps -a
+```
+해당 명령어는 현재 시스템에 존재하는 모든 컨테이너 목록을 보여준다. `-a` 옵션을 추가하지 않으면 실행 중인 컨테이너만 표시된다. 두 명령어 모두 동일한 기능을 수행하므로 편한 것을 사용하면 된다. 필자도 귀찮아서 보통 `docker ps -a` 로 사용한다.
+
+# Container 종료
+
+```bash
+docker container stop CONTAINER_NAME
+```
 
 # 기본 명령어
 
