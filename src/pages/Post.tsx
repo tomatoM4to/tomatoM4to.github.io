@@ -8,7 +8,7 @@ import '@src/styles/Post.css';
 import '@src/styles/Markdown.css';
 
 const LazyMarkdown = lazy(() => import("@src/components/LazyMarkdown"));
-const LazyGiscus = lazy(() => import("@giscus/react"));
+const LazyGiscus = lazy(() => import("@src/components/LazyGiscus"));
 
 export default function Post({ markdown }: { markdown: string, }) {
   const { post } = useParams();
@@ -61,20 +61,7 @@ export default function Post({ markdown }: { markdown: string, }) {
         </Suspense>
       </div>
       <Suspense fallback={<></>}>
-        <LazyGiscus
-          id="comments"
-          repo="tomatoM4to/tomatoM4to.github.io"
-          repoId="R_kgDOP_LjPw"
-          category="Announcements"
-          categoryId="DIC_kwDOP_LjP84C0Omy"
-          mapping="pathname"
-          reactionsEnabled="0"
-          emitMetadata="0"
-          inputPosition="bottom"
-          theme="catppuccin_frappe"
-          lang="en"
-          loading="lazy"
-        />
+        <LazyGiscus />
       </Suspense>
     </div>
   )

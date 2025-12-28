@@ -6,6 +6,7 @@ import '@src/styles/Spinners.css';
 import Nav from '@src/components/Nav';
 import Footer from '@src/components/Footer';
 import { MountProvider } from '@src/context/Mount';
+import { ThemeProvider } from '@src/context/Theme';
 
 const Home = lazy(() => import('@src/pages/Home'));
 const Post = lazy(() => import('@src/pages/Post'));
@@ -16,17 +17,19 @@ const License = lazy(() => import('@src/pages/License'));
 export default function App({ markdown }: { markdown: string }) {
   return (
     <MountProvider>
-      <Nav />
-      <Suspense fallback={<></>}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/posts/:post" element={<Post markdown={markdown} />} />
-          <Route path='/search' element={<Search />} />
-          <Route path='/tags' element={<Tag />} />
-          <Route path='/license' element={<License />} />
-        </Routes>
-      </Suspense>
-      <Footer />
+      <ThemeProvider>
+        <Nav />
+        <Suspense fallback={<></>}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/posts/:post" element={<Post markdown={markdown} />} />
+            <Route path='/search' element={<Search />} />
+            <Route path='/tags' element={<Tag />} />
+            <Route path='/license' element={<License />} />
+          </Routes>
+        </Suspense>
+        <Footer />
+      </ThemeProvider>
     </MountProvider>
   )
 };

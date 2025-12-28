@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
-import { Theme, useTheme } from '@src/hooks/useTheme';
+import { useTheme } from '@src/hooks/useTheme';
 import { useMount } from '@src/hooks/useMount';
+import { Theme } from '@src/context/Theme';
 
 function ThemeToggle() {
   const { theme, setTheme } = useTheme();
