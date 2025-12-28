@@ -1,7 +1,9 @@
 import { StrictMode } from 'react';
-import { renderToString } from 'react-dom/server';
+import { renderToPipeableStream } from 'react-dom/server';
 import { StaticRouter } from 'react-router';
 import type { GrayMatterFile } from 'gray-matter';
+import { PassThrough } from 'node:stream';
+
 import {
   SITE_NAME,
   DEFAULT_DESC,
@@ -86,12 +88,47 @@ export async function render({
       type: 'article',
     });
   }
-  const body = renderToString(
-    <StrictMode>
-      <StaticRouter location={`/${url}`}>
-        <App markdown={initialData?.content || ''} />
-      </StaticRouter>
-    </StrictMode>,
-  );
+
+const body = await new Promise<string>((resolve, reject) => {
+    let html = '';
+    const writable = new PassThrough();
+    let isPiped = false;  // StrictMode 일시 두번 실행되는거 방지
+
+    writable.on('data', (chunk) => {
+      html += chunk.toString();
+    });
+
+    // 스트림이 완전히 종료되었을 때만 resolve
+    writable.on('end', () => {
+      resolve(html);
+    });
+
+    writable.on('error', (err) => {
+      reject(err);
+    });
+
+    const { pipe } = renderToPipeableStream(
+      <StrictMode>
+        <StaticRouter location={`/${url}`}>
+          <App markdown={initialData?.content || ''} />
+        </StaticRouter>
+      </StrictMode>,
+      {
+        onAllReady() {
+          if (isPiped) return;
+          isPiped = true;
+
+          pipe(writable);
+          writable.end();
+        },
+        onShellError(error) {
+          reject(error);
+        },
+        onError(error) {
+          console.error('Streaming error observed:', error);
+        }
+      }
+    );
+  });
   return { body, head };
 };
