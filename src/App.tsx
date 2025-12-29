@@ -7,11 +7,11 @@ import Nav from '@src/components/Nav';
 import Footer from '@src/components/Footer';
 import { MountProvider } from '@src/context/Mount';
 import { ThemeProvider } from '@src/context/Theme';
+import Home from '@src/pages/Home';
+import Post from '@src/pages/Post';
+import Search from '@src/pages/Search';
+import Tag from '@src/pages/Tag';
 
-const Home = lazy(() => import('@src/pages/Home'));
-const Post = lazy(() => import('@src/pages/Post'));
-const Search = lazy(() => import('@src/pages/Search'));
-const Tag = lazy(() => import('@src/pages/Tag'));
 const License = lazy(() => import('@src/pages/License'));
 
 export default function App({ markdown }: { markdown: string }) {
