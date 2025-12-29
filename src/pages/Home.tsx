@@ -4,7 +4,7 @@ import { ItemType, Item, ItemList, type ContentList } from "@src/components/Item
 import { Pagination } from "@src/components/Pagination";
 import { SITE_NAME, SITE_DOMAIN } from "@src/shared/common";
 import { useSearchParams } from "react-router";
-import '@src/styles/Home.css';
+
 
 function Profile() {
   return (
