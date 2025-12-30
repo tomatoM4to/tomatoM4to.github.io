@@ -5,6 +5,9 @@ date: "2025-12-30"
 keywords: "JavaScript"
 ---
 
+**Reference**
+1. [https://www.youtube.com/watch?v=YfAa5jA2xeM](https://www.youtube.com/watch?v=YfAa5jA2xeM)
+2. [https://dmitripavlutin.com/javascript-variables-and-temporal-dead-zone/](https://dmitripavlutin.com/javascript-variables-and-temporal-dead-zone/)
 
 # 호이스팅 (Hoisting)
 
