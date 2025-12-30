@@ -12,6 +12,7 @@ const LazyGiscus = lazy(() => import("@src/components/LazyGiscus"));
 export default function Post({ markdown }: { markdown: string, }) {
   const { post } = useParams();
   const [content, setContent] = useState(markdown);
+  const [date, setDate] = useState<string>('');
   const { networkMountRef } = useNetworkMount();
 
   useEffect(() => {
@@ -26,6 +27,7 @@ export default function Post({ markdown }: { markdown: string, }) {
         }
         const result: GrayMatterFile<string> = await response.json();
         setContent(result.content);
+        setDate(result.data?.date || '');
         const encodedPost = encodeURIComponent(`${post}`);
         updateHead({
           title: result.data.title,
@@ -49,9 +51,7 @@ export default function Post({ markdown }: { markdown: string, }) {
       <div className="post-header">
         <h1 className="post-title">{post}</h1>
         <div className="post-meta">
-          <span className="post-date">2024-01-15</span>
-          <span className="post-author">tomatoM4to</span>
-          <span className="post-reading-time">5분 읽기</span>
+          <span className="post-date">{date}</span>
         </div>
       </div>
       <div className="post-content markdown">

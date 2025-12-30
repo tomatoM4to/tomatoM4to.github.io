@@ -33,16 +33,6 @@
   font-weight: 400;
 }
 
-.post-author {
-  color: var(--text-secondary);
-  font-weight: 400;
-}
-
-.post-reading-time {
-  color: var(--text-muted);
-  font-weight: 400;
-}
-
 .post-content {
   color: var(--text-secondary);
   line-height: 1.75;
@@ -77,11 +67,5 @@
 @media (max-width: 768px) {
   .post-title {
     font-size: 1.5rem;
-  }
-
-  .post-meta {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.4rem;
   }
 }
