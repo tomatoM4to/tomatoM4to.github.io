@@ -1,5 +1,5 @@
 ---
-title: "Docker 이미지 최적화"
+title: "Docker 이미지를 최적화 하는 3가지 전략"
 description: "Docker Image의 크기를 줄이고 빌드 속도를 높이기 위한 Layer 최적화 전략과 원리를 알아봅니다."
 date: "2025-06-02"
 keywords: "Docker"
