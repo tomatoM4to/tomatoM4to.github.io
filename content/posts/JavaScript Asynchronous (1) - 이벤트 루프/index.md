@@ -1,6 +1,6 @@
 ---
-title: "JavaScript 이벤트 루프"
-description: "싱글 스레드 언어인 JavaScript가 비동기 I/O를 처리하는 방식과 V8, libuv, 이벤트 루프의 동작 원리를 알아봅니다."
+title: "JavaScript Asynchronous (1) - 이벤트 루프"
+description: "싱글 스레드 언어인 JavaScript가 비동기 I/O를 처리하는 방식을 V8 엔진, libuv, 이벤트 루프의 관점에서 자세히 살펴봅니다."
 date: "2026-01-01"
 keywords: "JavaScript"
 ---

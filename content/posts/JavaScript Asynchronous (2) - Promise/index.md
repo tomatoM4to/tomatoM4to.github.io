@@ -1,5 +1,5 @@
 ---
-title: "JavaScript Asynchronous (1) - Promise"
+title: "JavaScript Asynchronous (2) - Promise"
 description: "콜백 지옥을 해결하기 위해 등장한 Promise의 동작 원리와 상태 관리, 그리고 Microtask Queue와 Macrotask Queue의 차이점에 대해 깊이 있게 알아봅니다."
 date: "2026-01-02"
 keywords: "JavaScript"
@@ -179,9 +179,8 @@ new Promise((_, reject) => reject(new Error("실패!")))
   .catch(err => console.log(err.message));
 ```
 
-> `resolve` 는 문자열, 숫자, 객체 등 어떤 값이든 상관 없지만, `reject` 에는 반드시 `new Error()` 를 전달하는 습관을 들이자.
+> `resolve` 는 문자열, 숫자, 객체 등 어떤 값이든 상관 없지만, **스택 트레이스(Stack Trace)**가 남지 않아 에러가 발생한 위치를 찾기 어렵기 때문에, 반드시 `new Error()` 를 전달하는 습관을 들이자.
 
-> `reject` 에는 단순 문자열도 넘길수 있지만 **스택 트레이스(Stack Trace)**가 남지 않아 에러가 발생한 위치를 찾기 어렵기 때문에, 반드시 `new Error()` 를 전달하자
 
 ## 자주 사용되는 Promise 패턴
 
