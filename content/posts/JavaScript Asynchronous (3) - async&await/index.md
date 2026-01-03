@@ -1,6 +1,6 @@
 ---
 title: "JavaScript Asynchronous (3) - async&await"
-description: ""
+description: "async/await의 동작 원리와 Generator와의 관계를 살펴보고, Promise.all, allSettled, any, race를 활용해 비동기 병목(Waterfall) 현상을 해결하는 다양한 패턴을 알아봅니다."
 date: "2026-01-03"
 keywords: "JavaScript"
 ---
@@ -9,7 +9,7 @@ keywords: "JavaScript"
 기존 Promise 의 동작으로 콜백 기반의 비동기 작업의 가독성을 어느정도 해결할 수 있었지만, 여전히 `then` 체이닝이 길어지면 가독성이 떨어지는 문제는 남아있었다. 이를 해결하기 위해 ES2017(ES8) 에서 `async` 와 `await` 키워드가 도입되었다.
 
 `async` 키워드로 선언된 함수는 다음과 같은 특징을 가진다.
-1. 항상 Promise 를 반환한다, 함수 내부에서 명시적으로 Promise 를 반환하지 않더라도, 반환값은 자동으로 `Promise.resolve()` 로 감싸진다.
+1. 항상 Promise 를 반환한다, 함수 내부에서 명시적으로 Promise 를 반환하지 않더라도, 반환값은 자동으로 `Promise.resolve()` 로 감싸진다, 에러가 발생하면 `Promise.reject()` 로 감싸진다.
 2. 함수 내부에서 `await` 키워드를 사용할 수 있다, `await` 키워드는 `async` 함수 내에서만 사용 가능하다.
 3. `await` 키워드는 Promise 가 이행될 때까지 **함수의 실행을 일시 중지**한다. 이때 중요한 점은 메인 스레드를 차단(Block)하는 것이 아니라, **해당 함수의 실행 컨텍스트만 스택에서 내려가고 다른 작업을 처리할 수 있게 한다는 점**이다.
 4. 이후 Promise 가 이행되면, 다시 함수의 실행 컨텍스트가 스택에 올라오면서 **함수의 실행이 재개**된다. 이때 `await` 표현식은 이행된 Promise 의 결과값으로 평가된다.
@@ -22,7 +22,7 @@ async function foo() {
 }
 
 function bar() {
-  return Promise.resolve("완료!");
+  return new Promise.resolve("완료!");
 }
 ```
 
@@ -122,11 +122,11 @@ function _fetchData() {
 
 복잡해 보이지만 **구조의 변화**에 주목해서 보자.
 
-핵심은 `async function`이 `function*`(Generator)으로 바뀌고, `await` 키워드가 `yield`로 변환되었다는 점이다. 이를 통해 `await`를 만났을 때 함수가 **실제로는 `yield`를 통해 실행을 멈추고 제어권을 밖으로 넘긴다**는 것을 시각적으로 확인할 수 있다.
+핵심은 `async function`이 `function*`(Generator)으로 바뀌고, `await` 키워드가 `yield`로 변환되었다는 점이다. 이를 통해 `await`를 만났을 때 **함수가 중지되고 중지된 지점에서 다시 재개되는 동작**을 코드로 확인할 수 있다.
 
 또한, 제너레이터는 스스로 작동하지 않기 때문에(수동으로 `next`를 호출해야 함), 이를 자동으로 실행시켜 줄 **`_asyncToGenerator`라는 헬퍼 함수**가 감싸고 있는 구조도 확인할 수 있다.
 
-> Babel 로 `async/await` 이 어떻게 트랜스파일링 되는지 궁금하다면, [Babel REPL](https://babeljs.io/repl) 에서 직접 코드를 입력해보자. 해당 코드는 ENV PRESET 을 체크하고 NODE 버전을 6으로 설정했다. (최신 브라우저는 `async/await` 를 지원하기에 트랜스파일링이 일어나지 않는다.)
+> Babel 로 `async/await` 이 어떻게 트랜스파일링 되는지 궁금하다면, [Babel REPL](https://babeljs.io/repl) 에서 직접 코드를 입력해보자. 해당 코드는 ENV PRESET 을 체크하고 NODE 버전을 6으로 설정했다. (최신 버전은 `async/await` 를 지원하기에 트랜스파일링이 일어나지 않는다.)
 
 ## await Waterfall
 
@@ -245,4 +245,4 @@ async function getDataWithTimeout() {
 }
 ```
 
-> `Promise.any` 와 `Promise.race` 를 통해 먼저 결과를 반환받더라도, 채택되지 못한 나머지 비동기 작업(네트워크 요청 등)이 자동으로 취소되지는 않는다. 최신 자바스크립트는 이 문제를 해결하기 위해 `AbortController` 라는 API를 제공한다. 관심있다면 [MDN 문서](https://developer.mozilla.org/ko/docs/Web/API/AbortController)를 참고하자.
+> `Promise.any` 와 `Promise.race` 를 통해 먼저 결과를 반환받더라도, 채택되지 못한 나머지 비동기 작업(네트워크 요청, 타이머 등)이 자동으로 취소되지는 않는다. 최신 자바스크립트는 이 문제를 해결하기 위해 `AbortController` 라는 API를 제공한다. 관심있다면 [MDN 문서](https://developer.mozilla.org/ko/docs/Web/API/AbortController)를 참고하자.
