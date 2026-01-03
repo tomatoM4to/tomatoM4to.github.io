@@ -15,10 +15,10 @@ JS 는 V8 엔진 위에서 동작하는 싱글스레드 언어이면서, **비�
 
 표로 확인해 보자
 
-| 관리 주체 | 큐 이름        | 포함되는 작업 종류                   | 우선순위 |
+| 관리 주체 | 큐 이름       | 포함되는 작업 종류                   | 우선순위 |
 |-------|-----------------|-----------------------------------|---------|
-| V8 엔진 | Microtask Queue | `Promise`, `process.nextTick` 등 | 1순위  |
-| libuv | Macrotask Queue | `setTimeout`, `setInterval` 등    | 2순위  |
+| V8    | Microtask Queue | `Promise`, `process.nextTick` 등  | 1순위    |
+| libuv | Macrotask Queue | `setTimeout`, `setInterval` 등    | 2순위    |
 
 
 > Call Stack 이 비어있을 때, Microtask Queue 에 작업이 있다면 해당 작업들을 모두 처리한 후에야 Macrotask Queue 에서 콜백을 꺼내 처리한다.
@@ -62,7 +62,7 @@ Promise 는 인자로 `(resolve, reject) => {...}` 형태의 콜백 함수를 �
 
 그리고 `then` 메서드를 사용해 `resolve` 가 호출되었을 때 실행할 콜백 함수를 등록할 수 있다. 이로 인해 비동기 작업이 연속적으로 이어질 때, 콜백 함수들이 중첩되는 현상을 피할 수 있어 코드의 가독성이 크게 향상된다. 반대로 `catch` 메서드를 사용해 `reject` 가 호출되었을 때 실행할 콜백 함수를 등록할 수도 있다.
 
-> Promise 라고 이름이 지어진 이유는, 비동기 I/O 작업 은 결국 시간이 걸릴테니까.. 지금 당장은 언젠간 완료될거라는 **약속** 을 해준다는 의미에서 붙여진 이름이다. 그리고 진짜 약속처럼 약속이 지켜졌을 때(`resolve`), 혹은 지켜지지 않았을 때(`reject`) 에 대한 처리를 미리 정의해둘 수 있다.
+> Promise 라고 이름이 지어진 이유는, 비동기 I/O 작업 은 결국 시간이 걸릴테니까.. 언젠간 완료될거라는 **약속** 을 해준다는 의미에서 붙여진 이름이다. 그리고 진짜 약속처럼 약속이 지켜졌을 때(`resolve`), 혹은 지켜지지 않았을 때(`reject`) 에 대한 처리를 미리 정의해둘 수 있다.
 
 ## Promise 의 동작 방식
 
@@ -110,7 +110,7 @@ delay()
 
 Promise 는 생성될 때부터 완료될 때까지 세 가지 상태(state)를 가진다.
 1. 대기(pending): 초기 상태, 아직 이행(resolve)도 거부(reject)도 되지 않은 상태
-2. 이행(fulfilled): 작업이 성공적으로 완료되어 `resolve` 가 호출된 상태
+2. 이행(fulfilled): `resolve` 가 호출되어 작업이 성공적으로 완료된 상태
 3. 거부(rejected): 작업이 실패하여 `reject` 가 호출된 상태
 
 아래 코드를 통해 Promise 의 상태 변화를 추적해 보자.
@@ -160,8 +160,7 @@ myPromise
 4. 전달된 Promise 는 거부(rejected) 상태이므로, `myPromise` 도 거부(rejected) 상태가 됨
 5. 따라서 `then` 블록은 건너뛰고 `catch` 블록이 실행됨
 
-> `resolve(new Promise(...))` 형태가 어색할순 있지만 이후 예기할 `async/await` 에서 굉장히 자주 등장하는 패턴이니 한번은 이해하고 넘어가자.
-
+> `resolve(new Promise(...))` 형태를 직접 사용하는 경우는 거의 없지만, `async/await` 문법을 사용할 때 내부적으로 이런 동작이 자주 발생하기에 이해해두면 좋다.
 ### reject
 `reject` 는 좀더 단순하게 동작하는데, Promise 는 `reject` 를 호출시, 인자로 어떤 값을 넣던지간에 무조건 거부(rejected) 상태가 된다.
 
