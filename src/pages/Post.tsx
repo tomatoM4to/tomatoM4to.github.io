@@ -11,9 +11,14 @@ const LazyGiscus = lazy(() => import("@src/components/LazyGiscus"));
 
 export default function Post({ markdown }: { markdown: string, }) {
   const { post } = useParams();
-  const [content, setContent] = useState(markdown);
-  const [date, setDate] = useState<string>('');
   const { networkMountRef } = useNetworkMount();
+  const [content, setContent] = useState<string | null>(() => {
+    if (!networkMountRef.current) {
+      return markdown;
+    }
+    return null;
+  });
+  const [date, setDate] = useState<string>('');
 
   useEffect(() => {
     if (!networkMountRef.current) {
@@ -56,7 +61,7 @@ export default function Post({ markdown }: { markdown: string, }) {
       </div>
       <div className="post-content markdown">
         <Suspense fallback={<div className="loader"></div>}>
-          {content ? <LazyMarkdown content={content} /> : <div className="loader"></div>}
+          {content !== null ? <LazyMarkdown content={content} /> : <div className="loader"></div>}
         </Suspense>
       </div>
       <Suspense fallback={<></>}>
