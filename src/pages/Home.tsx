@@ -11,8 +11,8 @@ function Profile() {
     <div className="profile-container">
       <img
         className="profile-image"
-        src="GOAT.jpg"
-        alt="역사상 최고 미녀"
+        src="reze.webp"
+        alt="Chainsaw Man - The Movie: Reze Arc"
         loading="lazy"
       />
       <p>
