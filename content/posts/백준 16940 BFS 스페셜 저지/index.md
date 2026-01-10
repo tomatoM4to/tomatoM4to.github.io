@@ -1,0 +1,106 @@
+---
+title: "백준 16940 BFS 스페셜 저지"
+description: "백준 16940번 BFS 스페셜 저지 Python, cpp 코드"
+date: "2022-05-04"
+keywords: "백준"
+---
+
+> [https://www.acmicpc.net/problem/16940](https://www.acmicpc.net/problem/16940)
+
+BFS 이해도 검증하기 좋은 문제, 탐색할때 노드를 체크하는것도 중요하지만 q에 넣는 순서도 중요하다.
+
+```python
+from sys import stdin
+from collections import deque
+
+def bfs(x):
+    global graph, visit, check
+    visit[x] = 1
+    q = deque([x])
+
+    while q:
+        node = q.popleft()
+        for i in range(len(graph[node])-1):
+            c = check.popleft()
+            if c in graph[node]:
+                visit[c] = 1
+                q.append(c)
+            else:
+                print(0)
+                exit(0)
+
+N = int(stdin.readline())
+graph = [[] for _ in range(N+1)]
+graph[1].append(0)
+visit = [0] * 100001
+for i in range(N-1):
+    x, y = map(int, stdin.readline().split())
+    graph[x].append(y)
+    graph[y].append(x)
+check = deque(list((map(int, stdin.readline().split()))))
+if check[0] != 1:
+    print(0)
+    exit(0)
+
+bfs(check.popleft())
+print(1)
+```
+
+아래는 2026년 1월에 다시 풀어본 코드
+
+```cpp
+#include <bits/stdc++.h>
+
+using namespace std;
+
+vector<multiset<int>> graph;
+queue<int> ans, q;
+vector<int> v;
+int N;
+
+int main () {
+    cin >> N;
+
+    for (int i = 0; i < N + 1; i++) {
+        graph.push_back({});
+        v.push_back(0);
+    }
+
+    int a, b;
+    for (int i = 0; i < N - 1; i++) {
+        cin >> a >> b;
+        graph[a].insert(b);
+        graph[b].insert(a);
+    }
+
+    for (int i = 0; i < N; i++) {
+        cin >> a;
+        ans.push(a);
+    }
+
+    q.push(1);
+    if (ans.front() != 1) {
+        cout << 0 << endl;
+        return 0;
+    }
+    ans.pop();
+    while (!q.empty()) {
+        int node = q.front();
+        q.pop();
+        int m = node == 1 ? graph[node].size() : graph[node].size() - 1;
+        for (int i = 0; i < m; i++) {
+            if (!ans.empty()) {
+                int target = ans.front();
+                ans.pop();
+                if (graph[node].find(target) == graph[node].end()) {
+                    cout << 0 << endl;
+                    return 0;
+                }
+                q.push(target);
+            }
+        }
+    }
+    cout << 1 << endl;
+    return 0;
+}
+```

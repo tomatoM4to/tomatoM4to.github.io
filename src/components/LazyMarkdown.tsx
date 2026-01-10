@@ -9,6 +9,7 @@ import tsx from 'react-syntax-highlighter/dist/cjs/languages/prism/tsx';
 import bash from 'react-syntax-highlighter/dist/cjs/languages/prism/bash';
 import json from 'react-syntax-highlighter/dist/cjs/languages/prism/json';
 import python from 'react-syntax-highlighter/dist/cjs/languages/prism/python';
+import cpp from 'react-syntax-highlighter/dist/cjs/languages/prism/cpp';
 
 // 빌드 에러 방지를 위한 헬퍼 함수
 function register(name: string, language: any) {
@@ -22,6 +23,7 @@ register('bash', bash);
 register('json', json);
 register('tsx', tsx);
 register('python', python);
+register('cpp', cpp);
 
 export default function LazyMarkdown({content}: {content: string}) {
   return (
