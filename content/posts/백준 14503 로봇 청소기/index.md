@@ -1,5 +1,5 @@
 ---
-title: "백준 9663 N-Queen"
+title: "백준 14503 로봇 청소기"
 description: "백준 14503 로봇 청소기 cpp 코드"
 date: "2026-01-12"
 keywords: "백준"
