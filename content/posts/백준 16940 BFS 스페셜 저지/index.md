@@ -1,13 +1,13 @@
 ---
 title: "백준 16940 BFS 스페셜 저지"
-description: "백준 16940번 BFS 스페셜 저지 Python, cpp 코드"
+description: "백준 16940번 BFS 스페셜 저지 Python 코드"
 date: "2022-05-04"
 keywords: "백준"
 ---
 
 > [https://www.acmicpc.net/problem/16940](https://www.acmicpc.net/problem/16940)
 
-BFS 이해도 검증하기 좋은 문제, 탐색할때 노드를 체크하는것도 중요하지만 q에 넣는 순서도 중요하다.
+BFS 이해도 검증하기 좋은 문제, 탐색할때 노드를 체크하는것도 중요하지만 q 에 넣는 순서도 고려해야 한다.
 
 ```python
 from sys import stdin
@@ -44,63 +44,4 @@ if check[0] != 1:
 
 bfs(check.popleft())
 print(1)
-```
-
-아래는 2026년 1월에 다시 풀어본 코드
-
-```cpp
-#include <bits/stdc++.h>
-
-using namespace std;
-
-vector<multiset<int>> graph;
-queue<int> ans, q;
-vector<int> v;
-int N;
-
-int main () {
-    cin >> N;
-
-    for (int i = 0; i < N + 1; i++) {
-        graph.push_back({});
-        v.push_back(0);
-    }
-
-    int a, b;
-    for (int i = 0; i < N - 1; i++) {
-        cin >> a >> b;
-        graph[a].insert(b);
-        graph[b].insert(a);
-    }
-
-    for (int i = 0; i < N; i++) {
-        cin >> a;
-        ans.push(a);
-    }
-
-    q.push(1);
-    if (ans.front() != 1) {
-        cout << 0 << endl;
-        return 0;
-    }
-    ans.pop();
-    while (!q.empty()) {
-        int node = q.front();
-        q.pop();
-        int m = node == 1 ? graph[node].size() : graph[node].size() - 1;
-        for (int i = 0; i < m; i++) {
-            if (!ans.empty()) {
-                int target = ans.front();
-                ans.pop();
-                if (graph[node].find(target) == graph[node].end()) {
-                    cout << 0 << endl;
-                    return 0;
-                }
-                q.push(target);
-            }
-        }
-    }
-    cout << 1 << endl;
-    return 0;
-}
 ```
