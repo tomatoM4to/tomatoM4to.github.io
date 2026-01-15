@@ -1,9 +1,11 @@
 ---
 title: "백준 4485 녹색 옷 입은 애가 젤다지"
-description: "백준 4485번 녹색 옷 입은 애가 젤다지 python"
+description: "백준 4485번 녹색 옷 입은 애가 젤다지? python"
 date: "2022-05-26"
 keywords: "백준"
 ---
+
+> https://www.acmicpc.net/problem/4485
 
 야숨 클리어 기념
 

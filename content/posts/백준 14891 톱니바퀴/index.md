@@ -5,6 +5,8 @@ date: "2026-01-15"
 keywords: "백준"
 ---
 
+> https://www.acmicpc.net/problem/14891
+
 삼성 코딩 테스트 기출 문제인 톱니바퀴 문제입니다.
 
 ```cpp
