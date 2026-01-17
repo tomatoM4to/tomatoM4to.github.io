@@ -55,6 +55,7 @@ export async function render({
 }): Promise<{ body: string; head: string; }> {
   let head = '';
   if (url === '') {
+    // Home
     head = generateMeta({
       url: url,
       type: 'website'
@@ -74,6 +75,13 @@ export async function render({
       title: `${SITE_NAME} - search`,
       type: 'website',
     })
+  }
+  if (url === 'license') {
+    head = generateMeta({
+      url: url,
+      title: `${SITE_NAME} - license`,
+      type: 'website',
+    });
   }
   if (url.includes('posts') && initialData?.data) {
     // 개별 포스트 페이지
