@@ -1,6 +1,6 @@
 ---
 title: "백준 2447 별 찍기 - 10"
-description: "백준 2447번 별 찍기 - 10 Python 풀이"
+description: "[골드5] 백준 2447번 별 찍기 - 10, 재귀, 분할 정복, Python"
 date: "2021-08-14"
 keywords: "백준"
 ---

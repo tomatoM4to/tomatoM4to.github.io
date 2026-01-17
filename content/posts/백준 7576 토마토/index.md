@@ -1,6 +1,6 @@
 ---
-title: "백준 7576 토마토 (2차원)"
-description: "백준 7576번 토마토 Python 코드"
+title: "백준 7576 토마토"
+description: "[골드5] 백준 7576번 토마토, BFS, 그래프, Python"
 date: "2021-08-30"
 keywords: "백준"
 ---

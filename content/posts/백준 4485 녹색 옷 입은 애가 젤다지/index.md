@@ -1,6 +1,6 @@
 ---
 title: "백준 4485 녹색 옷 입은 애가 젤다지"
-description: "백준 4485번 녹색 옷 입은 애가 젤다지? python"
+description: "[골드4] 백준 4485번 녹색 옷 입은 애가 젤다지?, 다익스트라, 그래프, Python"
 date: "2022-05-26"
 keywords: "백준"
 ---

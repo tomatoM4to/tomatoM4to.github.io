@@ -1,6 +1,6 @@
 ---
 title: "백준 2448 별 찍기 - 11"
-description: "백준 2448번 별 찍기 - 11 Python 풀이"
+description: "[골드4] 백준 2448번 별 찍기 - 11, 재귀, 분할 정복, Python"
 date: "2021-10-24"
 keywords: "백준"
 ---

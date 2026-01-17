@@ -1,13 +1,13 @@
 ---
 title: "백준 2671 잠수함식별"
-description: "백준 2671번 잠수함 식별 Python 코드"
+description: "[골드5] 백준 2671번 잠수함 식별, 구현, 문자열(정규 표현식), Python"
 date: "2021-09-01"
 keywords: "백준"
 ---
 
 > [https://www.acmicpc.net/problem/2671](https://www.acmicpc.net/problem/2671)
 
-나중에 알았지만 정규 표현식 한줄이면 되는 문제였다. 하지만 정규 표현식으로 풀면 훨씬 오래 걸린다.
+나중에 알았지만 정규 표현식 한줄이면 되는 문제였다.
 
 ```python
 sound = input()

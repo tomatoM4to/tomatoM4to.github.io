@@ -1,13 +1,13 @@
 ---
 title: "백준 7576 토마토"
-description: "백준 17114번 하이퍼 토마토 Python 코드"
+description: "[골드1] 백준 17114번 하이퍼 토마토, BFS, 그래프, Python"
 date: "2021-09-25"
 keywords: "백준"
 ---
 
 > [https://www.acmicpc.net/problem/17114](https://www.acmicpc.net/problem/17114)
 
-마치 코드가 ⚡ 처럼 생겼다. `pypy3` 가 아니면 시간 초과가 뜬다.
+⚡⚡⚡⚡⚡⚡⚡
 
 ```python
 from sys import stdin

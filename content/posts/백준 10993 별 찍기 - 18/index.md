@@ -1,6 +1,6 @@
 ---
 title: "백준 10993 별 찍기 - 18"
-description: "백준 10993번 별 찍기 - 18 Python 풀이"
+description: "[골드3] 백준 10993번 별 찍기 - 18, 재귀, 분할 정복, Python"
 date: "2021-10-28"
 keywords: "백준"
 ---
