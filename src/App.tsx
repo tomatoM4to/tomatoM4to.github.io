@@ -24,15 +24,17 @@ export default function App({ markdown }: { markdown: string }) {
     <MountProvider>
       <ThemeProvider>
         <Nav />
-        <Suspense fallback={<></>}>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/posts/:post" element={<Post markdown={markdown} />} />
             <Route path='/search' element={<Search />} />
             <Route path='/tags' element={<Tag />} />
-            <Route path='/license' element={<License />} />
+            <Route path='/license' element={
+              <Suspense fallback={<></>}>
+                <License />
+              </Suspense>
+            } />
           </Routes>
-        </Suspense>
         <Footer />
       </ThemeProvider>
     </MountProvider>
