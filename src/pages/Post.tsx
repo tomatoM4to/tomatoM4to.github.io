@@ -36,7 +36,7 @@ export default function Post({ markdown }: { markdown: string, }) {
         const encodedPost = encodeURIComponent(`${post}`);
         updateHead({
           title: result.data.title,
-          url: makeURL(encodedPost),
+          url: makeURL(`posts/${encodedPost}`),
           desc: result.data.description,
           keywords: result.data.keywords,
           type: 'article',
@@ -48,7 +48,6 @@ export default function Post({ markdown }: { markdown: string, }) {
       }
     }
     getData();
-    console.log(`!!! network event !!!`);
   }, [post]);
 
   return (
