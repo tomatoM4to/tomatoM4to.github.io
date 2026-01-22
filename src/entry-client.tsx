@@ -8,7 +8,7 @@ import App from '@src/App';
 const rawData = window.__INITIAL_DATA__;
 
 let initialData: GrayMatterFile<string> | null = null;
-if (rawData && rawData !== "") {
+if (rawData && rawData !== null) {
   initialData = rawData as GrayMatterFile<string>;
 }
 

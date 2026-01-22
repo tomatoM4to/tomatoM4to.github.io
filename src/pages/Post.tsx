@@ -13,13 +13,13 @@ export default function Post({ initialData }: { initialData: GrayMatterFile<stri
   const { post } = useParams();
   const { networkMountRef } = useNetworkMount();
   const [content, setContent] = useState<string | null>(() => {
-    if (initialData) {
+    if (!networkMountRef.current && initialData) {
       return initialData.content;
     }
     return null;
   });
   const [date, setDate] = useState<string>(() => {
-    if (initialData) {
+    if (!networkMountRef.current && initialData) {
       return initialData.data?.date || '';
     }
     return '';
