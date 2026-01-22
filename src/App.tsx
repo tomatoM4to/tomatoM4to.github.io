@@ -17,16 +17,18 @@ import Post from '@src/pages/Post';
 import Search from '@src/pages/Search';
 import Tag from '@src/pages/Tag';
 
+import { type GrayMatterFile } from 'gray-matter';
+
 const License = lazy(() => import('@src/pages/License'));
 
-export default function App({ markdown }: { markdown: string }) {
+export default function App({ initialData }: { initialData: GrayMatterFile<string> | null }) {
   return (
     <MountProvider>
       <ThemeProvider>
         <Nav />
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/posts/:post" element={<Post markdown={markdown} />} />
+            <Route path="/posts/:post" element={<Post initialData={initialData} />} />
             <Route path='/search' element={<Search />} />
             <Route path='/tags' element={<Tag />} />
             <Route path='/license' element={

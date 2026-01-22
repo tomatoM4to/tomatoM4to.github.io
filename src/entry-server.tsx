@@ -118,7 +118,7 @@ const body = await new Promise<string>((resolve, reject) => {
     const { pipe } = renderToPipeableStream(
       <StrictMode>
         <StaticRouter location={`/${url}`}>
-          <App markdown={initialData?.content || ''} />
+          <App initialData={initialData} />
         </StaticRouter>
       </StrictMode>,
       {

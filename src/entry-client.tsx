@@ -1,20 +1,22 @@
 import { StrictMode } from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
+import { type GrayMatterFile } from 'gray-matter';
 import App from '@src/App';
 
 // @ts-ignore
-let initialData = window.__INITIAL_DATA__;
+const rawData = window.__INITIAL_DATA__;
 
-if (initialData === undefined) {
-  initialData = "# Hydrate Error";
+let initialData: GrayMatterFile<string> | null = null;
+if (rawData && rawData !== "") {
+  initialData = rawData as GrayMatterFile<string>;
 }
 
 hydrateRoot(
   document.getElementById('root') as HTMLElement,
   <StrictMode>
     <BrowserRouter>
-      <App markdown={initialData} />
+      <App initialData={initialData} />
     </BrowserRouter>
   </StrictMode>,
 );

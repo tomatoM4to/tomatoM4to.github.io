@@ -9,16 +9,21 @@ import { makeURL } from "@src/shared/common";
 const LazyMarkdown = lazy(() => import("@src/components/LazyMarkdown"));
 const LazyGiscus = lazy(() => import("@src/components/LazyGiscus"));
 
-export default function Post({ markdown }: { markdown: string, }) {
+export default function Post({ initialData }: { initialData: GrayMatterFile<string> | null }) {
   const { post } = useParams();
   const { networkMountRef } = useNetworkMount();
   const [content, setContent] = useState<string | null>(() => {
-    if (!networkMountRef.current) {
-      return markdown;
+    if (initialData) {
+      return initialData.content;
     }
     return null;
   });
-  const [date, setDate] = useState<string>('');
+  const [date, setDate] = useState<string>(() => {
+    if (initialData) {
+      return initialData.data?.date || '';
+    }
+    return '';
+  });
 
   useEffect(() => {
     if (!networkMountRef.current) {

@@ -147,7 +147,7 @@ app.use('*all', async (req, res) => {
       template: template,
       head: rendered.head,
       body: rendered.body,
-      initialData: initialData ? JSON.stringify(initialData.content) : JSON.stringify("")
+      initialData: initialData ? JSON.stringify(initialData) : JSON.stringify("")
     })
 
     res.status(200).set({ 'Content-Type': 'text/html' }).send(html)
