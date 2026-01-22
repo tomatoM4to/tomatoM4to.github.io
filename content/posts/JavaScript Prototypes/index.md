@@ -2,7 +2,7 @@
 title: "JavaScript Prototypes"
 description: "JavaScript 가 상속을 구현하는 방법인 프로토타입에 대해 알아봅니다."
 date: "2026-01-15"
-keywords: ""
+keywords: "JavaScript"
 ---
 
 ## Object & Instance
@@ -14,18 +14,35 @@ keywords: ""
 자바스크립트에서 실제로 확인 해보자.
 
 ```ts
-const parent = {};
-console.log(Object.prototype);  // [Object: null prototype] {}
-console.log(parent.__proto__);  // [Object: null prototype] {}
-console.log(parent.__proto__ === Object.prototype);  // true
+function Person(name) {
+    this.name = name;
+}
 
-console.log(Object.__proto__);  // null
+const alice = new Person('Alice');
+
+console.log(alice);                                 // Person { name: 'Alice' }
+console.log(alice.__proto__);                       // Person {}
+console.log(Person.prototype);                      // Person {}
+console.log(alice.__proto__ === Person.prototype);  // true
 ```
 
-`parent` 객체에 `__proto__` 속성을 정의하지 않았는데도 자동적으로 생성되었다.
-
-`__proto__` 속성은 해당 객체의 프로토타입 객체, 즉 상속을 위한 템플릿 객체를 가리킨다. 익숙한 표현으론 부모 객체를 가리킨다 고도 할 수 있다.
-
-> `Object`
 
 ## Prototype Chain
+
+## Prototype Methods
+
+Prototype 이 유용하게 쓰이는 이유 중 하나는, **객체가 공통적으로 사용하는 메서드(method)를 프로토타입 객체에 정의하여 메모리를 절약할 수 있기 때문**이다.
+
+```ts
+function Person(name) {
+    this.name = name;
+}
+
+// 프로토타입(창고)에 딱 하나만 만듦
+Person.prototype.sayHello = function() {
+    console.log(`안녕, 나는 ${this.name}야.`);
+};
+const alice = new Person('Alice');
+const bob = new Person('Bob');
+console.log(alice.sayHello === bob.sayHello);  // true
+```
