@@ -2,7 +2,7 @@
 title: "백준 9663 N-Queen"
 description: "[골드4] 백준 9663번 N-Queen, 백트래킹, 재귀, Python"
 date: "2022-04-22"
-keywords: "백준"
+keywords: "백준, Python"
 ---
 
 > [https://www.acmicpc.net/problem/9663](https://www.acmicpc.net/problem/9663)

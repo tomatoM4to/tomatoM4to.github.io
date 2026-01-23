@@ -2,7 +2,7 @@
 title: "백준 2448 별 찍기 - 11"
 description: "[골드4] 백준 2448번 별 찍기 - 11, 재귀, 분할 정복, Python"
 date: "2021-10-24"
-keywords: "백준"
+keywords: "백준, Python"
 ---
 
 > [https://www.acmicpc.net/problem/2448](https://www.acmicpc.net/problem/2448)

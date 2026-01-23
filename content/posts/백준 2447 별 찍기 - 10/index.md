@@ -2,7 +2,7 @@
 title: "백준 2447 별 찍기 - 10"
 description: "[골드5] 백준 2447번 별 찍기 - 10, 재귀, 분할 정복, Python"
 date: "2021-08-14"
-keywords: "백준"
+keywords: "백준, Python"
 ---
 
 > [https://www.acmicpc.net/problem/2447](https://www.acmicpc.net/problem/2447)

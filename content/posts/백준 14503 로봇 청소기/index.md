@@ -2,7 +2,7 @@
 title: "백준 14503 로봇 청소기"
 description: "[골드5] 백준 14503 로봇 청소기, 삼성 SW 역량 테스트 기출 문제, 시뮬레이션, 구현, cpp"
 date: "2026-01-12"
-keywords: "백준"
+keywords: "백준, cpp"
 ---
 
 > [https://www.acmicpc.net/problem/14503](https://www.acmicpc.net/problem/14503)

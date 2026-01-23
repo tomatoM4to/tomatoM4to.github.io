@@ -2,7 +2,7 @@
 title: "백준 9019 DSLR"
 description: "[골드4] 백준 9019번 DSLR, bfs, queue, 역추적, cpp"
 date: "2026-01-19"
-keywords: "백준"
+keywords: "백준, cpp"
 ---
 
 > [https://www.acmicpc.net/problem/9019](https://www.acmicpc.net/problem/9019)

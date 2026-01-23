@@ -2,7 +2,7 @@
 title: "백준 7569 토마토 (3차원)"
 description: "[골드5] 백준 7569번 토마토, BFS, 그래프, Python"
 date: "2021-08-31"
-keywords: "백준"
+keywords: "백준, Python"
 ---
 
 > [https://www.acmicpc.net/problem/7569](https://www.acmicpc.net/problem/7569)

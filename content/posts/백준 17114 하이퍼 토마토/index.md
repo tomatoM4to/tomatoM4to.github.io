@@ -2,7 +2,7 @@
 title: "백준 7576 토마토"
 description: "[골드1] 백준 17114번 하이퍼 토마토, BFS, 그래프, Python"
 date: "2021-09-25"
-keywords: "백준"
+keywords: "백준, Python"
 ---
 
 > [https://www.acmicpc.net/problem/17114](https://www.acmicpc.net/problem/17114)

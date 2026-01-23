@@ -1,8 +1,8 @@
 ---
 title: "백준 16940 BFS 스페셜 저지"
-description: "[골드3] 백준 16940번 BFS 스페셜 저지, BFS, 그래프 Python"
+description: "[골드3] 백준 16940번 BFS 스페셜 저지, BFS, 그래프, Python"
 date: "2022-05-04"
-keywords: "백준"
+keywords: "백준, Python"
 ---
 
 > [https://www.acmicpc.net/problem/16940](https://www.acmicpc.net/problem/16940)

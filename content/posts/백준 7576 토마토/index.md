@@ -2,7 +2,7 @@
 title: "백준 7576 토마토"
 description: "[골드5] 백준 7576번 토마토, BFS, 그래프, Python"
 date: "2021-08-30"
-keywords: "백준"
+keywords: "백준, Python"
 ---
 
 > [https://www.acmicpc.net/problem/7576](https://www.acmicpc.net/problem/7576)
