@@ -1,5 +1,5 @@
 ---
-title: "백준 9251 LCS, 9252 LCS 2"
+title: "백준 9251 LCS, 백준 9252 LCS 2"
 description: "[골드4] 백준 9251번 LCS, dp, 문자열, cpp [골드3] 백준 9252번 LCS 2, dp, 문자열, 역추적, cpp"
 date: "2026-01-22"
 keywords: "백준, cpp"
