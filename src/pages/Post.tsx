@@ -5,9 +5,15 @@ import { type GrayMatterFile } from "gray-matter";
 import { updateHead } from "@src/hooks/useHead";
 import { makeURL } from "@src/shared/common";
 
-
 const LazyMarkdown = lazy(() => import("@src/components/LazyMarkdown"));
 const LazyGiscus = lazy(() => import("@src/components/LazyGiscus"));
+
+type PostMeta = {
+  title: string;
+  date: string;
+  description: string;
+  keywords: string;
+}
 
 export default function Post({ initialData }: { initialData: GrayMatterFile<string> | null }) {
   const { post } = useParams();
@@ -18,11 +24,16 @@ export default function Post({ initialData }: { initialData: GrayMatterFile<stri
     }
     return null;
   });
-  const [date, setDate] = useState<string>(() => {
+  const [meta, setMeta] = useState<PostMeta>(() => {
     if (!networkMountRef.current && initialData) {
-      return initialData.data?.date || '';
+      return {
+        title: initialData.data?.title || '',
+        date: initialData.data?.date || '',
+        description: initialData.data?.description || '',
+        keywords: initialData.data?.keywords || '',
+      };
     }
-    return '';
+    return { title: '', date: '', description: '', keywords: '' };
   });
 
   useEffect(() => {
@@ -37,7 +48,12 @@ export default function Post({ initialData }: { initialData: GrayMatterFile<stri
         }
         const result: GrayMatterFile<string> = await response.json();
         setContent(result.content);
-        setDate(result.data?.date || '');
+        setMeta({
+          title: result.data?.title || '',
+          date: result.data?.date || '',
+          description: result.data?.description || '',
+          keywords: result.data?.keywords || '',
+        });
         const encodedPost = encodeURIComponent(`${post}`);
         updateHead({
           title: result.data.title,
@@ -58,9 +74,21 @@ export default function Post({ initialData }: { initialData: GrayMatterFile<stri
   return (
     <div className="post-container">
       <div className="post-header">
-        <h1 className="post-title">{post}</h1>
+        <h1 className="post-title">{meta.title || post}</h1>
+        {meta.description && (
+          <p className="post-description">{meta.description}</p>
+        )}
         <div className="post-meta">
-          <span className="post-date">{date}</span>
+          {meta.date && <span className="post-date">{meta.date}</span>}
+          {meta.keywords && (
+            <div className="post-tags">
+              {meta.keywords.split(',').map((tag) => (
+                <div key={tag.trim()} className="post-tag">
+                  {tag.trim()}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
       <div className="post-content markdown">
