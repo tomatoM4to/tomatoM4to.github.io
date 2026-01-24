@@ -5,6 +5,8 @@ date: "2026-01-24"
 keywords: "백준, cpp"
 ---
 
+> [https://www.acmicpc.net/problem/14500](https://www.acmicpc.net/problem/14500)
+
 뇌는 약한놈들이나 쓰는것
 
 ```cpp
