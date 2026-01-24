@@ -2,7 +2,7 @@
 title: "코테를 위한 cpp STL 정리"
 description: "코테(PS) 에서 자주 사용되는 C++ STL 정리, vector, queue, stack, set, map, string"
 date: "2026-01-17"
-keywords: "백준, cpp"
+keywords: "cpp"
 ---
 
 ## vector
