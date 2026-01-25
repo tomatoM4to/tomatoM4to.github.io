@@ -71,9 +71,12 @@
 
 /* Footer */
 .footer {
-  margin-top: 6rem;
-  padding: 3rem 0;
+  margin-top: auto;
+  padding-top: 6rem;
+  padding-bottom: 3rem;
   border-top: 1px solid var(--border-secondary);
+  flex-shrink: 0;
+  min-height: 140px;
 }
 
 .footer-content {

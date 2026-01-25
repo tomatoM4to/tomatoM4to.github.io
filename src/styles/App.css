@@ -70,6 +70,12 @@ body {
   max-width: 900px;
   margin: 0 auto;
   position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+#root > *:not(.footer):not(nav) {
+  flex: 1 0 auto;
 }
 
 /* Laptop / Small Desktop */
