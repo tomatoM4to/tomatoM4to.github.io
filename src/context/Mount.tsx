@@ -28,13 +28,21 @@ export function MountProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(() => {
-    return { isMount }
+    return { isMount };
   }, [isMount]);
+
+  const networkValue = useMemo(() => {
+    return { networkMountRef };
+  }, []);
+
+  const headValue = useMemo(() => {
+    return { headMountRef };
+  }, []);
 
   return (
     <MountContext.Provider value={value}>
-      <NetworkMountContext.Provider value={{ networkMountRef }}>
-        <HeadMountContext.Provider value={{ headMountRef }}>
+      <NetworkMountContext.Provider value={networkValue}>
+        <HeadMountContext.Provider value={headValue}>
           {children}
         </HeadMountContext.Provider>
       </NetworkMountContext.Provider>

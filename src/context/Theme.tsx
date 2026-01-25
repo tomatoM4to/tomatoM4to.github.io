@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useState } from "react";
+import { createContext, ReactNode, useCallback, useState, useMemo } from "react";
 
 export enum Theme {
   Light = 'light',
@@ -27,7 +27,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         return Theme.Light;
     }
   });
-  function setTheme() {
+
+  const setTheme = useCallback(() => {
     _setTheme((pre) => {
       const newTheme: Theme = pre === Theme.Light ? Theme.Dark : Theme.Light;
       document.documentElement.setAttribute('data-theme', newTheme);
@@ -41,9 +42,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       }
       return newTheme;
     })
-  }
+  }, []);
+
+  const value = useMemo(() =>{
+    return { theme, setTheme }
+  }, [theme, setTheme]);
+
   return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
+    <ThemeContext.Provider value={value}>
       {children}
     </ThemeContext.Provider>
   )
