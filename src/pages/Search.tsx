@@ -1,6 +1,6 @@
 import { useHead } from "@src/hooks/useHead";
 import { SITE_NAME, makeURL } from "@src/shared/common";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   type ItemType,
   type ContentList,
@@ -58,15 +58,15 @@ export default function Search() {
     })();
   }, []);
 
-  const filteredList = searchList.filter((item) => {
-    if (!searchQuery.trim()) return false;
-    const query = searchQuery.toLowerCase();
-    return (
-      item.id.toLowerCase().includes(query) ||
+  const filteredList = useMemo(() => {
+    const trimmedQuery = searchQuery.trim();
+    if (!trimmedQuery) return [];
+    const query = trimmedQuery.toLowerCase();
+    return searchList.filter((item) => (
       item.title.toLowerCase().includes(query) ||
       item.description.toLowerCase().includes(query)
-    );
-  });
+    ));
+  }, [searchQuery, searchList]);
 
   return (
     <div className="search-container">
@@ -80,10 +80,15 @@ export default function Search() {
           autoFocus
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          disabled={isLoading}
         />
       </div>
 
-      {isLoading && <Loading loadProgress={loadProgress} />}
+      {isLoading && (
+        <div className="search-loading">
+          <progress value={loadProgress} max="100" className="search-progress" />
+        </div>
+      )}
 
       {!isLoading && (
         <div className="search-results-box">
@@ -103,16 +108,6 @@ export default function Search() {
     </div>
   )
 }
-
-
-function Loading({loadProgress}: {loadProgress: number}) {
-  return (
-    <div className="search-loading">
-      <progress value={loadProgress} max="100" className="search-progress" />
-    </div>
-  )
-}
-
 
 function SearchResultSupport({support}: {support: string}) {
   return (
