@@ -1,6 +1,5 @@
 .search-container {
-  max-width: 820px;
-  margin: 0 auto;
+  width: 100%;
   padding: 0;
 }
 
@@ -71,7 +70,7 @@
 .search-results-box {
   border: none;
   background-color: transparent;
-  padding: 1.5rem;
+  padding: 0;
   min-height: 400px;
   max-height: 800px;
   overflow-y: auto;
@@ -86,10 +85,6 @@
 
 /* Laptop / Small Desktop */
 @media (max-width: 1440px) {
-  .search-container {
-    max-width: 680px;
-  }
-
   .search-title {
     font-size: 1.75rem;
   }
@@ -102,9 +97,6 @@
 
 /* Tablet Landscape */
 @media (max-width: 1024px) {
-  .search-container {
-    max-width: 100%;
-  }
 }
 
 /* Tablet Portrait */
@@ -112,19 +104,11 @@
   .search-container {
     padding: 0 0.5rem;
   }
-
-  .search-results-box {
-    padding: 1rem 0.5rem;
-  }
 }
 
 /* Mobile */
 @media (max-width: 480px) {
   .search-container {
     padding: 0 0.25rem;
-  }
-
-  .search-results-box {
-    padding: 0.75rem 0.25rem;
   }
 }
