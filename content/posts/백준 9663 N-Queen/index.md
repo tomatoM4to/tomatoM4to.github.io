@@ -1,6 +1,6 @@
 ---
 title: "백준 9663 N-Queen"
-description: "[골드4] 백준 9663번 N-Queen, 백트래킹, 재귀, Python"
+description: "[골드4] 백준 9663번 N-Queen, 브루트포스 알고리즘, 백트래킹, Python"
 date: "2022-04-22"
 keywords: "백준, Python"
 ---

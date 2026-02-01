@@ -1,6 +1,6 @@
 ---
 title: "백준 7569 토마토 (3차원)"
-description: "[골드5] 백준 7569번 토마토, BFS, 그래프, Python"
+description: "[골드5] 백준 7569번 토마토, 그래프 이론, 그래프 탐색, bfs, 최단 경로, 격자 그래프, Python"
 date: "2021-08-31"
 keywords: "백준, Python"
 ---

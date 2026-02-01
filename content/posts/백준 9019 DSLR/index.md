@@ -1,6 +1,6 @@
 ---
 title: "백준 9019 DSLR"
-description: "[골드4] 백준 9019번 DSLR, bfs, queue, 역추적, cpp"
+description: "[골드4] 백준 9019번 DSLR, 그래프 이론, 그래프 탐색, bfs, 역추적, cpp"
 date: "2026-01-19"
 keywords: "백준, cpp"
 ---

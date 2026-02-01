@@ -1,6 +1,6 @@
 ---
 title: "백준 2671 잠수함식별"
-description: "[골드5] 백준 2671번 잠수함 식별, 구현, 문자열(정규 표현식), Python"
+description: "[골드5] 백준 2671번 잠수함 식별, 문자열, 정규 표현식, Python"
 date: "2021-09-01"
 keywords: "백준, Python"
 ---

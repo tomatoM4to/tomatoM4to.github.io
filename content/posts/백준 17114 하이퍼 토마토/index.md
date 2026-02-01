@@ -1,6 +1,6 @@
 ---
 title: "백준 7576 토마토"
-description: "[골드1] 백준 17114번 하이퍼 토마토, BFS, 그래프, Python"
+description: "[골드1] 백준 17114번 하이퍼 토마토, 구현, 그래프 이론, 그래프 탐색, bfs, 격자 그래프, Python"
 date: "2021-09-25"
 keywords: "백준, Python"
 ---
