@@ -1,6 +1,5 @@
 import { useHead } from '@src/hooks/useHead';
 import { SITE_NAME, SITE_DOMAIN } from '@src/shared/common';
-import '@src/styles/License.css';
 
 interface Dependency {
   name: string;
@@ -31,28 +30,40 @@ export default function License() {
   }, []);
 
   return (
-    <div className="license-container">
-      <div className="license-header">
-        <h1 className="license-title">Open Source Licenses</h1>
-        <p className="license-description">
+    <div className="w-full max-w-[820px] mx-auto">
+      <header className="mb-8 pb-6 border-b">
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-3">Open Source Licenses</h1>
+        <p className="text-muted-foreground text-base md:text-lg">
           This project is built using the following open source software.
         </p>
-      </div>
+      </header>
 
-      <div className="license-list">
+      <div className="grid gap-4">
         {dependencies.map((dep) => (
-          <div key={dep.name} className="license-item">
-            <h2 className="license-name">{dep.name}</h2>
-            <span className="license-type">{dep.type}</span>
-            <div>
+          <div
+            key={dep.name}
+            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-lg border border-border bg-transparent hover:bg-muted/30 transition-colors duration-200"
+          >
+            <div className="flex items-center gap-3">
+              <h2 className="text-lg font-medium">{dep.name}</h2>
+              <span className={`text-xs px-2 py-0.5 rounded-full ${
+                dep.type === 'dependency'
+                  ? 'bg-primary/10 text-primary'
+                  : 'bg-muted text-muted-foreground'
+              }`}>
+                {dep.type === 'dependency' ? 'prod' : 'dev'}
+              </span>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-muted-foreground font-mono">{dep.version}</span>
               {dep.url && (
                 <a
                   href={dep.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="license-link"
+                  className="text-sm text-primary hover:underline underline-offset-4"
                 >
-                  Visit Website →
+                  Visit
                 </a>
               )}
             </div>
