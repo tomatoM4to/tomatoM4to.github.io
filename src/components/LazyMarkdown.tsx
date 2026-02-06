@@ -1,7 +1,7 @@
 import Markdown from 'react-markdown';
 import remarkGfm from "remark-gfm";
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
-import dracula from 'react-syntax-highlighter/dist/cjs/styles/prism/dracula';
+import { atomDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 // 필요한 언어만 사용 (cjs 경로 유지)
 import ts from 'react-syntax-highlighter/dist/cjs/languages/prism/typescript';
@@ -10,6 +10,8 @@ import bash from 'react-syntax-highlighter/dist/cjs/languages/prism/bash';
 import json from 'react-syntax-highlighter/dist/cjs/languages/prism/json';
 import python from 'react-syntax-highlighter/dist/cjs/languages/prism/python';
 import cpp from 'react-syntax-highlighter/dist/cjs/languages/prism/cpp';
+import sql from 'react-syntax-highlighter/dist/cjs/languages/prism/sql';
+
 
 // 빌드 에러 방지를 위한 헬퍼 함수
 function register(name: string, language: any) {
@@ -24,6 +26,7 @@ register('json', json);
 register('tsx', tsx);
 register('python', python);
 register('cpp', cpp);
+register('sql', sql);
 
 export default function LazyMarkdown({content}: {content: string}) {
   return (
@@ -39,7 +42,7 @@ export default function LazyMarkdown({content}: {content: string}) {
               PreTag="div"
               children={String(children).replace(/\n$/, '')}
               language={match[1]}
-              style={dracula}
+              style={atomDark}
             />
           ) : (
             <code {...rest} className={className}>
