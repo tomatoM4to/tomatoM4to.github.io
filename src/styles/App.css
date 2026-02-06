@@ -6,6 +6,22 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  --font-sans: "Pretendard Variable", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  --font-mono: "Fira Code", "Consolas", "Monaco", monospace;
+}
+
+html {
+  font-family: var(--font-sans);
+  font-feature-settings: "liga" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code, pre, .font-mono {
+  font-family: var(--font-mono);
+}
+
+:root {
   --radius: 0.625rem;
 
   --background: oklch(1 0 0);
