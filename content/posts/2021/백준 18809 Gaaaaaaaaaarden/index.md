@@ -1,8 +1,8 @@
 ---
 title: "백준 18809 Gaaaaaaaaaarden"
-description: "[골드1] 백준 18809 번 Gaaaaaaaaaarden, 구현, 그래프 이론, 브루트 포스 알고리즘, 그래프 탐색, 시뮬레이션, bfs, 백트래킹, python"
+description: "[골드1] 백준 18809 번 Gaaaaaaaaaarden, 구현, 그래프 이론, 브루트 포스 알고리즘, 그래프 탐색, 시뮬레이션, bfs, 백트래킹, Python"
 date: "2021-09-24"
-keywords: "백준, python"
+keywords: "백준, Python"
 ---
 
 끔찍한 문제

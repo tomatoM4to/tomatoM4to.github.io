@@ -1,29 +1,97 @@
 import fs from "node:fs/promises";
+import fsSync from "node:fs";
 import path from 'node:path';
 import matter, { type GrayMatterFile } from "gray-matter";
 
 const PROJECT_ROOT = process.cwd();
+const POSTS_DIR = path.join(PROJECT_ROOT, 'content', 'posts');
 
+/**
+ * content/posts 하위의 연도 폴더(2021, 2022, ...)를 모두 스캔하여
+ * postName -> 실제 파일 경로 매핑을 반환한다.
+ * 연도 폴더가 아닌 직접 하위 폴더도 하위 호환을 위해 포함한다.
+ */
+export async function getAllPostPaths(): Promise<Map<string, string>> {
+  const postMap = new Map<string, string>();
+  const entries = await fs.readdir(POSTS_DIR, { withFileTypes: true });
+
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+
+    // 연도 폴더인 경우 (4자리 숫자)
+    if (/^\d{4}$/.test(entry.name)) {
+      const yearDir = path.join(POSTS_DIR, entry.name);
+      const posts = await fs.readdir(yearDir, { withFileTypes: true });
+      for (const post of posts) {
+        if (post.isDirectory()) {
+          postMap.set(post.name, path.join(yearDir, post.name, 'index.md'));
+        }
+      }
+    } else {
+      // 하위 호환: 연도 폴더 없이 바로 포스트 폴더가 있는 경우
+      postMap.set(entry.name, path.join(POSTS_DIR, entry.name, 'index.md'));
+    }
+  }
+
+  return postMap;
+}
+
+/**
+ * 동기 버전 - gen-static.ts 에서 사용
+ */
+export function getAllPostPathsSync(): Map<string, string> {
+  const postMap = new Map<string, string>();
+  const entries = fsSync.readdirSync(POSTS_DIR, { withFileTypes: true });
+
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+
+    if (/^\d{4}$/.test(entry.name)) {
+      const yearDir = path.join(POSTS_DIR, entry.name);
+      const posts = fsSync.readdirSync(yearDir, { withFileTypes: true });
+      for (const post of posts) {
+        if (post.isDirectory()) {
+          postMap.set(post.name, path.join(yearDir, post.name, 'index.md'));
+        }
+      }
+    } else {
+      postMap.set(entry.name, path.join(POSTS_DIR, entry.name, 'index.md'));
+    }
+  }
+
+  return postMap;
+}
+
+/** postName 으로 실제 파일 경로를 찾는다 */
+async function resolvePostPath(postName: string): Promise<string> {
+  const postMap = await getAllPostPaths();
+  const resolved = postMap.get(postName);
+  if (resolved) return resolved;
+  // fallback: 직접 경로
+  return path.join(POSTS_DIR, postName, 'index.md');
+}
 
 export async function createInitialData(url: string): Promise<GrayMatterFile<string> | null> {
   if (!url.includes('posts')) {
     return null;
   }
-  const initialDataPath = path.join(PROJECT_ROOT, "content", url, 'index.md');
+  // url 은 "posts/postname" 형태
+  const postName = url.replace(/^posts\//, '');
+  const filePath = await resolvePostPath(postName);
   let fileContent;
   try {
-    fileContent = await fs.readFile(initialDataPath, 'utf-8');
+    fileContent = await fs.readFile(filePath, 'utf-8');
   }
   catch (err) {
-    console.error(`[ERROR] File not found or unreadable: ${initialDataPath}`, err);
-    throw new Error(`File not found: ${initialDataPath}`);
+    console.error(`[ERROR] File not found or unreadable: ${filePath}`, err);
+    throw new Error(`File not found: ${filePath}`);
   }
   return matter(fileContent);
 }
 
 
 export async function getMarkdown(name: string): Promise<GrayMatterFile<string>> {
-  const filePath = path.join(PROJECT_ROOT, 'content', 'posts', name, 'index.md');
+  const filePath = await resolvePostPath(name);
   try {
     const fileContent = await fs.readFile(filePath, 'utf-8');
     return matter(fileContent);
@@ -77,17 +145,14 @@ export type ContentList = {
 }
 
 export async function getSortedContentList(): Promise<Item[]> {
-  const contentList: string[] = [
-    ...(await fs.readdir(path.join(PROJECT_ROOT, 'content/posts')))
-  ];
+  const postMap = await getAllPostPaths();
   const newContentList: Item[] = [];
 
-  for (const post of contentList) {
-    const filePath = path.join(PROJECT_ROOT, 'content/posts', post, 'index.md');
+  for (const [postName, filePath] of postMap) {
     const fileContent = await fs.readFile(filePath, 'utf-8');
     const meta = matter(fileContent);
     newContentList.push({
-      id: post,
+      id: postName,
       title: meta.data.title,
       description: meta.data.description,
       date: meta.data.date,
@@ -115,14 +180,10 @@ export type Render = ({
 }>;
 
 export async function getTags(): Promise<Record<string, number>> {
-  const contentList: string[] = [
-    ...(await fs.readdir(path.join(PROJECT_ROOT, 'content/posts')))
-  ];
-
+  const postMap = await getAllPostPaths();
   const tagCount: Record<string, number> = {};
 
-  for (const post of contentList) {
-    const filePath = path.join(PROJECT_ROOT, 'content/posts', post, 'index.md');
+  for (const [postName, filePath] of postMap) {
     const fileContent = await fs.readFile(filePath, 'utf-8');
     const meta = matter(fileContent);
 

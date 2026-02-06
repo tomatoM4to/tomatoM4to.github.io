@@ -5,17 +5,21 @@ import {
   createHTML,
   createTemplate,
   createInitialData,
+  getAllPostPathsSync,
   type Render,
   delay
 } from '@server/utils.ts';
 
 const PROJECT_ROOT = process.cwd();
 
+// 연도 폴더 구조에서 포스트 이름만 추출하여 flat 한 경로 생성
+const postNames = [...getAllPostPathsSync().keys()];
+
 const pages: string[] = [
   "",
   "search",
   "tags",
-  ...fs.readdirSync(path.join(PROJECT_ROOT, 'content', 'posts')).map((postname) => `posts/${postname}`),
+  ...postNames.map((postname) => `posts/${postname}`),
 ];
 
 const DIST_PATH = path.join(PROJECT_ROOT, 'dist');

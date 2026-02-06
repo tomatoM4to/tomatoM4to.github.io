@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import matter from 'gray-matter';
 import {
+  getAllPostPaths,
   getItemFromTag,
   getSortedContentList,
   getTags,
@@ -13,9 +14,8 @@ import {
 const PROJECT_ROOT = process.cwd();
 
 
-async function genMarkdownJSON(markdown: string) {
-  const filePath = path.join(PROJECT_ROOT, 'content/posts', markdown, 'index.md');
-  const destPath = path.join(PROJECT_ROOT, 'dist/api/posts', markdown);
+async function genMarkdownJSON(postName: string, filePath: string) {
+  const destPath = path.join(PROJECT_ROOT, 'dist/api/posts', postName);
 
   let fileContent: string;
   try {
@@ -102,11 +102,10 @@ async function createTagContentList(sortedContentList: Item[]) {
 
 (async function main() {
   const sortedContentList = await getSortedContentList();
-  const contentList: string[] = [
-    ...(await fs.readdir(path.join(PROJECT_ROOT, 'content/posts')))
-  ]
-  for (const content of contentList) {
-    genMarkdownJSON(content);
+  const postMap = await getAllPostPaths();
+
+  for (const [postName, filePath] of postMap) {
+    genMarkdownJSON(postName, filePath);
   }
   await delay(100);
   await genRecentPostList(sortedContentList);
