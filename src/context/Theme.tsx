@@ -17,28 +17,21 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (typeof window === 'undefined') {
       return Theme.Light;
     }
-    const currentTheme: string | null = document.documentElement.getAttribute('data-theme');
-    switch (currentTheme) {
-      case Theme.Light:
-        return Theme.Light;
-      case Theme.Dark:
-        return Theme.Dark;
-      default:
-        return Theme.Light;
-    }
+    const isDark = document.documentElement.classList.contains('dark');
+    return isDark ? Theme.Dark : Theme.Light;
   });
 
   const setTheme = useCallback(() => {
     _setTheme((pre) => {
       const newTheme: Theme = pre === Theme.Light ? Theme.Dark : Theme.Light;
-      document.documentElement.setAttribute('data-theme', newTheme);
-      switch (newTheme) {
-        case Theme.Light:
-          localStorage.removeItem('theme');
-          break;
-        case Theme.Dark:
-          localStorage.setItem('theme', newTheme);
-          break;
+      if (newTheme === Theme.Dark) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.setAttribute('data-theme', 'light');
+        localStorage.removeItem('theme');
       }
       return newTheme;
     })

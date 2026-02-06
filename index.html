@@ -6,7 +6,8 @@
       (function() {
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'dark') {
-          document.documentElement.setAttribute('data-theme', savedTheme);
+          document.documentElement.classList.add('dark');
+          document.documentElement.setAttribute('data-theme', 'dark');
           return;
         }
         document.documentElement.setAttribute('data-theme', 'light');

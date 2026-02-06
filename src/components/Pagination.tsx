@@ -1,4 +1,13 @@
-import { Link, useSearchParams } from "react-router";
+import { useSearchParams } from "react-router";
+import {
+  Pagination as ShadcnPagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
+} from "@src/ui/pagination";
 
 export function Pagination({
   currentPage,
@@ -13,7 +22,6 @@ export function Pagination({
     const pages: number[] = [];
     const maxVisible = 5;
 
-    // 전체 페이지 수가 적으면 전체 표시
     if (totalPages <= maxVisible) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
@@ -21,7 +29,6 @@ export function Pagination({
       return pages;
     }
 
-    // 현재 페이지가 3페이지 이하
     if (currentPage <= 3) {
       for (let i = 1; i <= 4; i++) {
         pages.push(i);
@@ -29,7 +36,6 @@ export function Pagination({
       pages.push(-1);
       pages.push(totalPages);
     }
-    // 현재 페이지가 끝에서 두번째 이상
     else if (currentPage >= totalPages - 2) {
       pages.push(1);
       pages.push(-1);
@@ -37,7 +43,6 @@ export function Pagination({
         pages.push(i);
       }
     }
-    // 중간 페이지
     else {
       pages.push(1);
       pages.push(-1);
@@ -62,43 +67,39 @@ export function Pagination({
   }
 
   return (
-    <nav className="pagination">
-      <Link
-        to={createPageLink(currentPage - 1)}
-        className={`pagination-btn pagination-arrow ${currentPage === 1 ? 'disabled' : ''}`}
-        aria-label="Previous page"
-        aria-disabled={currentPage === 1}
-      >
-        ←
-      </Link>
+    <ShadcnPagination className="mt-12 mb-8">
+      <PaginationContent>
+        <PaginationItem>
+          <PaginationPrevious
+            to={createPageLink(currentPage - 1)}
+            aria-disabled={currentPage === 1}
+            className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+          />
+        </PaginationItem>
 
-      <div className="pagination-numbers">
         {getPageNumbers().map((page, index) => (
-          page === -1 ? (
-            <span key={`ellipsis-${index}`} className="pagination-ellipsis">
-              . . .
-            </span>
-          ) : (
-            <Link
-              key={page}
-              to={createPageLink(page)}
-              className={`pagination-btn pagination-number ${currentPage === page ? 'active' : ''}`}
-              aria-current={currentPage === page ? 'page' : undefined}
-            >
-              {page}
-            </Link>
-          )
+          <PaginationItem key={`page-${index}`}>
+            {page === -1 ? (
+              <PaginationEllipsis />
+            ) : (
+              <PaginationLink
+                to={createPageLink(page)}
+                isActive={currentPage === page}
+              >
+                {page}
+              </PaginationLink>
+            )}
+          </PaginationItem>
         ))}
-      </div>
 
-      <Link
-        to={createPageLink(currentPage + 1)}
-        className={`pagination-btn pagination-arrow ${currentPage === totalPages ? 'disabled' : ''}`}
-        aria-label="Next page"
-        aria-disabled={currentPage === totalPages}
-      >
-        →
-      </Link>
-    </nav>
+        <PaginationItem>
+          <PaginationNext
+            to={createPageLink(currentPage + 1)}
+            aria-disabled={currentPage === totalPages}
+            className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+          />
+        </PaginationItem>
+      </PaginationContent>
+    </ShadcnPagination>
   );
 }

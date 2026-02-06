@@ -4,6 +4,8 @@ import { useParams } from "react-router";
 import { type GrayMatterFile } from "gray-matter";
 import { updateHead } from "@src/hooks/useHead";
 import { makeURL } from "@src/shared/common";
+import { Badge } from "@src/ui/badge";
+import { Calendar } from "lucide-react";
 
 const LazyMarkdown = lazy(() => import("@src/components/LazyMarkdown"));
 const LazyGiscus = lazy(() => import("@src/components/LazyGiscus"));
@@ -72,30 +74,39 @@ export default function Post({ initialData }: { initialData: GrayMatterFile<stri
   }, [post]);
 
   return (
-    <div className="post-container">
-      <div className="post-header">
-        <h1 className="post-title">{meta.title || post}</h1>
+    <div className="w-full max-w-[820px] mx-auto">
+      <header className="mb-8 pb-6 border-b">
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-3">
+          {meta.title || post}
+        </h1>
         {meta.description && (
-          <p className="post-description">{meta.description}</p>
+          <p className="text-muted-foreground text-base md:text-lg mb-4">
+            {meta.description}
+          </p>
         )}
-        <div className="post-meta">
-          {meta.date && <span className="post-date">{meta.date}</span>}
+        <div className="flex flex-wrap gap-3 items-center text-sm text-muted-foreground">
+          {meta.date && (
+            <div className="flex items-center gap-1.5">
+              <Calendar className="h-4 w-4" />
+              <span>{meta.date}</span>
+            </div>
+          )}
           {meta.keywords && (
-            <div className="post-tags">
+            <div className="flex gap-2 flex-wrap">
               {meta.keywords.split(',').map((tag) => (
-                <div key={tag.trim()} className="post-tag">
+                <Badge key={tag.trim()} variant="secondary" className="text-sm px-2.5 py-0.5 font-normal rounded-md transition-all duration-200 hover:scale-105 hover:bg-primary hover:text-primary-foreground cursor-default">
                   {tag.trim()}
-                </div>
+                </Badge>
               ))}
             </div>
           )}
         </div>
-      </div>
-      <div className="post-content markdown">
+      </header>
+      <article className="markdown">
         <Suspense fallback={<div className="loader"></div>}>
           {content !== null ? <LazyMarkdown content={content} /> : <div className="loader"></div>}
         </Suspense>
-      </div>
+      </article>
       <Suspense fallback={<></>}>
         <LazyGiscus />
       </Suspense>

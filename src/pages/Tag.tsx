@@ -4,6 +4,7 @@ import { makeURL, SITE_NAME } from "@src/shared/common";
 import { type ContentList, ItemList, Item } from "@src/components/Item";
 import { Link, useSearchParams } from "react-router";
 import { Pagination } from "@src/components/Pagination";
+import { Badge } from "@src/ui/badge";
 
 
 export default function Tag() {
@@ -54,26 +55,35 @@ export default function Tag() {
   }, [tag]);
 
   return (
-    <div className="tag-container">
-      <h1 className="tag-title">태그</h1>
+    <div className="w-full max-w-[820px] mx-auto">
+      <h1 className="text-2xl font-semibold tracking-tight mb-6">태그</h1>
 
-      <div className="tag-cloud">
+      <div className="flex flex-wrap gap-2.5 mb-6 pb-6 border-b">
         {
           allTags && Object.entries(allTags).map(([tagName, count]) => (
-            <Link
-              to={`?tag=${tagName}`}
+            <Badge
               key={tagName}
-              className={`tag-item ${tag === tagName ? 'active' : ''}`}
+              variant={tag === tagName ? "default" : "outline"}
+              className={`text-sm px-3 py-1 cursor-pointer transition-all duration-200 hover:scale-105 ${
+                tag === tagName
+                  ? "!bg-foreground !text-background hover:!bg-foreground/90"
+                  : "hover:!bg-foreground hover:!text-background"
+              }`}
+              asChild
             >
-              {tagName} ({count})
-            </Link>
+              <Link to={`?tag=${tagName}`}>
+                {tagName} ({count})
+              </Link>
+            </Badge>
           ))
         }
       </div>
 
-      <div className="tag-results-header">
-        {tag && <h2>{tag} 태그가 포함된 글</h2>}
-      </div>
+      {tag && (
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold">{tag} 태그가 포함된 글</h2>
+        </div>
+      )}
       {
         contentList && tag && (
           <>
