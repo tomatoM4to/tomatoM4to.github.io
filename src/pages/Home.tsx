@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useHead } from '@src/hooks/useHead';
 import { ItemType, Item, ItemList, type ContentList } from "@src/components/Item";
 import { Pagination } from "@src/components/Pagination";
@@ -9,12 +9,21 @@ import { Skeleton } from "@src/ui/skeleton";
 
 function Profile() {
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    // 이미지가 캐시에서 이미 로드된 경우 처리
+    if (imgRef.current?.complete && imgRef.current?.naturalHeight !== 0) {
+      setIsLoaded(true);
+    }
+  }, []);
 
   return (
     <div className="flex items-center gap-6 group">
       <div className="shrink-0 w-28 h-28 md:w-32 md:h-32 relative">
         {!isLoaded && <Skeleton className="absolute inset-0 rounded-full" />}
         <img
+          ref={imgRef}
           className={`w-full h-full rounded-full object-cover border-4 border-background shadow-lg transition-all duration-500 hover:scale-110 hover:shadow-xl hover:border-primary/20 hover:rotate-3 ${!isLoaded ? 'opacity-0' : 'opacity-100'}`}
           src="reze.webp"
           alt="Chainsaw Man - The Movie: Reze Arc"
