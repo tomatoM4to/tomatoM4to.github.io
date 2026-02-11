@@ -74,17 +74,6 @@ async function genRecentPostList(sortedContentList: Item[]) {
   }
 }
 
-async function createAllTags() {
-  const allTags = await getTags();
-  const destPath = path.join(PROJECT_ROOT, 'dist/api/tags');
-  await fs.mkdir(destPath, { recursive: true });
-  await fs.writeFile(
-    path.join(destPath, 'all-tags.json'),
-    JSON.stringify(allTags)
-  );
-  console.log(`🔥 Created All-Tags JSON to: ${path.join(destPath, 'all-tags.json')}`);
-}
-
 async function createTagContentList(sortedContentList: Item[]) {
   const allTags = await getTags();
   const destPath = path.join(PROJECT_ROOT, 'dist/api/tags');
@@ -109,8 +98,6 @@ async function createTagContentList(sortedContentList: Item[]) {
   }
   await delay(100);
   await genRecentPostList(sortedContentList);
-  await delay(100);
-  await createAllTags();
   await delay(100);
   await createTagContentList(sortedContentList);
 })();

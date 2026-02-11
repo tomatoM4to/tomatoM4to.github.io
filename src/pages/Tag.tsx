@@ -1,39 +1,25 @@
 import { useHead } from "@src/hooks/useHead";
 import { useEffect, useState } from "react";
-import { makeURL, SITE_NAME } from "@src/shared/common";
+import { makeURL, SITE_NAME, type TagsData } from "@src/shared/common";
 import { type ContentList, ItemList, Item } from "@src/components/Item";
 import { Link, useSearchParams } from "react-router";
 import { Pagination } from "@src/components/Pagination";
 import { Badge } from "@src/ui/badge";
 
+type TagProps = {
+  initialTags: TagsData;
+};
 
-export default function Tag() {
+export default function Tag({ initialTags }: TagProps) {
   const [searchParams] = useSearchParams();
   const tag = searchParams.get('tag');
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
-  const [allTags, setAllTags] = useState<Record<string, number> | null>(null);
   const [contentList, setContentList] = useState<ContentList | null>(null);
   const [totalPage, setTotalPage] = useState<number>(1);
 
   useHead({
     title: `${SITE_NAME} - tags`,
     url: makeURL('tags'),
-  }, []);
-
-  useEffect(() => {
-    (async function getData() {
-      try {
-        const response = await fetch('/api/tags/all-tags.json');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const result: Record<string, number> = await response.json();
-        setAllTags(result);
-      }
-      catch (err) {
-        console.error(err);
-      }
-    })();
   }, []);
 
   useEffect(() => {
@@ -60,7 +46,7 @@ export default function Tag() {
 
       <div className="flex flex-wrap gap-2.5 mb-6 pb-6 border-b">
         {
-          allTags && Object.entries(allTags).map(([tagName, count]) => (
+          initialTags && Object.entries(initialTags).map(([tagName, count]) => (
             <Badge
               key={tagName}
               variant={tag === tagName ? "default" : "outline"}

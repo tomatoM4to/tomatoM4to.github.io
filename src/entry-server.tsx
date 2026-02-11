@@ -1,7 +1,6 @@
 import { StrictMode } from 'react';
 import { renderToPipeableStream } from 'react-dom/server';
 import { StaticRouter } from 'react-router';
-import type { GrayMatterFile } from 'gray-matter';
 import { PassThrough } from 'node:stream';
 
 import {
@@ -9,7 +8,8 @@ import {
   DEFAULT_DESC,
   DEFAULT_KEYWORDS,
   DEFAULT_IMAGE,
-  makeURL
+  makeURL,
+  type InitialData
 } from '@src/shared/common';
 import App from '@src/App';
 
@@ -51,7 +51,7 @@ export async function render({
   initialData,
 }: {
   url: string,
-  initialData: GrayMatterFile<string> | null,
+  initialData: InitialData,
 }): Promise<{ body: string; head: string; }> {
   let head = '';
   if (url === '') {
@@ -83,9 +83,9 @@ export async function render({
       type: 'website',
     });
   }
-  if (url.includes('posts') && initialData?.data) {
+  if (url.includes('posts') && initialData.post?.data) {
     // 개별 포스트 페이지
-    const { title, description, image, keywords, date } = initialData.data;
+    const { title, description, image, keywords, date } = initialData.post.data;
     head = generateMeta({
       url: url,
       title: `${title}`,

@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import fsSync from "node:fs";
 import path from 'node:path';
 import matter, { type GrayMatterFile } from "gray-matter";
+import { type InitialData } from "../src/shared/common.ts";
 
 const PROJECT_ROOT = process.cwd();
 const POSTS_DIR = path.join(PROJECT_ROOT, 'content', 'posts');
@@ -71,9 +72,12 @@ async function resolvePostPath(postName: string): Promise<string> {
   return path.join(POSTS_DIR, postName, 'index.md');
 }
 
-export async function createInitialData(url: string): Promise<GrayMatterFile<string> | null> {
+export async function createInitialData(url: string): Promise<InitialData> {
+  // 모든 페이지에 태그 데이터 포함
+  const tags = await getTags();
+
   if (!url.includes('posts')) {
-    return null;
+    return { tags };
   }
   // url 은 "posts/postname" 형태
   const postName = url.replace(/^posts\//, '');
@@ -86,7 +90,7 @@ export async function createInitialData(url: string): Promise<GrayMatterFile<str
     console.error(`[ERROR] File not found or unreadable: ${filePath}`, err);
     throw new Error(`File not found: ${filePath}`);
   }
-  return matter(fileContent);
+  return { post: matter(fileContent), tags };
 }
 
 
@@ -173,7 +177,7 @@ export type Render = ({
   initialData
 }: {
   url: string,
-  initialData: GrayMatterFile<string> | null
+  initialData: InitialData
 }) => Promise<{
   body: string;
   head: string;
@@ -183,7 +187,7 @@ export async function getTags(): Promise<Record<string, number>> {
   const postMap = await getAllPostPaths();
   const tagCount: Record<string, number> = {};
 
-  for (const [postName, filePath] of postMap) {
+  for (const [, filePath] of postMap) {
     const fileContent = await fs.readFile(filePath, 'utf-8');
     const meta = matter(fileContent);
 

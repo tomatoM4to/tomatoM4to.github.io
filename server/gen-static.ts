@@ -44,7 +44,7 @@ async function generatePage(route: string) {
     template: template,
     head: html.head,
     body: html.body,
-    initialData: initialData ? JSON.stringify(initialData) : "null"
+    initialData: JSON.stringify(initialData)
   });
 
   // Ensure directory exists before writing file

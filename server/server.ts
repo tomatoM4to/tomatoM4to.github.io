@@ -123,7 +123,7 @@ app.use('*all', async (req, res) => {
     // ex) '', 'tags', 'search', 'posts/postname'
     const url = req.originalUrl.replace(base, '')
 
-    const initialData: GrayMatterFile<string> | null = await createInitialData(decodeURIComponent(url));
+    const initialData = await createInitialData(decodeURIComponent(url));
 
     let template: string;
     /** @type {import('../src/entry-server.tsx').render} */
@@ -147,7 +147,7 @@ app.use('*all', async (req, res) => {
       template: template,
       head: rendered.head,
       body: rendered.body,
-      initialData: initialData ? JSON.stringify(initialData) : JSON.stringify("")
+      initialData: JSON.stringify(initialData)
     })
 
     res.status(200).set({ 'Content-Type': 'text/html' }).send(html)
