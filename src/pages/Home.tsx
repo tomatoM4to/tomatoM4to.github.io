@@ -4,17 +4,24 @@ import { ItemType, Item, ItemList, type ContentList } from "@src/components/Item
 import { Pagination } from "@src/components/Pagination";
 import { SITE_NAME, SITE_DOMAIN } from "@src/shared/common";
 import { useSearchParams } from "react-router";
+import { Skeleton } from "@src/ui/skeleton";
 
 
 function Profile() {
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
+
   return (
     <div className="flex items-center gap-6 group">
-      <img
-        className="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover border-4 border-background shadow-lg transition-all duration-500 hover:scale-110 hover:shadow-xl hover:border-primary/20 hover:rotate-3"
-        src="reze.webp"
-        alt="Chainsaw Man - The Movie: Reze Arc"
-        loading="lazy"
-      />
+      <div className="shrink-0 w-28 h-28 md:w-32 md:h-32 relative">
+        {!isLoaded && <Skeleton className="absolute inset-0 rounded-full" />}
+        <img
+          className={`w-full h-full rounded-full object-cover border-4 border-background shadow-lg transition-all duration-500 hover:scale-110 hover:shadow-xl hover:border-primary/20 hover:rotate-3 ${!isLoaded ? 'opacity-0' : 'opacity-100'}`}
+          src="reze.webp"
+          alt="Chainsaw Man - The Movie: Reze Arc"
+          loading="lazy"
+          onLoad={() => setIsLoaded(true)}
+        />
+      </div>
       <p className="text-muted-foreground leading-relaxed transition-colors duration-300 group-hover:text-foreground/80">
         웹개발을 주로 다루는 개발 블로그 입니다. 그 외 운영체제와 같은 CS 적인 지식도 다룹니다.
       </p>
