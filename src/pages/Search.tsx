@@ -1,5 +1,5 @@
 import { useHead } from "@src/hooks/useHead";
-import { SITE_NAME, makeURL } from "@src/shared/common";
+import { SITE_NAME, makeURL } from "@shared/common";
 import { useEffect, useMemo, useState } from "react";
 import {
   type ItemType,

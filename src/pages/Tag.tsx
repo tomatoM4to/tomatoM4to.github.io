@@ -1,6 +1,6 @@
 import { useHead } from "@src/hooks/useHead";
 import { useEffect, useState } from "react";
-import { makeURL, SITE_NAME, type TagsData } from "@src/shared/common";
+import { makeURL, SITE_NAME, POSTS_PER_PAGE, type TagsData } from "@shared/common";
 import { type ContentList, ItemList, Item } from "@src/components/Item";
 import { Link, useSearchParams } from "react-router";
 import { Pagination } from "@src/components/Pagination";
@@ -32,7 +32,7 @@ export default function Tag({ initialTags }: TagProps) {
         }
         const result: ContentList = await response.json();
         setContentList(result);
-        setTotalPage(Math.ceil(result.len / 4));
+        setTotalPage(Math.ceil(result.len / POSTS_PER_PAGE));
       }
       catch (err) {
         console.error(err);
@@ -75,7 +75,7 @@ export default function Tag({ initialTags }: TagProps) {
           <>
             <ItemList>
               {
-                contentList.data.slice((currentPage - 1) * 4, currentPage * 4).map(post => (
+              contentList.data.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE).map(post => (
                   <Item post={post} key={post.id} />
                 ))
               }

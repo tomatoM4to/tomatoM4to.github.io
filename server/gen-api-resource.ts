@@ -9,6 +9,7 @@ import {
   type Item,
   delay
 } from '@server/utils.ts';
+import { POSTS_PER_PAGE } from '@shared/common.ts';
 
 
 const PROJECT_ROOT = process.cwd();
@@ -45,7 +46,7 @@ async function genRecentPostList(sortedContentList: Item[]) {
   let index = 1;
   for (const post of sortedContentList) {
     buffer.push(post);
-    if (buffer.length >= 4) {
+    if (buffer.length >= POSTS_PER_PAGE) {
       const destPath = path.join(PROJECT_ROOT, 'dist/api/recent');
       await fs.mkdir(destPath, { recursive: true });
       await fs.writeFile(

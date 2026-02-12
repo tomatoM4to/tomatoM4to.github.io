@@ -5,7 +5,7 @@ import {
   DEFAULT_KEYWORDS,
   DEFAULT_IMAGE,
   SITE_DOMAIN,
-} from "@src/shared/common";
+} from "@shared/common";
 
 
 type Meta = {

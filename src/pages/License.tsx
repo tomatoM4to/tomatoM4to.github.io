@@ -1,5 +1,5 @@
 import { useHead } from '@src/hooks/useHead';
-import { SITE_NAME, SITE_DOMAIN } from '@src/shared/common';
+import { SITE_NAME, SITE_DOMAIN } from '@shared/common';
 
 interface Dependency {
   name: string;

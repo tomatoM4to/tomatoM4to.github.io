@@ -9,7 +9,7 @@ import Home from '@src/pages/Home';
 import Post from '@src/pages/Post';
 import Search from '@src/pages/Search';
 import Tag from '@src/pages/Tag';
-import { type InitialData } from '@src/shared/common';
+import { type InitialData } from '@shared/common';
 
 const License = lazy(() => import('@src/pages/License'));
 

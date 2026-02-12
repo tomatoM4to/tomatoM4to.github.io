@@ -16,6 +16,7 @@ import {
   getTags,
   getItemFromTag
 } from '@server/utils.ts';
+import { POSTS_PER_PAGE } from '@shared/common.ts';
 
 const isProduction = process.env.NODE_ENV === 'production'
 const port = process.env.PORT || 5173
@@ -49,9 +50,9 @@ app.get('/api/recent/:index.json', async (req, res) => {
       recentContentList = await getSortedContentList();
     }
     const { index } = req.params;
-    const parsedIndex = (parseInt(index) - 1) * 4;
+    const parsedIndex = (parseInt(index) - 1) * POSTS_PER_PAGE;
 
-    const posts = recentContentList.slice(parsedIndex, parsedIndex + 4);
+    const posts = recentContentList.slice(parsedIndex, parsedIndex + POSTS_PER_PAGE);
     const contentList: ContentList = {
       len: recentContentList.length,
       data: posts

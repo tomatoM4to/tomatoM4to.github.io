@@ -2,7 +2,9 @@ import fs from "node:fs/promises";
 import fsSync from "node:fs";
 import path from 'node:path';
 import matter, { type GrayMatterFile } from "gray-matter";
-import { type InitialData } from "../src/shared/common.ts";
+import { type InitialData } from "@shared/common.ts";
+import { type Item, type ContentList } from "@server/types.ts";
+export type { Item, ContentList, Render } from "@server/types.ts";
 
 const PROJECT_ROOT = process.cwd();
 const POSTS_DIR = path.join(PROJECT_ROOT, 'content', 'posts');
@@ -134,20 +136,6 @@ export function createHTML({
     return html;
 }
 
-export type Item = {
-  id: string
-  title: string,
-  description: string,
-  date: string,
-  image: string,
-  keywords: string,
-}
-
-export type ContentList = {
-  len: number,
-  data: Item[]
-}
-
 export async function getSortedContentList(): Promise<Item[]> {
   const postMap = await getAllPostPaths();
   const newContentList: Item[] = [];
@@ -171,17 +159,6 @@ export async function getSortedContentList(): Promise<Item[]> {
   });
   return newContentList;
 }
-
-export type Render = ({
-  url,
-  initialData
-}: {
-  url: string,
-  initialData: InitialData
-}) => Promise<{
-  body: string;
-  head: string;
-}>;
 
 export async function getTags(): Promise<Record<string, number>> {
   const postMap = await getAllPostPaths();

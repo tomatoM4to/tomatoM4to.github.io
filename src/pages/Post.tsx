@@ -3,7 +3,7 @@ import { useEffect, useState, lazy, Suspense } from "react";
 import { useParams } from "react-router";
 import { type GrayMatterFile } from "gray-matter";
 import { updateHead } from "@src/hooks/useHead";
-import { makeURL } from "@src/shared/common";
+import { makeURL } from "@shared/common";
 import { Badge } from "@src/ui/badge";
 import { Calendar } from "lucide-react";
 

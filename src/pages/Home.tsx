@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useHead } from '@src/hooks/useHead';
 import { ItemType, Item, ItemList, type ContentList } from "@src/components/Item";
 import { Pagination } from "@src/components/Pagination";
-import { SITE_NAME, SITE_DOMAIN } from "@src/shared/common";
+import { SITE_NAME, SITE_DOMAIN, POSTS_PER_PAGE } from "@shared/common";
 import { useSearchParams } from "react-router";
 import { Skeleton } from "@src/ui/skeleton";
 
@@ -58,7 +58,7 @@ export default function Home() {
         }
         const result: ContentList = await response.json();
         setPostList(result.data);
-        setTotalPages(Math.ceil(result.len / 4));
+        setTotalPages(Math.ceil(result.len / POSTS_PER_PAGE));
       }
       catch (err) {
         console.error(err);

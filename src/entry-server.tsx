@@ -10,7 +10,7 @@ import {
   DEFAULT_IMAGE,
   makeURL,
   type InitialData
-} from '@src/shared/common';
+} from '@shared/common';
 import App from '@src/App';
 
 function generateMeta({
