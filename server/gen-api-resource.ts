@@ -79,7 +79,7 @@ async function createTagContentList(sortedContentList: Item[]) {
   const allTags = await getTags();
   const destPath = path.join(PROJECT_ROOT, 'dist/api/tags');
   await fs.mkdir(destPath, { recursive: true });
-  for (const [tag, count] of Object.entries(allTags)) {
+  for (const [tag, _] of Object.entries(allTags)) {
     const tagContent = await getItemFromTag(sortedContentList, tag);
     const newDestPath = path.join(destPath, `${tag}.json`);
     await fs.writeFile(
