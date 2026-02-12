@@ -9,7 +9,7 @@ keywords: "백준, cpp"
 
 최소 이동 횟수를 구하는 문제라 bfs 로 푸는게 정석이지만, 구현의 편의를 위해 dfs 로 풀었다.
 
-핵심 아이디어
+아이디어
 1. red, blue 구슬을 각각 2번씩 이동시킨다. (총 4번)
 2. 함수가 실행하기 board 상태를 초기화 한다. (파란 구슬이 구명에 빠졌을시 바로 return 하기 위해)
 
@@ -22,16 +22,12 @@ int N, M, ans = 987654321;
 vector<vector<char>> arr;
 int dy[] = {0, 0, -1, 1};
 int dx[] = {-1, 1, 0, 0};
-struct Red {
-    int y;
-    int x;
-};
-struct Blue {
+struct Point {
     int y;
     int x;
 };
 
-void dfs(Red red, Blue blue, int d, int cnt) {
+void dfs(Point red, Point blue, int d, int cnt) {
     if (cnt > 10) return;
 
     // reset
@@ -43,8 +39,8 @@ void dfs(Red red, Blue blue, int d, int cnt) {
 
     arr[red.y][red.x] = 'R';
     arr[blue.y][blue.x] = 'B';
-    Red nred;
-    Blue nblue;
+    Point nred;
+    Point nblue;
     bool red_goal = false;
     bool redm = false, bluem = false;
 
@@ -117,8 +113,8 @@ int main() {
     cin >> N >> M;
 
     string a;
-    Red red;
-    Blue blue;
+    Point red;
+    Point blue;
     for (int i = 0; i < N; i++) {
         arr.push_back(vector<char>());
         cin >> a;
