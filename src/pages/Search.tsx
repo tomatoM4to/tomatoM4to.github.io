@@ -1,5 +1,5 @@
 import { useHead } from "@src/hooks/useHead";
-import { SITE_NAME, makeURL } from "@shared/common";
+import { SITE_NAME, makeURL, POSTS_PER_PAGE } from "@shared/common";
 import { useEffect, useMemo, useState } from "react";
 import {
   type ItemType,
@@ -10,6 +10,9 @@ import {
 import { Input } from "@src/ui/input";
 import { Card, CardContent } from "@src/ui/card";
 import { Search as SearchIcon, Loader2 } from "lucide-react";
+
+
+const CONCURRENT_FETCH_COUNT = 2;
 
 
 export default function Search() {
@@ -29,25 +32,39 @@ export default function Search() {
         setIsLoading(true);
         setLoadProgress(0);
 
+        // 첫 번째 페이지 fetch로 전체 개수 파악
         const response = await fetch(`/api/recent/1.json`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const result: ContentList = await response.json();
-        const count: number = Math.ceil(result.len / 4);
-        setSearchList(result.data);
-        setLoadProgress(1 / count * 100);
+        const totalPages = Math.ceil(result.len / POSTS_PER_PAGE);
+        let allPosts = [...result.data];
+        let loadedCount = 1;
+        setLoadProgress((loadedCount / totalPages) * 100);
 
-        for (let i = 2; i <= count; i++) {
-          const response = await fetch(`/api/recent/${i}.json`);
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        // 남은 페이지를 CONCURRENT_FETCH_COUNT개씩 병렬로 fetch
+        for (let i = 2; i <= totalPages; i += CONCURRENT_FETCH_COUNT) {
+          const batch: Promise<Response>[] = [];
+          for (let j = i; j < i + CONCURRENT_FETCH_COUNT && j <= totalPages; j++) {
+            batch.push(fetch(`/api/recent/${j}.json`));
           }
-          const result: ContentList = await response.json();
-          setSearchList((pre) => [...pre, ...result.data]);
-          setLoadProgress(i / count * 100);
+
+          const results = await Promise.allSettled(batch);
+
+          for (const res of results) {
+            if (res.status === 'fulfilled' && res.value.ok) {
+              const data: ContentList = await res.value.json();
+              allPosts = [...allPosts, ...data.data];
+            }
+            loadedCount++;
+          }
+
+          setSearchList([...allPosts]);
+          setLoadProgress((loadedCount / totalPages) * 100);
         }
 
+        setSearchList(allPosts);
         setIsLoading(false);
       }
       catch (err) {
