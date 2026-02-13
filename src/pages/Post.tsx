@@ -94,7 +94,7 @@ export default function Post({ initialData }: { initialData: GrayMatterFile<stri
           {meta.keywords && (
             <div className="flex gap-2 flex-wrap">
               {meta.keywords.split(',').map((tag) => (
-                <Badge key={tag.trim()} variant="secondary" className="text-sm px-2.5 py-0.5 font-normal rounded-md transition-all duration-200 hover:scale-105 hover:bg-primary hover:text-primary-foreground cursor-default">
+                <Badge key={tag.trim()} variant="secondary" className="inline-flex text-sm px-2.5 py-0.5 font-normal rounded-md transition-transform duration-200 hover:scale-105 cursor-default">
                   {tag.trim()}
                 </Badge>
               ))}
