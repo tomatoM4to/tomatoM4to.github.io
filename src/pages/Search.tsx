@@ -13,11 +13,13 @@ import { Search as SearchIcon, Loader2 } from "lucide-react";
 
 
 const CONCURRENT_FETCH_COUNT = 2;
+const SEARCH_DEBOUNCE_DELAY_MS = 500;
 
 
 export default function Search() {
   const [searchList, setSearchList] = useState<ItemType[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>("");
   const [loadProgress, setLoadProgress] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -74,15 +76,30 @@ export default function Search() {
     })();
   }, []);
 
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, SEARCH_DEBOUNCE_DELAY_MS);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [searchQuery]);
+
   const filteredList = useMemo(() => {
-    const trimmedQuery = searchQuery.trim();
+    const trimmedQuery = debouncedSearchQuery.trim();
     if (!trimmedQuery) return [];
     const query = trimmedQuery.toLowerCase();
     return searchList.filter((item) => (
       item.title.toLowerCase().includes(query) ||
       item.description.toLowerCase().includes(query)
     ));
-  }, [searchQuery, searchList]);
+  }, [debouncedSearchQuery, searchList]);
+
+  const isSearching =
+    !isLoading &&
+    searchQuery.trim() !== "" &&
+    searchQuery !== debouncedSearchQuery;
 
   return (
     <div className="w-full">
@@ -120,6 +137,11 @@ export default function Search() {
         <div className="max-h-[60vh] overflow-y-auto rounded-lg border border-border">
           {searchQuery.trim() === "" ? (
             <SearchResultSupport support="검색어를 입력해주세요." />
+          ) : isSearching ? (
+            <div className="flex items-center justify-center gap-2 py-12 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>검색 중...</span>
+            </div>
           ) : filteredList.length > 0 ? (
             <div className="p-4">
               <ItemList>
