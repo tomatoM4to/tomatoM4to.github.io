@@ -17,7 +17,6 @@ ORDER BY PUBLISHED_DATE
 ## 자동차 종류 별 특정 옵션이 포함된 자동차 수 구하기
 2023-02-22
 ```sql
--- 코드를 입력하세요
 SELECT car_type AS 'CAR_TYPE' , COUNT(*) AS 'CARS'
 FROM car_rental_company_car
 WHERE OPTIONS LIKE '%통풍시트%'
