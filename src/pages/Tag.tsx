@@ -16,6 +16,7 @@ export default function Tag({ initialTags }: TagProps) {
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
   const [contentList, setContentList] = useState<ContentList | null>(null);
   const [totalPage, setTotalPage] = useState<number>(1);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useHead({
     title: `${SITE_NAME} - tags`,
@@ -23,8 +24,15 @@ export default function Tag({ initialTags }: TagProps) {
   }, []);
 
   useEffect(() => {
-    if (!tag) return;
+    if (!tag) {
+      setContentList(null);
+      setTotalPage(1);
+      setIsLoading(false);
+      return;
+    }
     (async function getData() {
+      setIsLoading(true);
+      setContentList(null);
       try {
         const response = await fetch(`/api/tags/${tag}.json`);
         if (!response.ok) {
@@ -36,6 +44,9 @@ export default function Tag({ initialTags }: TagProps) {
       }
       catch (err) {
         console.error(err);
+      }
+      finally {
+        setIsLoading(false);
       }
     })();
   }, [tag]);
@@ -70,20 +81,22 @@ export default function Tag({ initialTags }: TagProps) {
           <h2 className="text-lg font-semibold">{tag} 태그가 포함된 글</h2>
         </div>
       )}
-      {
-        contentList && tag && (
-          <>
-            <ItemList>
-              {
-              contentList.data.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE).map(post => (
-                  <Item post={post} key={post.id} />
-                ))
-              }
-            </ItemList>
-            <Pagination currentPage={currentPage} totalPages={totalPage} />
-          </>
-        )
-      }
+      {tag && isLoading && (
+        <div className="flex items-center justify-center gap-3 py-12 text-muted-foreground">
+          <div className="h-5 w-5 rounded-full border-2 border-border border-t-foreground animate-spin" />
+          <span className="text-sm">불러오는 중...</span>
+        </div>
+      )}
+      {!isLoading && contentList && tag && (
+        <>
+          <ItemList>
+            {contentList.data.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE).map(post => (
+              <Item post={post} key={post.id} />
+            ))}
+          </ItemList>
+          <Pagination currentPage={currentPage} totalPages={totalPage} />
+        </>
+      )}
     </div>
   )
 }
