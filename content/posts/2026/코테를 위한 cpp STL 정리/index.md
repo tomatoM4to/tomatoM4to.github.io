@@ -288,13 +288,14 @@ string s2 = "World";
 s += " " + s2;         // 문자열 합치기, s: "Hello World"
 s.size();              // 길이 반환 (length()와 동일)
 s.empty();             // 비어있는지 확인
-s[0];                  // 인덱스 접근 (수정 가능), 'H'
+s[0];                  // 인덱스 접근 (수정 가능), 'H', char 형 임에 주의
 s.front();             // 첫 번째 문자 반환 ('H'), s[0]과 동일
 s.back();              // 마지막 문자 반환 ('d')
 s.pop_back();          // 마지막 문자 제거
 
 // 슬라이싱
 string sub = s.substr(0, 5); // "Hello" (0번부터 5개)
+sub = s.substr(0, 1);        // "H" (0번부터 1개) 인덱스 접근과 달리 string 반환
 
 // 문자열 찾기
 if (s.find("World") != string::npos) {
