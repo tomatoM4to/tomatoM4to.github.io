@@ -24,7 +24,7 @@ git reset --hard HEAD~1
 git reset HEAD~3
 ```
 
-이밖에 숫자가 아닌 커밋의 해시값을 이용해서도 커밋을 삭제할 수 있다.
+이밖에 숫자가 아닌 커밋의 해시값을 이용해서도 커밋을 삭제할 수 있다. 이때는 가장 최근의 커밋부터 해시값 커밋까지의 모든 커밋이 삭제된다.
 ```bash
 git reset <commit-hash>
 ```
@@ -32,7 +32,7 @@ git reset <commit-hash>
 > hash 값은 `git log` 명령어로 확인할 수 있다, 아니면 IDE 의 내장 git 도구에서도 확인 가능
 
 ## github 에서 커밋 취소하기
-github 에 실수로 push 한 커밋을 취소하려면 **내 로컬 저장소를 강제로 push** 해야한다. 만약 팀원이 있다면, 팀원들에게 커밋을 취소할거니 pull 하지 말라고 미리 알려주는 것이 좋다. (눈치..)
+github 에 실수로 `push` 한 커밋을 취소하려면 **내 로컬 저장소를 강제로 push** 해야한다. 만약 팀원이 있다면, 팀원들에게 커밋을 취소할거니 `pull` 하지 말라고 미리 알려주는 것이 좋다. (눈치..)
 
 하지만 혼자서 작업하는 저장소라면 걱정없이 강제로 push 해도 별 문제는 없다.
 
@@ -43,4 +43,4 @@ git push --force-with-lease origin <branch-name>
 * `--force` 옵션은 강제로 push 하는 옵션, **혼자서 작업할때 사용**
 * `--force-with-lease` 옵션은 다른 사람이 push 한 커밋이 있는 경우 push 를 거부하는 옵션, **협업할 때는 이 옵션을 사용**
 
-> [https://docs.github.com/ko/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/changing-a-commit-message](https://docs.github.com/ko/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/changing-a-commit-message)
+> [참고한 Github 문서](https://docs.github.com/ko/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/changing-a-commit-message)
