@@ -40,7 +40,7 @@ github 에 실수로 `push` 한 커밋을 취소하려면 **내 로컬 저장소
 git push --force origin <branch-name>
 git push --force-with-lease origin <branch-name>
 ```
-* `--force` 옵션은 강제로 push 하는 옵션, **혼자서 작업할때 사용**
-* `--force-with-lease` 옵션은 다른 사람이 push 한 커밋이 있는 경우 push 를 거부하는 옵션, **협업할 때는 이 옵션을 사용**
+* `--force` or `-f`: 강제로 `push` 하는 옵션, **혼자서 작업할때 사용**
+* `--force-with-lease`: 다른 사람이 `push` 한 커밋이 있는 경우 `push` 를 거부하는 옵션, **협업할 때는 이 옵션을 사용**
 
 > [참고한 Github 문서](https://docs.github.com/ko/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/changing-a-commit-message)
