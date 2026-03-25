@@ -10,6 +10,22 @@ type TagProps = {
   initialTags: TagsData;
 };
 
+const CS_TAGS = new Set([
+  '백준',
+  'Python',
+  'SQL',
+  'Database',
+  'HTTP',
+  'Network',
+  'JavaScript',
+  'KNU',
+  'cpp',
+]);
+
+type TagEntry = [tagName: string, count: number];
+
+const sortTagEntry = ([a]: TagEntry, [b]: TagEntry) => a.localeCompare(b, 'ko');
+
 export default function Tag({ initialTags }: TagProps) {
   const [searchParams] = useSearchParams();
   const tag = searchParams.get('tag');
@@ -51,30 +67,42 @@ export default function Tag({ initialTags }: TagProps) {
     })();
   }, [tag]);
 
+  const allTags = Object.entries(initialTags ?? {}) as TagEntry[];
+  const csTags = allTags.filter(([tagName]) => CS_TAGS.has(tagName)).sort(sortTagEntry);
+  const devTags = allTags.filter(([tagName]) => !CS_TAGS.has(tagName)).sort(sortTagEntry);
+
+  const renderTagBadges = (tags: TagEntry[], withBottomBorder = true) => (
+    <div
+      className={`flex flex-wrap gap-2.5 ${withBottomBorder ? 'mb-6 pb-6 border-b' : 'mb-3 pb-0'}`}
+    >
+      {
+        tags.map(([tagName, count]) => (
+          <Badge
+            key={tagName}
+            variant={tag === tagName ? "default" : "outline"}
+            className={`text-sm px-3 py-1 cursor-pointer transition-all duration-200 hover:scale-105 ${
+              tag === tagName
+                ? "!bg-foreground !text-background hover:!bg-foreground/90"
+                : "hover:!bg-foreground hover:!text-background"
+            }`}
+            asChild
+          >
+            <Link to={`?tag=${tagName}`}>
+              {tagName} ({count})
+            </Link>
+          </Badge>
+        ))
+      }
+    </div>
+  );
+
   return (
     <div className="w-full max-w-[820px] mx-auto">
-      <h1 className="text-2xl font-semibold tracking-tight mb-6">태그</h1>
+      <h1 className="text-xl font-semibold tracking-tight mb-6">CS</h1>
+      {renderTagBadges(csTags, false)}
 
-      <div className="flex flex-wrap gap-2.5 mb-6 pb-6 border-b">
-        {
-          initialTags && Object.entries(initialTags).map(([tagName, count]) => (
-            <Badge
-              key={tagName}
-              variant={tag === tagName ? "default" : "outline"}
-              className={`text-sm px-3 py-1 cursor-pointer transition-all duration-200 hover:scale-105 ${
-                tag === tagName
-                  ? "!bg-foreground !text-background hover:!bg-foreground/90"
-                  : "hover:!bg-foreground hover:!text-background"
-              }`}
-              asChild
-            >
-              <Link to={`?tag=${tagName}`}>
-                {tagName} ({count})
-              </Link>
-            </Badge>
-          ))
-        }
-      </div>
+      <h1 className="text-xl font-semibold tracking-tight mb-6">Dev</h1>
+      {renderTagBadges(devTags)}
 
       {tag && (
         <div className="mb-4">
