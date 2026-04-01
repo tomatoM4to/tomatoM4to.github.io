@@ -12,6 +12,9 @@ import python from 'react-syntax-highlighter/dist/cjs/languages/prism/python';
 import cpp from 'react-syntax-highlighter/dist/cjs/languages/prism/cpp';
 import sql from 'react-syntax-highlighter/dist/cjs/languages/prism/sql';
 
+import { Suspense, lazy } from 'react';
+
+const LazyMermaid = lazy(() => import("@src/components/Mermaid"));
 
 // 빌드 에러 방지를 위한 헬퍼 함수
 function register(name: string, language: any) {
@@ -35,7 +38,19 @@ export default function LazyMarkdown({content}: {content: string}) {
       components={{
         code(props: any) {
           const { children, className, node, ...rest } = props
-          const match = /language-(\w+)/.exec(className || '')
+          const match = /language-(\w+)/.exec(className || '');
+          const codeString = String(children).replace(/\n$/, '');
+
+          // 1. Mermaid 다이어그램 렌더링
+          if (match && match[1] === 'mermaid') {
+            return (
+              <Suspense fallback={<div className="animate-pulse p-4 text-center text-gray-500">다이어그램 로딩 중...</div>}>
+                <LazyMermaid chart={codeString} />
+              </Suspense>
+            );
+          }
+
+          // 2. 일반 코드 블록 렌더링
           return match ? (
             <SyntaxHighlighter
               {...rest}

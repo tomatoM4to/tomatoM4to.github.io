@@ -23,6 +23,7 @@
     "compression": "^1.8.1",
     "express": "^5.1.0",
     "lucide-react": "^0.563.0",
+    "mermaid": "^11.14.0",
     "radix-ui": "^1.4.3",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
