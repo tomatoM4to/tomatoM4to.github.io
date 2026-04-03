@@ -1,5 +1,5 @@
 ---
-title: "git (1) - CM and VSC"
+title: "CM and VSC"
 description: "소프트웨어 공학 1주차 강의에서 다룬 Configuration Management, VCS 에 대한 내용 정리"
 date: "2026-04-01"
 keywords: "git, KNU"
