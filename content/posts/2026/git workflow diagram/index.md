@@ -1,8 +1,8 @@
 ---
 title: "git workflow diagram"
-description: "소프트웨어 공학 1주차 강의에서 다룬 git 에 대한 내용 정리"
+description: "git 의 세가지 상태와 원격 저장소에 대한 개념을 설명하는 다이어그램"
 date: "2026-04-03"
-keywords: "git, KNU"
+keywords: "git"
 ---
 
 ![git-workflow-diagram](https://i.redd.it/nm1w0gnf2zh11.png)
