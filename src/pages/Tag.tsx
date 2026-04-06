@@ -20,7 +20,8 @@ const CS_TAGS = new Set([
   'JavaScript',
   'KNU',
   'cpp',
-  'OS'
+  'OS',
+  'Big Data',
 ]);
 
 type TagEntry = [tagName: string, count: number];
