@@ -1,6 +1,6 @@
 ---
-title: "Web Framework 1주차"
-description: "강원대학교 컴퓨터공학과 2026년 1학기 웹프레임워크 수업 1주차 강의 내용 정리, 추가 및 보충"
+title: "Web Framework - 개요"
+description: "2026년 1학기 웹프레임워크 수업 개요"
 date: "2026-03-06"
 keywords: "Express, JavaScript, KNU"
 ---
