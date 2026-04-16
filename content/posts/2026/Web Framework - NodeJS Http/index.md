@@ -72,3 +72,95 @@ server.listen(3000, () => {
 > `localhost` or `127.0.0.1` 는 컴퓨터의 루프백 네트워크 인터페이스를 말한다, 인터넷 연결 없이도 웹서버를 개발 및 테스트 할 수 있다.
 
 > 만약 외부에서 접근 가능한 서버를 만들고 싶다면, `server.listen(0.0.0.0:3000, ...)` 와 같이 IP 주소를 지정하여 외부에서 접근할 수 있도록 설정할 수 있다.
+
+### Request Object
+> Client 에서 Server 로 요청했을 때 사용하는 Object, `req` or `request` 로 작성하는게 관례
+
+**req log example**
+```json
+TODO
+```
+
+### Response Object
+> Server 에서 Client 로 넘겨는 Response Object, Header 와 Body 로 구성
+
+먼저 Header 를 설정하는 방법부터 보자
+
+```javascript
+res.statusCode = 200;
+res.setHeader('Content-Type', 'text/plain');
+```
+or
+```javascript
+res.writeHead(200, { 'Content-Type': 'text/plain' });
+```
+
+* `res.setHeader(name, value)`: 응답 헤더 설정
+* `res.writeHead(statusCode, headers)`: 응답 상태 코드와 헤더를 한 번에 설정
+
+Body 는 `res.write(data)` 메서드를 사용하여 데이터를 전송할 수 있다, `res.end(data)` 메서드는 응답 본문을 전송하고 연결을 종료한다.
+
+```javascript
+res.write('Hello, ');
+res.write('World!');
+res.end();
+or
+```
+```javascript
+res.end('Hello, World!');
+```
+
+### Response Html example
+
+```javascript
+const http = require('node:http');
+const fs = require('node:fs');
+
+const server = http.createServer((req, res) => {
+  res.setHeader("Content-Type", "text/html");
+  const readStream = fs.createReadStream(__dirname + "/index.html", 'utf-8');
+  readStream.pipe(res);
+});
+
+server.listen(3000, () => {
+  console.log('Server running at http://localhost:3000/');
+});
+```
+
+### Route Handling
+*  URL 경로에 따라 다른 응답을 반환하는 기능, `req.url` 속성을 사용하여 요청된 URL 경로를 확인할 수 있다
+* 폴더명 과 같은 물리적 경로가 아닌 논리적 경로, TODO: 물리적 경로를 사용할 수도 있지만, 라우팅 과는 다른 예기니 넘어감
+* `GET` 이나 `POST`, `PUT`, `DELETE` 등 **같은 URL 경로라도 요청 메서드에 따라 다른 응답을 반환할 수 있다**
+
+아래 예시 코드는 브라우저 상에서 오직 `http://localhost:3000/home` 과 `http://localhost:3000/about` 경로로만 접근이 가능하도록 설정한 코드이다, `root` 포함 그 외의 경로로 접근하면 **404 Not Found** 응답이 반환된다.
+
+```javascript
+const http = require('node:http');
+const fs = require('node:fs');
+
+const server = http.createServer((req, res) => {
+  const { method, url } = req;
+  res.setHeader("Content-Type", "text/plain");
+
+  if (method === 'GET' && url === '/home') {
+    res.statusCode = 200;
+    res.end('Welcome to the home page!');
+  }
+  else if (method === 'GET' && url === '/about') {
+    res.statusCode = 200;
+    res.end('This is the about page.');
+  }
+  // else if (method === 'GET' && url === '/') {
+  //   res.statusCode = 200;
+  //   res.end('Welcome to the root page!');
+  // }
+  else {
+    res.statusCode = 404;
+    res.end('Page not found');
+  }
+});
+
+server.listen(3000, () => {
+  console.log('Server running at http://localhost:3000/');
+});
+```
