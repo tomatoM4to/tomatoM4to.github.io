@@ -104,13 +104,13 @@ export default function Tag({ initialTags }: TagProps) {
 
   return (
     <div className="w-full max-w-[820px] mx-auto">
-      <h1 className="text-xl font-semibold tracking-tight mb-6">Language</h1>
+      <h1 className="text-xl font-semibold tracking-tight mb-2">Language</h1>
       {renderTagBadges(languageTags, false)}
 
-      <h1 className="text-xl font-semibold tracking-tight mb-6">CS</h1>
+      <h1 className="text-xl font-semibold tracking-tight mb-2">CS</h1>
       {renderTagBadges(csTags, false)}
 
-      <h1 className="text-xl font-semibold tracking-tight mb-6">Dev</h1>
+      <h1 className="text-xl font-semibold tracking-tight mb-2">Dev</h1>
       {renderTagBadges(devTags)}
 
       {tag && (
