@@ -1,18 +1,37 @@
 ---
 title: "Big Data - Python (1)"
-description: "강원대학교 컴퓨터공학과 202601 DB Programming 2, 3, 4주차 Python basic"
+description: "강원대학교 컴퓨터공학과 202601 DB Programming, Python basic"
 date: "2026-04-05"
 keywords: "Big Data, Python, KNU"
 ---
 
 ## Basic Syntax
-* `+` : 덧셈, Concatenation 연결 연산자로도 사용
-* `-` : Subtraction
-* `*` : Multiplication , Concatenation 반복 연산자로도 사용
-* `/` : 나눗셈, 결과는 항상 `float`
-* `//` : 몫, 결과는 항상 `int`
-* `%` : Mod
+* `=` : Assignment
+* `==` : Comparison
+* `+` : Sum, Concatenation for tuples, strings, lists
+* `-` : Subtract
+* `*` : Multiplication, Repetition for tuples, strings, lists
+* `/` : Divide, 결과는 항상 `float`
+* `//` : Quotient, 결과는 항상 `int`
+* `%` : Mod, string formatting operator 로도 사용
 * `**` : Power
+
+A Code Sample
+* Variable types don't need to be declared.
+* Python figures out the variable types on its own.
+
+```python
+x = 34 - 23
+y = "Hello, " + "World!"
+z = 3.5
+
+if z == 3.5 or y == "Hello, World!":
+    x = x + 1
+    y = y + "!!!"
+
+print(x)  # 12
+print(y)  # Hello, World!!!!
+```
 
 ## Basic Data types
 ```python
