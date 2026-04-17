@@ -12,16 +12,19 @@ type TagProps = {
 
 const CS_TAGS = new Set([
   '백준',
-  'Python',
-  'SQL',
   'Database',
   'HTTP',
   'Network',
-  'JavaScript',
   'KNU',
-  'cpp',
   'OS',
   'Big Data',
+]);
+
+const LANGUAGE_TAGS = new Set([
+  'Python',
+  'cpp',
+  'JavaScript',
+  'SQL',
 ]);
 
 type TagEntry = [tagName: string, count: number];
@@ -70,8 +73,9 @@ export default function Tag({ initialTags }: TagProps) {
   }, [tag]);
 
   const allTags = Object.entries(initialTags ?? {}) as TagEntry[];
+  const languageTags = allTags.filter(([tagName]) => LANGUAGE_TAGS.has(tagName)).sort(sortTagEntry);
   const csTags = allTags.filter(([tagName]) => CS_TAGS.has(tagName)).sort(sortTagEntry);
-  const devTags = allTags.filter(([tagName]) => !CS_TAGS.has(tagName)).sort(sortTagEntry);
+  const devTags = allTags.filter(([tagName]) => !CS_TAGS.has(tagName) && !LANGUAGE_TAGS.has(tagName)).sort(sortTagEntry);
 
   const renderTagBadges = (tags: TagEntry[], withBottomBorder = true) => (
     <div
@@ -100,6 +104,9 @@ export default function Tag({ initialTags }: TagProps) {
 
   return (
     <div className="w-full max-w-[820px] mx-auto">
+      <h1 className="text-xl font-semibold tracking-tight mb-6">Language</h1>
+      {renderTagBadges(languageTags, false)}
+
       <h1 className="text-xl font-semibold tracking-tight mb-6">CS</h1>
       {renderTagBadges(csTags, false)}
 
