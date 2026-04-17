@@ -164,3 +164,27 @@ server.listen(3000, () => {
   console.log('Server running at http://localhost:3000/');
 });
 ```
+
+## Blocking
+`createServer()` 는 Non-blocking 방식으로 동작하지만, 내부에서 `for-loop` 와 같이 Main-thread 를 점유하는 작업이 있다면, 해당 작업이 완료될 때까지 서버가 다른 요청을 처리할 수 없게 된다.
+
+아래 예제는 `for-loop` 가 Main-thread 를 점유하는 CPU-Blocking 상황을 보여준다.
+
+```javascript
+const http = require('http');
+
+const server = http.createServer((req, res) => {
+  if (req.url === '/') {
+    res.end('Root page');
+  }
+  else if (req.url === '/about') {
+    for (let i = 0; i < 1e9; i++) {} // CPU를 많이 사용하는 작업
+    res.end('About page');
+  }
+});
+
+server.listen(3000, () => {
+  console.log('Server is running on port 3000');
+});
+```
+브라우저에서 `http://localhost:3000/` 에 접속하면 `Root page` 가 정상적으로 출력된다. 하지만 `http://localhost:3000/about` 에 접속하면, CPU를 많이 사용하는 작업 때문에 서버가 멈추게 되고, 다른 요청을 처리할 수 없게 된다.

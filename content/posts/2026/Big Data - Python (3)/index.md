@@ -8,8 +8,8 @@ keywords: "Big Data, Python, KNU"
 ## Database Programming
 Big Data 에 대한 개요를 살펴봤고, Python 언어도 빠르게 훑어봤으니, Big Data 를 다루기 위한 Built-in Library 들을 살펴보자.
 
-* Numpy: Numerical Python 의 줄임말로, 대규모 다차원 배열과 행렬 연산을 지원하는 라이브러리
-* Matplotlib: 데이터 시각화를 위한 라이브러리로, 다양한 그래프와 차트를 그릴 수 있음
+* **Numpy:** Numerical Python 의 줄임말로, 대규모 다차원 배열과 행렬 연산을 지원하는 라이브러리
+* **Matplotlib:** 데이터 시각화를 위한 라이브러리로, 다양한 그래프와 차트를 그릴 수 있음
 
 > Numpy 는 내부적으로 C 언어로 구현되어 있어, Python 의 기본 리스트보다 훨씬 빠르게 대규모 데이터 처리가 가능하다. 제대로 사용하면 cpp 보다 코드는 훨씬 적으며 빠르게 실행되는 경우도 많다.
 
@@ -18,14 +18,14 @@ Big Data 에 대한 개요를 살펴봤고, Python 언어도 빠르게 훑어봤
 ## Numpy
 * Linear algebra library
 * Fundamental package for working with N-dimensional array objects (vector, matrix, tensor, ...)
-  * vector: 1차원 배열
-  * matrix: 2차원 배열
-  * tensor: 3차원 이상의 배열
+  * **vector:** 1차원 배열
+  * **matrix:** 2차원 배열
+  * **tensor:** 3차원 이상의 배열
 * Numpy arrays are a fundamental data type for some other packages to use
 * Numpy has many specialized modules and functions
-  * numpy.linalg: linear algebra functions
-  * numpy.fft: Fourier transform functions
-  * numpy.random: random number generation functions
+  * `numpy.linalg`: linear algebra functions
+  * `numpy.fft`: Fourier transform functions
+  * `numpy.random`: random number generation functions
   * math function, sorting, searching, counting, unit test, ...
 * Numpy is written in C, so it is very fast for numerical computations
 
@@ -71,6 +71,8 @@ print(b.T) # [[1 4]
            #  [3 6]]
 ```
 
+> Transpose 는 행렬의 행과 열을 바꿔주는 연산이다. `(1, 2)` 에 있는 원소는 `(2, 1)` 로, `(2, 3)` 에 있는 원소는 `(3, 2)` 로 이동한다. 2차원 이상 배열에서 사용 가능
+
 ## Vectors
 > vectors are 1d arrays
 * `np.zeros(n)` : Return a new array of giiven shape and type, filled with zeros.
@@ -107,7 +109,7 @@ np.zeros((2, 3)) # [[0. 0. 0.]
                  #  [0. 0. 0.]]
 
 npr.randn(2, 3) # [[ 0.49671415 -0.1382643  0.64768854]
-                 #  [-0.82731631  0.23415337 -0.23413696]]
+                #  [-0.82731631  0.23415337 -0.23413696]]
 ```
 
 ## Array shape
@@ -136,7 +138,7 @@ import numpy as np
 
 a = np.arange(8)
 a.reshape((2, 4)) # [[0 1 2 3]
-                 #  [4 5 6 7]]
+                  #  [4 5 6 7]]
 
 a.reshape(3, 3) # ValueError: cannot reshape array of size 8 into shape (3, 3)
 ```
@@ -282,10 +284,10 @@ print(a / b) # [[0.14285714 0.25       0.33333333]
              #  [0.4        0.45454545 0.555556]]
 
 print(a ** b) # [[      1       256      19683]
-             #  [   16384    9765625  2176782336]]
+              #  [   16384    9765625  2176782336]]
 
 print(a ** 2) # [[ 1  4  9]
-             #  [16 25 36]]
+              #  [16 25 36]]
 ```
 
 ## sum()

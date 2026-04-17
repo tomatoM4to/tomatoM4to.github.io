@@ -41,7 +41,7 @@ print(type(y))  # <class 'str'>
 ```
 
 ## Assignment
-Python 에서는 `=` 연산자를 사용하여 변수에 값을 할당한다. 변수는 메모리 **주소(reference)**를 참조하는 이름으로, 값이 변경될 때마다 새로운 메모리 **주소(reference)**가 할당된다.
+Python 에서는 `=` 연산자를 사용하여 변수에 값을 할당한다. 변수는 메모리 **주소(reference)** 를 참조하는 이름으로, 값이 변경될 때마다 새로운 메모리 **주소(reference)** 가 할당된다.
 
 reference 자체는 값이 아니며 type 을 가지지 않지만, reference 가 가리키는 Object(reference) 는 type 을 가진다.
 
@@ -427,7 +427,7 @@ print(mol)
 TODO: 결과 로그값 만들어야 함
 
 ## Inheritance
-> 상성(Inheritance) 은 새로운 클래스가 기존 클래스의 method 와 member variable 를 물려받아 재사용 및 확장하는 OOP 의 핵심 기능중 하나다.
+> 상속(Inheritance) 은 새로운 클래스가 기존 클래스의 method 와 member variable 를 물려받아 재사용 및 확장하는 OOP 의 핵심 기능중 하나다.
 
 ```python
 class MonoAtomicMolecule(Molecule):

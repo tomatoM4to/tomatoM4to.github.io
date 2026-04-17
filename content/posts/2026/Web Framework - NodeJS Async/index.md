@@ -144,3 +144,75 @@ getUser();
 > `async/await` 은 `Promise` 와 `then` 을 쓰기 편하게 포장해놓은 Syntax Sugar 일 뿐 실제 동작은 `Promise` 와 동일하다.
 
 > `await` 은 비동기 처리를 직렬로 수행하기 때문에, 편리하지만 성능 이슈가 생길 수 있다. 이럴땐 `Promise.all()` 을 사용하여 병렬로 처리할 수 있다. (설명 생략)
+
+## Blocking I/O
+> `Blocking I/O`: I/O 작업이 완료될 때까지 프로그램의 실행이 멈추는 방식. `readFileSync()` 같은 동기 함수가 대표적이다.
+
+
+아래는 Blocking I/O 의 대표적인 예시로서, `fs.readFileSync()` 함수가 실행되면 전체 프로그램이 멈추고, 파일 읽기가 완료된 후에야 다음 코드가 실행된다.
+```javascript
+const fs = require('fs');
+
+const data = fs.readFileSync('example.txt');
+console.log("File content:", data.toString());
+```
+
+## Non-blocking I/O
+> `Non-blocking I/O`: I/O 작업이 완료될 때까지 프로그램의 실행이 멈추지 않고, 다른 작업을 계속할 수 있는 방식. `readFile()` 같은 비동기 함수가 대표적이다.
+
+```javascript
+const fs = require('fs');
+
+const data = fs.readFile('example.txt', (err, data) => {
+  if (err) {
+    console.error("Error reading file:", err);
+    return;
+  }
+  console.log("File content:", data.toString());
+});
+```
+
+## Event Loop
+> JavaScript 런타임에서 **비동기 작업을 처리하기 위한 매커니즘**으로, 콜백 함수들을 스케줄링하여 실행하는 역할을 한다.
+
+[Event Loop](https://tomatom4to.github.io/posts/JavaScript%20Asynchronous%20(1)%20-%20%EC%9D%B4%EB%B2%A4%ED%8A%B8%20%EB%A3%A8%ED%94%84)
+
+Node.js 는 V8 엔진과 libuv 를 포함한 JavaScript 런타임이란게 무슨 뜻인지 알 수 있다.
+* V8: Google 에서 개발한 오픈소스 JavaScript 엔진
+* libuv: Node.js 의 이벤트 기본 Non-blocking I/O 모델을 구현한 라이브러리, cpp 로 작성되어 있다.
+
+## Promise Pattern
+`readFile` 이나 `readdir` 같은 오래된 Node.js API 들은 콜백 패턴을 사용하기에 불편한 경우가 많다, 해당 함수들을 `Promise` 패턴으로 변환하는 방법이 있다.
+
+```javascript
+const fs = require('fs').promises;
+
+fs.readdir('./')
+  .then((data) => {
+    console.log("Directory content:", data);
+  })
+  .catch((err) => {
+    console.error("Error reading directory:", err);
+  });
+```
+
+`Promise` 패턴으로 변환된 API 들은 `async/await` 와도 쉽게 호환되어, 비동기 코드를 더 간결하게 작성할 수 있다.
+
+```javascript
+const fs = require('fs').promises;
+
+async function readDirAsync() {
+  try {
+    const data = await fs.readdir('./');
+    console.log("Directory content:", data);
+  }
+  catch (err) {
+    console.error("Error reading directory:", err);
+  }
+}
+readDirAsync();
+```
+
+> `promise` 가 아닌 `promises` 오타 주의
+
+> 만약 `await` keyword 를 제거하면, Console 에 `Directory content: Promise { <pending> }` 가 출력된다. `await` 키워드는 `Promise`가 해결될 때까지 기다리는 역할을 한다는 점을 다시 한번 강조
