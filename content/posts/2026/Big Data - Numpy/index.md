@@ -1,6 +1,6 @@
 ---
-title: "Big Data - Python (3)"
-description: "강원대학교 컴퓨터공학과 202601 DB Programming 5주차 Python Numpy and Matplotlib"
+title: "Big Data - Numpy"
+description: "강원대학교 컴퓨터공학과 202601 DB Programming 5주차 Python Numpy exercise"
 date: "2026-04-11"
 keywords: "Big Data, Python, KNU"
 ---
@@ -47,11 +47,11 @@ print(b) # [[1 2 3]
 ```
 
 each Numpy array has some attributes
-1. shape: a tuple of size in each dimension
-2. dtype: data type of entries
-3. size: total of entries
-4. ndim: number of dimensions
-5. T: Transpose (행렬의 전치)
+1. `shape`: a tuple of size in each dimension
+2. `dtype`: data type of entries
+3. `size`: total of entries
+4. `ndim`: number of dimensions
+5. `T`: Transpose (행렬의 전치)
 
 ```python
 print(a.shape) # (3,)
@@ -298,7 +298,7 @@ print(a ** 2) # [[ 1  4  9]
   * jth = j 번째
 
 ```python
-a = np.array([[1, 2, 3], 
+a = np.array([[1, 2, 3],
               [4, 5, 6]])
 
 print(a.shape) # (2, 3)
@@ -351,9 +351,9 @@ print(np.argmax(a, axis=1)) # [2 1]
 이전에 `*` 는 ement-wise 곱셈이었는데, `dot()` 은 행렬의 곱셈을 의미한다. 최신 문법으로 `@` 연산자를 이용해 행렬의 곱셈을 할 수도 있다.
 
 ```python
-a = np.array([[1, 2], 
+a = np.array([[1, 2],
               [3, 4]])
-b = np.array([[5, 6], 
+b = np.array([[5, 6],
               [7, 8]])
 
 print(np.dot(a, b)) # [[19 22]
@@ -362,6 +362,10 @@ print(np.dot(a, b)) # [[19 22]
 print(a @ b) # [[19 22]
              #  [43 50]]
 ```
+
+![Dot product](https://velog.velcdn.com/images%2Ftreejy%2Fpost%2F5af553c0-06c0-4a4f-9895-b15f883e04d0%2Fimage.png)
+
+[Image Source](https://velog.io/@treejy/DP-BOJ-11049%EB%B2%88-%ED%96%89%EB%A0%AC-%EA%B3%B1%EC%85%88-%EC%88%9C%EC%84%9C-%ED%8C%8C%ED%97%A4%EC%B9%98%EA%B8%B0-1-%EA%B0%9C%EB%85%90)
 
 ## Broadcasting
 > Shape이 서로 다른 Numpy array 들 간의 산술 연산을 가능하게 해주는 메커니즘. 작은 배열을 큰 배열의 크기에 맞게 내부적으로 **확장(Stretch)**하여 연산이 가능하도록 만들어 준다.

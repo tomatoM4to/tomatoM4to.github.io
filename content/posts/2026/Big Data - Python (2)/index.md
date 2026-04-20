@@ -104,34 +104,203 @@ t3 = timeit.timeit(fibo_dp_time, number=ITERS)
 print(f"DP: {t3:.6f} seconds") # ex) 0.000001
 ```
 
-## Basic Class Uses
+## Char Counting
+
+How many times each letters (chars) are written in given text (string)?
+
+Implement `get_char_count(text)` which returns an dictionary storing the counts of appearance of each character in given text.
+
+Erase # pass and fill out appropriate codes inside the given functions:
+
+> supercalifragilisticexpialidocious
 
 ```python
-class Point:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-    def print_point(self):
-        print(f"({self.x}, {self.y})")
-    def distance(self, other):
-        return ((self.x - other.x) ** 2 + (self.y - other.y) ** 2) ** 0.5
-p1 = Point(1, 2)
-p2 = Point(4, 6)
-p1.print_point() # (1, 2)
-p2.print_point() # (4, 6)
-print(p1.distance(p2)) # 5.0
+text = 'supercalifragilisticexpialidocious'
 
-def Circle:
-    def __init__(self, center, radius):
-        self.center = Point(center[0], center[1])
-        self.radius = radius
-    def print_circle(self):
-        print(f"Circle with center at ({self.center.x}, {self.center.y}) and radius {self.radius}")
-    def in_circle(self, point):
-        return self.center.distance(point) < self.radius
+def get_char_count(text):
+  d = {}
+  for c in text:
+    if c not in d:
+      d[c] = 1
+    else:
+      d[c] += 1
+  return d
 
-c = Circle((0, 0), 5)
-c.print_circle() # Circle with center at (0, 0) and radius 5
-p3 = Point(3, 4)
-print(c.in_circle(p3)) # True
+char_count = get_char_count(text)
+
+print ("-------- print dictionary! -------")
+for char in char_count:
+    print (char, ':', char_count[char])
+
+"""OUTPUT
+-------- print dictionary! -------
+s : 3
+u : 2
+p : 2
+e : 2
+r : 2
+c : 3
+a : 3
+l : 3
+i : 7
+f : 1
+g : 1
+t : 1
+x : 1
+d : 1
+o : 2
+"""
+```
+
+## Sorted
+1. Implement `print_by_keys_order(char_count)` which print list of (char, counts) pair sorted by char in char_count dictionary.
+2. Implement `print_by_values_order(char_count)` which prints (char, counts) pair sorted by counts in char_count dictionary.
+
+```python
+def print_by_keys_order(dic):
+  dic_t = sorted(dic.items())
+  for k, v in dict(dic_t).items():
+    print(k, ":", v)
+print("-------- keys sorted alphabetically -------")
+print_by_keys_order(get_char_count(text))
+
+"""OUTPUT
+-------- keys sorted alphabetically -------
+a : 3
+c : 3
+d : 1
+e : 2
+f : 1
+g : 1
+i : 7
+l : 3
+o : 2
+p : 2
+r : 2
+s : 3
+t : 1
+u : 2
+x : 1
+"""
+
+
+def print_by_values_order(dic):
+  dic_t = sorted(dic.items(), key=lambda x : x[1])
+  return dict(dic_t)
+print ("-------- keys sorted by values -------")
+print_by_values_order(get_char_count(text))
+
+"""OUTPUT
+{'d': 1,
+ 'f': 1,
+ 'g': 1,
+ 't': 1,
+ 'x': 1,
+ 'e': 2,
+ 'o': 2,
+ 'p': 2,
+ 'r': 2,
+ 'u': 2,
+ 'a': 3,
+ 'c': 3,
+ 'l': 3,
+ 's': 3,
+ 'i': 7}
+"""
+```
+
+* 개수가 같으면서 사전순으로 정렬하려면 `key=lambda x : (x[1], x[0])`
+* 여러 문자열이 있을 경우 해당 문자열의 길이를 기준으로 정렬하는 방법 `key=lambda x : len(x)`
+* 역순 파라미터를 이용하여 내림차순으로 정렬 가능 `sorted(dic.items(), key=lambda x : x[1], reverse=True)`
+
+
+## Class Inheritance
+
+With the practice notebook, we studied how to implement a `Point` class. Also, we implemented `Circle` class which has Point instance as a member variable.
+
+Implement your own Circle class, which inherits Point class. It should inherit/override a function `distance` such that distance can be calculated between both points and circles. The `distance` function in `Circle` class should calculate the distance between the circle's center and the given point / the given circle's center.
+
+x and y member variable will be a location of circle's center in Circle class.
+
+```python
+class Point():
+  def __init__(self, x, y):
+    self.x = x
+    self.y = y
+  def distance(self, c):
+    dx = (self.x - c.x) ** 2
+    dy = (self.y - c.y) ** 2
+    return (dx + dy) ** 0.5
+
+class Circle(Point):
+  def __init__(self, p, d):
+    super().__init__(p[0], p[1])
+    self.d = d
+
+  def distance(self, p):
+    dx = (self.x - p.x) ** 2
+    dy = (self.y - p.y) ** 2
+    return (dx + dy) ** 0.5
+
+  def in_circle(self, p):
+    d = self.distance(p)
+    return d < self.d
+
+p = Point(0, 0)
+c = Circle((5, 0), 3)
+
+print(p.distance(c))  # 5.0
+print(c.distance(p))  # 5.0
+print(c.in_circle(p)) # False
+```
+
+## Word Count in Pure Python
+
+A student wants to count the frequency of words in a Wikipedia document.
+
+> Example: en.wikipedia.org/wiki/MapReduce
+>
+> TEXT : MapReduce is a programming model and an associated implementation for processing and generating big data sets with a parallel, distributed algorithm on a cluster.
+>
+> RESULT : "a" appears 3 times, "and" appears 2 times, "Mapreduce" appears 1 time..........
+> To do this, we will implement a program by using MapReduce method.
+>
+> MapReduce consists of 4 functions, map(text), shuffle(mapped_result), reduce(mapped_result), word_count(text)
+>
+> Refer to https://wikidocs.net/64, for details on how map/reduce works
+
+```python
+def map(text):
+  lst = text.split()
+  cnt = [1] * len(lst)
+  return list(zip(lst, cnt))
+
+def shuffle(lst):
+  dic = {}
+  for s, i in lst:
+    if s not in dic:
+      dic[s] = [1]
+    else:
+      dic[s].append(1)
+  return dic
+
+def reduce(dic):
+  d = {}
+  for k, v in dic.items():
+    if k not in d:
+      d[k] = sum(v)
+  return d
+
+def word_count(text):
+  lst = map(text)
+  dic = shuffle(lst)
+  dic = reduce(dic)
+  return dic
+
+inputText = "Now test your result if it's right"
+word_count(inputText)
+
+"""OUTPUT
+{'Now': 1, 'test': 1, 'your': 1, 'result': 1, 'if': 1, "it's": 1, 'right': 1}
+"""
 ```
