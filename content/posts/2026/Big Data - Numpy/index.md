@@ -40,11 +40,17 @@ import numpy as np
 
 a: np.ndarray = np.array([1, 2, 3])
 b: np.ndarray = np.array([[1, 2, 3], [4, 5, 6]])
+c: np.ndarray = np.zeros((2, 3, 4))
 
 print(a) # [1 2 3]
 print(b) # [[1 2 3]
          #  [4 5 6]]
-```
+print(c)   # [[[0. 0. 0. 0.]
+           #   [0. 0. 0. 0.]
+           #   [0. 0. 0. 0.]]
+           #  [[0. 0. 0. 0.]
+           #   [0. 0. 0. 0.]
+           #   [0. 0. 0. 0.]]]
 
 each Numpy array has some attributes
 1. `shape`: a tuple of size in each dimension
@@ -96,10 +102,12 @@ np.arange(0, 10, 2) # [0 2 4 6 8]
 np.arange(5) # [0 1 2 3 4]
 ```
 
+> Numpy 는 정말한 계산을 위해 `ones`, `zeros` 든 기본적으로 `float64` 타입의 배열을 생성한다.
+
 ## Matrices
 > matrices are 2d arrays
 * `np.zeros((m, n))` : Return a new array of given shape and type, filled with zeros.
-* `npr.randn((m, n))` : Return samples from the "standard normal" distribution.
+* `npr.randn(m, n)` : Return samples from the "standard normal" distribution.
 
 ```python
 import numpy as np
@@ -111,6 +119,8 @@ np.zeros((2, 3)) # [[0. 0. 0.]
 npr.randn(2, 3) # [[ 0.49671415 -0.1382643  0.64768854]
                 #  [-0.82731631  0.23415337 -0.23413696]]
 ```
+
+> npmpy 의 기본적인 큐칙은 shape 를 지정할때 `Tuple` 형태로 값을 전달해야 하지만, `randn()`, `rand()` 개별 인자로 전달해야 한다. (MATLAB 스타일)
 
 ## Array shape
 > Shape returns a tuple listing the length of the array along each demension. (차원별 Tuple 의 사이즈)
@@ -170,6 +180,9 @@ print(a[4:, 4:]) # [[28 29]
 
 # 모든 row, 2번째 column의 원소를 선택
 print(a[:, 2]) # [2, 8, 14, 20, 26, 32]
+
+# 2번째 row, 모든 column의 원소를 선택
+print(a[2, :]) # [12 13 14 15 16 17]
 
 # Slices are reference to memory in the original array
 b = a[0, 3:5]
