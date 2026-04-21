@@ -275,4 +275,12 @@ app.listen(3000, () => {
 });
 ```
 
-TODO
+`res.send()` 로 **종료**되는건 Http 의 **Request-Response 사이클**이지, JavaScript 함수가 아니다 (정확힌 Excution Context). 해당 코드를 작성하고 `/` 에 연속적으로 요청을 보내면 `res.send()` 이후에서 `logger` Middleware 가 다시 실행되는 것을 볼 수 있다.
+
+현업에선 보통 **빠른 응답** 이후 **통계, 알림, 로깅 등**이 필요할때 이런 패턴을 사용한다. 당연한거겠지만 이후에 사용할 `next()` 에서 `res` 를 다시 조작하려고 하면 `ERR_HTTP_HEADERS_SENT` 가 발생하여 앱이 죽어버리니 **절대** 하면 안된다.
+
+또 `next()` 를 호출하면 체인을 타다가 마지막 Middleware 까지 다 지나쳐 더이상 처리되는 Middleware 가 없다면, Express 의 내장 Final Handler 가 이를 처리한다. 이때 이미 응답이 완료된 상태라면(`res.headersSent === true`) Express 는 정상적으로 내부 사이클을 완전히 종료한다.
+
+만약 응답이 안보낸 상태로 체인이 끝나면 Express 가 알아서 `404 Not Found` 에러를 발생시킨다.
+
+> 헤당 내용은 임의로 작성함
