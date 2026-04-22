@@ -2,7 +2,7 @@
 title: "Web Framework - MongoDB"
 description: "202601 웹프레임워크, MongoDB 세팅 및 Express 와의 연동"
 date: "2026-04-20"
-keywords: "Database, JavaScript, KNU"
+keywords: "Express, Database, KNU"
 ---
 
 ## NoSQL
