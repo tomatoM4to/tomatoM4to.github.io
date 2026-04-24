@@ -1,5 +1,7 @@
 import Markdown from 'react-markdown';
 import remarkGfm from "remark-gfm";
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
@@ -34,7 +36,8 @@ register('sql', sql);
 export default function LazyMarkdown({content}: {content: string}) {
   return (
     <Markdown
-      remarkPlugins={[remarkGfm]}
+      remarkPlugins={[remarkGfm, remarkMath]}
+      rehypePlugins={[rehypeKatex]}
       components={{
         code(props: any) {
           const { children, className, node, ...rest } = props
