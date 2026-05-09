@@ -41,6 +41,7 @@ function Profile() {
 export default function Home() {
   const [postList, setPostList] = useState<ItemType[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
   const [searchParams] = useSearchParams();
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
 
@@ -62,6 +63,8 @@ export default function Home() {
       }
       catch (err) {
         console.error(err);
+      } finally {
+        setIsFirstLoad(false);
       }
     })();
   }, [currentPage]);
@@ -72,11 +75,14 @@ export default function Home() {
       <h2 className="text-2xl font-semibold tracking-tight mt-12 mb-12">최근 포스트</h2>
       <section className="mt-0">
         <ItemList>
-          {postList.map(post => (
-            <Item post={post} key={post.id} />
-          ))}
+          {isFirstLoad
+            ? Array.from({ length: 5 }).map((_, i) => <Item key={`skeleton-${i}`} loading />)
+            : postList.map(post => (
+              <Item post={post} key={post.id} />
+            ))
+          }
         </ItemList>
-        <Pagination currentPage={currentPage} totalPages={totalPages} />
+        {!isFirstLoad && <Pagination currentPage={currentPage} totalPages={totalPages} />}
       </section>
     </div>
   )

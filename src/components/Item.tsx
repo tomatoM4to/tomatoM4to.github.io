@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import { ReactNode } from "react";
 import { Badge } from "@src/ui/badge";
 import { Calendar } from "lucide-react";
+import { Skeleton } from "@src/ui/skeleton";
 
 export type ItemType = {
   id: string,
@@ -17,7 +18,34 @@ export type ContentList = {
   data: ItemType[]
 }
 
-export function Item({post}: {post: ItemType}) {
+export function Item({post, loading}: {post?: ItemType, loading?: boolean}) {
+  if (loading) {
+    return (
+      <div className="block">
+        <div className="bg-transparent border-b border-border py-7">
+          <div className="mb-2">
+            <Skeleton className="h-[25px] w-1/2" />
+          </div>
+          <div className="mb-3">
+            <Skeleton className="h-[26px] w-full" />
+          </div>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-1.5">
+              <Skeleton className="h-3.5 w-3.5 rounded-full" />
+              <Skeleton className="h-4 w-24" />
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              <Skeleton className="h-6 w-16" />
+              <Skeleton className="h-6 w-12" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!post) return null;
+
   return (
     <Link to={`/posts/${post.id}`} className="block group">
       <div className="bg-transparent border-b border-border py-7 transition-all duration-300 hover:bg-muted/30 hover:px-4 hover:-mx-4 hover:rounded-lg hover:border-transparent">
