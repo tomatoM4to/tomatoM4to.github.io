@@ -120,10 +120,11 @@ export default function Tag({ initialTags }: TagProps) {
         </div>
       )}
       {tag && isLoading && (
-        <div className="flex items-center justify-center gap-3 py-12 text-muted-foreground">
-          <div className="h-5 w-5 rounded-full border-2 border-border border-t-foreground animate-spin" />
-          <span className="text-sm">불러오는 중...</span>
-        </div>
+        <ItemList>
+          {Array.from({ length: POSTS_PER_PAGE }).map((_, i) => (
+            <Item key={i} loading />
+          ))}
+        </ItemList>
       )}
       {!isLoading && contentList && tag && (
         <>
