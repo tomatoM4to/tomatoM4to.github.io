@@ -275,24 +275,6 @@ input {
   animation: pulse-soft 2s ease-in-out infinite;
 }
 
-/* Loader Spinner */
-.loader {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
-}
-
-.loader::after {
-  content: '';
-  width: 24px;
-  height: 24px;
-  border: 2px solid var(--muted);
-  border-top-color: var(--primary);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
 /* KaTeX 접근성용 텍스트(중복 텍스트) 숨기기 */
 .katex-html {
   display: none !important;

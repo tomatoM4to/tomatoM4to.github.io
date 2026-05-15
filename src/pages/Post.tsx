@@ -6,6 +6,7 @@ import { updateHead } from "@src/hooks/useHead";
 import { makeURL } from "@shared/common";
 import { Badge } from "@src/ui/badge";
 import { Calendar } from "lucide-react";
+import PostSkeleton from "@src/components/PostSkeleton";
 
 const LazyMarkdown = lazy(() => import("@src/components/LazyMarkdown"));
 const LazyGiscus = lazy(() => import("@src/components/LazyGiscus"));
@@ -75,45 +76,49 @@ export default function Post({ initialData }: { initialData: GrayMatterFile<stri
 
   return (
     <div className="w-full max-w-[820px] mx-auto">
-      <header className="mb-8 pb-6 border-b">
-        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-3">
-          {meta.title || post}
-        </h1>
-        {meta.description && (
-          <p className="text-muted-foreground text-base md:text-lg mb-4">
-            {meta.description}
-          </p>
-        )}
-        <div className="flex flex-wrap gap-3 items-center text-sm text-muted-foreground">
-          {meta.date && (
-            <div className="flex items-center gap-1.5">
-              <Calendar className="h-4 w-4" />
-              <span>{meta.date}</span>
+      {content === null || meta.title === '' ? (
+        <PostSkeleton />
+      ) : (
+        <Suspense fallback={<PostSkeleton />}>
+          <header className="mb-8 pb-6 border-b">
+            <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-3">
+              {meta.title || post}
+            </h1>
+            {meta.description && (
+              <p className="text-muted-foreground text-base md:text-lg mb-4">
+                {meta.description}
+              </p>
+            )}
+            <div className="flex flex-wrap gap-3 items-center text-sm text-muted-foreground">
+              {meta.date && (
+                <div className="flex items-center gap-1.5">
+                  <Calendar className="h-4 w-4" />
+                  <span>{meta.date}</span>
+                </div>
+              )}
+              {meta.keywords && (
+                <div className="flex gap-2 flex-wrap">
+                  {meta.keywords.split(',').map((tag) => (
+                    <Badge
+                      key={tag.trim()}
+                      variant="secondary"
+                      className="inline-flex text-sm px-2.5 py-0.5 font-normal rounded-md transition-transform duration-200 hover:scale-105 cursor-default"
+                    >
+                      {tag.trim()}
+                    </Badge>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-          {meta.keywords && (
-            <div className="flex gap-2 flex-wrap">
-              {meta.keywords.split(',').map((tag) => (
-                <Badge
-                  key={tag.trim()}
-                  variant="secondary"
-                  className="inline-flex text-sm px-2.5 py-0.5 font-normal rounded-md transition-transform duration-200 hover:scale-105 cursor-default"
-                >
-                  {tag.trim()}
-                </Badge>
-              ))}
-            </div>
-          )}
-        </div>
-      </header>
-      <article className="markdown">
-        <Suspense fallback={<div className="loader"></div>}>
-          {content !== null ? <LazyMarkdown content={content} /> : <div className="loader"></div>}
+          </header>
+          <article className="markdown">
+            <LazyMarkdown content={content} />
+          </article>
         </Suspense>
-      </article>
+      )}
       <Suspense fallback={<></>}>
         <LazyGiscus />
       </Suspense>
     </div>
   )
-}
+  }
