@@ -89,12 +89,10 @@ function main() {
 
     // Determine ETag type
     const ext = path.extname(filePath);
-    const type = (ext === '.json' || ext === '.md') ? 'hash' : 'default';
+    // HTML, JSON, MD files are content-hashed
+    const type = (ext === '.json' || ext === '.md' || ext === '.html') ? 'hash' : 'default';
     
-    // For HTML files not handled by MD hash, we can use their own hash or default
-    const finalType = ext === '.html' ? 'hash' : type;
-
-    etagMap[urlPath] = getETagForFile(filePath, finalType);
+    etagMap[urlPath] = getETagForFile(filePath, type);
   });
 
   const etagMapJson = JSON.stringify(etagMap);
