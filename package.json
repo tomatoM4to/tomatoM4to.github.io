@@ -10,7 +10,7 @@
     "build:ssr": "npm run build:client && npm run build:server",
     "build:ssg": "npm run build:ssr && tsx --tsconfig tsconfig.server.json server/gen-static.ts",
     "build:api": "tsx --tsconfig tsconfig.server.json server/gen-api-resource.ts",
-    "build": "npm run build:ssg && npm run build:api",
+    "build": "npm run build:ssg && npm run build:api && node scripts/inject-etag-map.js",
     "start:ssr": "cross-env NODE_ENV=production tsx watch --tsconfig tsconfig.server.json server/server.ts",
     "start:ssg": "serve dist",
     "convert": "node scripts/img-to-webp.js"
