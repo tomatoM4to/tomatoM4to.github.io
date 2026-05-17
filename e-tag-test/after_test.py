@@ -2,6 +2,7 @@ import time
 import tempfile
 import json
 import shutil
+import matplotlib.pyplot as plt
 from urllib.parse import urlparse
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -18,6 +19,11 @@ def run_rtt_verification():
     user_data_dir = tempfile.mkdtemp()
     driver = None
     
+    timings = {
+        "Cold Visit": 0,
+        "Refresh (Warm)": 0
+    }
+    
     try:
         options = Options()
         options.add_argument(f"user-data-dir={user_data_dir}")
@@ -31,9 +37,17 @@ def run_rtt_verification():
         driver.get(TARGET_URL)
         time.sleep(5) # SW 등록 및 리소스 다운로드 대기
         
+        cold_nav = driver.execute_script("return window.performance.getEntriesByType('navigation')[0].duration")
+        timings["Cold Visit"] = cold_nav
+        print(f"Cold Page Load: {cold_nav:.2f}ms")
+        
         print("\n[Step 2] Refresh - Measuring Sub-resource RTT (Expected: 0-RTT)")
         driver.refresh()
         time.sleep(3)
+        
+        refresh_nav = driver.execute_script("return window.performance.getEntriesByType('navigation')[0].duration")
+        timings["Refresh (Warm)"] = refresh_nav
+        print(f"Refresh Page Load: {refresh_nav:.2f}ms")
         
         # Resource Timing API를 사용하여 하위 리소스들의 duration 측정
         resources = driver.execute_script("""
@@ -70,11 +84,33 @@ def run_rtt_verification():
         else:
             print("No matching resources found to verify.")
             print(f"Debug: Total entries found: {len(resources)}")
-            if len(resources) > 0:
-                print("First few entries for debug:")
-                for r in resources[:3]:
-                    print(f" - {r['name']}")
         print("="*30)
+
+        # Matplotlib visualization
+        print("\nGenerating performance chart...")
+        labels = list(timings.keys())
+        values = list(timings.values())
+
+        plt.figure(figsize=(10, 6))
+        bars = plt.bar(labels, values, color=['#ff9999', '#66b3ff'])
+        
+        # Add value labels on top of bars
+        for bar in bars:
+            height = bar.get_height()
+            plt.text(bar.get_x() + bar.get_width()/2., height,
+                     f'{height:.2f}ms', ha='center', va='bottom', fontsize=12, fontweight='bold')
+
+        plt.title('Page Load Performance: Cold vs Warm (Refresh)', fontsize=14)
+        plt.ylabel('Duration (ms)', fontsize=12)
+        plt.grid(axis='y', linestyle='--', alpha=0.7)
+        
+        # Save the plot
+        output_file = "benchmark_result.png"
+        plt.savefig(output_file)
+        print(f"Chart saved to {output_file}")
+        
+        # Optional: Show plot if not in headless environment
+        # plt.show()
 
     except Exception as e:
         print(f"Test failed: {e}")
