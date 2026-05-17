@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tomato-etag-cache-v1';
+const CACHE_NAME = 'tomato-etag-cache-v2'; // 버전을 올립니다.
 const ETAG_MAP_CACHE_KEY = '/__etag_map__';
 
 self.addEventListener('install', (event) => {
@@ -6,7 +6,18 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            console.log('[SW] Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
+  );
 });
 
 self.addEventListener('message', (event) => {
@@ -70,29 +81,39 @@ self.addEventListener('fetch', (event) => {
 
       if (cachedResponse) {
         const cachedEtag = cachedResponse.headers.get('X-SW-ETag');
-        
-        // If ETags match, serve from cache immediately without network request (0 RTT)
+
         if (cachedEtag && currentEtag && cachedEtag === currentEtag) {
-          return cachedResponse;
+          const headers = new Headers(cachedResponse.headers);
+          headers.set('X-Cache-Status', 'HIT-0-RTT');
+          return new Response(cachedResponse.body, {
+            status: cachedResponse.status,
+            statusText: cachedResponse.statusText,
+            headers: headers
+          });
         }
+        console.log(`[SW] ETag Mismatch for ${url.pathname}: cached=${cachedEtag}, current=${currentEtag}`);
       }
 
       // 3. Not in cache or ETag mismatch
       try {
         const networkResponse = await fetch(event.request);
         const responseToCache = networkResponse.clone();
-        
+
+        const statusHeader = cachedResponse ? 'MISS-ETAG-MISMATCH' : 'MISS-NOT-IN-CACHE';
+
         if (currentEtag) {
           const headers = new Headers(responseToCache.headers);
           headers.set('X-SW-ETag', currentEtag);
-          
+          headers.set('X-Cache-Status', statusHeader);
+
           const responseWithEtag = new Response(await responseToCache.blob(), {
             status: responseToCache.status,
             statusText: responseToCache.statusText,
             headers: headers
           });
           event.waitUntil(cache.put(event.request, responseWithEtag));
-        } else {
+        }
+ else {
           event.waitUntil(cache.put(event.request, responseToCache));
         }
 
