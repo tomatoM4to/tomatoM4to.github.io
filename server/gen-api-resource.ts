@@ -58,6 +58,7 @@ async function genRecentPostList(sortedContentList: Item[]) {
       );
       buffer = [];
       console.log(`🐍 Created content JSON to: ${destPath}`);
+      if (Math.random() < 0.3) await delay(100);
     }
   }
 
@@ -87,6 +88,7 @@ async function createTagContentList(sortedContentList: Item[]) {
       JSON.stringify(tagContent)
     );
     console.log(`❄️ Created Tag-Content JSON to: ${newDestPath}`);
+    if (Math.random() < 0.3) await delay(100);
   }
 }
 
@@ -96,6 +98,7 @@ async function createTagContentList(sortedContentList: Item[]) {
 
   for (const [postName, filePath] of postMap) {
     genMarkdownJSON(postName, filePath);
+    if (Math.random() < 0.3) await delay(100);
   }
   await delay(100);
   await genRecentPostList(sortedContentList);
