@@ -2,7 +2,7 @@
 title: "Rethinking Web Caching"
 description: "2026년 1학기 데이터 통신 HTTP Web Cache 최적화 논문 리뷰"
 date: "2026-04-27"
-keywords: "Network, HTTP, KNU"
+keywords: "Network, HTTP, Paper"
 ---
 
 > [Rethinking Web Caching: An Optimization for the Latency-Constrained Internet](https://dl.acm.org/doi/10.1145/3696348.3696873)

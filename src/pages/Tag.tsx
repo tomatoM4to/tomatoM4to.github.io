@@ -18,7 +18,8 @@ const CS_TAGS = new Set([
   'KNU',
   'OS',
   'Big Data',
-  '정처기'
+  '자격증',
+  'Paper'
 ]);
 
 const LANGUAGE_TAGS = new Set([
