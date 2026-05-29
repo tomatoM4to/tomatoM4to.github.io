@@ -7,7 +7,7 @@ import {
   createInitialData,
   getAllPostPathsSync,
   type Render,
-  delay
+  randDelay
 } from '@server/utils.ts';
 
 const PROJECT_ROOT = process.cwd();
@@ -67,7 +67,7 @@ async function generatePagesSequentially() {
   // copyContentToDistDirectory();
   for (const route of pages) {
     await generatePage(route);
-    if (Math.random() < 0.3) await delay(100); // 30% chance to wait 0.1 second (Optimization)
+    await randDelay();
   }
 }
 

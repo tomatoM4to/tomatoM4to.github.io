@@ -7,7 +7,7 @@ import {
   getSortedContentList,
   getTags,
   type Item,
-  delay
+  randDelay
 } from '@server/utils.ts';
 import { POSTS_PER_PAGE } from '@shared/common.ts';
 
@@ -58,7 +58,7 @@ async function genRecentPostList(sortedContentList: Item[]) {
       );
       buffer = [];
       console.log(`🐍 Created content JSON to: ${destPath}`);
-      if (Math.random() < 0.3) await delay(100);
+      randDelay()
     }
   }
 
@@ -88,7 +88,7 @@ async function createTagContentList(sortedContentList: Item[]) {
       JSON.stringify(tagContent)
     );
     console.log(`❄️ Created Tag-Content JSON to: ${newDestPath}`);
-    if (Math.random() < 0.3) await delay(100);
+    randDelay()
   }
 }
 
@@ -98,11 +98,9 @@ async function createTagContentList(sortedContentList: Item[]) {
 
   for (const [postName, filePath] of postMap) {
     genMarkdownJSON(postName, filePath);
-    if (Math.random() < 0.3) await delay(100);
+    randDelay()
   }
-  await delay(100);
   await genRecentPostList(sortedContentList);
-  await delay(100);
   await createTagContentList(sortedContentList);
 })();
 

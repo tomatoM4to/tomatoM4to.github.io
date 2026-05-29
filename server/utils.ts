@@ -194,6 +194,13 @@ export async function getItemFromTag(
   };
 }
 
-export async function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+export async function randDelay() {
+  return new Promise<void>((resolve) => {
+    if (Math.random() < 0.1) {
+      setTimeout(resolve, 100)
+    }
+    else {
+      resolve()
+    }
+  });
 };
