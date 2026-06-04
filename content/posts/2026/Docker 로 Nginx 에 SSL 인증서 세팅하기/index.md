@@ -45,7 +45,7 @@ export EMAIL="admin@example.com"
 >
 > 80, 443 번 포트가 열려있는지 확인
 
-> Let's Encrypt는 짧은 시간에 잦은 발급 요청이나 실패가 반복되면 해당 도메인에 대해 일정 기간(1시간 ~ 1주일) API 호출을 **차단(Rate Limit)**해 버린다. 가능하면 원트컷 하는게 좋음
+> Let's Encrypt는 짧은 시간에 잦은 발급 요청이나 실패가 반복되면 해당 도메인에 대해 일정 기간(1시간 ~ 1주일) API 호출을 **차단(Rate Limit)** 해 버린다. 가능하면 원트컷 하는게 좋음
 
 ## Step 2: Nginx Template File
 보통 git 으로 관리하기 때문에 clone 하면 해결 되겠지만, 따로 Step 으로 설명
