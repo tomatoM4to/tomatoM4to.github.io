@@ -73,7 +73,39 @@ sc.textFile("someFile.txt").
     filter(filterFunc).
     count()
 ```
-`map`, `flatMap`, `filter` 모두 Shuffle 이 일어나지 않기 때문에 하나의 Stage 로 구성이 된다.
+> `map`, `flatMap`, `filter` 모두 Shuffle 이 일어나지 않기 때문에 하나의 Stage 로 구성이 된다.
+
+```python
+rdd1 = sc.textFile("file1.txt").map(func1)
+rdd2 = sc.textFile("file2.txt").filter(func2)
+rdd1.join(rdd2).map(func3).collect()
+```
+
+> 3개
+
+> `rdd1` 을 읽고 `map` 을 처리하는 Stage1, `rdd2` 를 읽고 `filter` 를 처리하는 Stage2(Stage1 과는 병렬로 실행), 두 데이터를 Shuffle 하여 `join` 한 뒤, 그 결과에 `map` 을 적용하고 `collect` 로 가져오는 Stage 3
+
+```python
+sc.textFile("data.txt") \
+    .map(lambda x: x.split(",")) \
+    .repartition(10) \
+    .filter(lambda x: x[0] == "error") \
+    .count()
+```
+> 2개
+
+> `repartition(10)` 이 무조건 shuffle 를 발생시키기에 2개
+
+```python
+sc.textFile("data.txt") \
+    .map(lambda x: (x, 1)) \
+    .reduceByKey(lambda x, y: x + y) \
+    .coalesce(2) \
+    .collect()
+```
+
+> 2개, `reduceByKey` 는 Key 별로 합산하기 위해 데이터를 섞어야 하므로, Shuffle 이 발생
+
 
 ### How many Stages will this DAG require?
 

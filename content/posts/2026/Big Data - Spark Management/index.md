@@ -24,6 +24,11 @@ Spark는 자체적인 클러스터 리소스 관리 시스템을 내장하기보
 * **Driver**: 사용자가 작성한 코드(Transformation 및 Action)를 선언하고, 이를 실행하기 위해 데이터를 분산 처리해달라고 Master에게 요청을 보냄
 * **Executor**: 클러스터의 각 Worker Machine(워커 노드) 내부에 JVM 프로세스 형태로 생성되며, 쪼개진 RDD의 파티션들에 대해 할당된 Task를 병렬로 처리
 
+### Executor Structure
+1. Worker Node: 물리적/가상 하드웨어
+2. Executor: JVM Process, 성능 튜닝에 따라 한 컴퓨터 1대에 3~4대의 Executor 를 띄울 수도 있음
+3. Task: JVM 내의 Thread, Thread 이므로 JVM 내의 Heap 메모리를 서로 공유함
+
 ### Local Mode
 > 단일 머신 환경에서 실행
 
