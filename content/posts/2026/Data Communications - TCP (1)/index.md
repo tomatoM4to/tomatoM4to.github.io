@@ -103,12 +103,12 @@ TODO: 사진
 
 ![TCP-flow-control](/img/network/TCP-flow-control.webp)
 
-* RcvBuffer(수신 버퍼): 수신 측에 할당된 메모리 공간
-* rwnd(수신 윈도우, Receive Window): `RcvBuffer` 안에서 실제로 남아있는 순수 여유 공간(Free buffer space)
+* **RcvBuffer(수신 버퍼)**: 수신 측에 할당된 메모리 공간
+* **rwnd(수신 윈도우, Receive Window)**: `RcvBuffer` 안에서 실제로 남아있는 순수 여유 공간(Free buffer space)
 
 **동작 원리**
-1. 수신자의 통보: 수신자는 자신이 보내는 모든 TCP Segment Header 의 `Window Size` 필드에 현재 자신의 Buffer 빈 공간 크기를 담아서 송신자에게 계속 알려줌
-2. 송신자의 억제: 송신자는 아직 확인응답(ACK)을 받지 못한 데이터, 즉 인플라이트(In-flight) 데이터의 총량이 수신자가 알려준 rwnd를 절대 넘지 않도록 전송량을 제한
+1. **수신자의 통보**: 수신자는 자신이 보내는 모든 TCP Segment Header 의 `Window Size` 필드에 현재 자신의 Buffer 빈 공간 크기를 담아서 송신자에게 계속 알려줌
+2. **송신자의 억제**: 송신자는 아직 확인응답(ACK)을 받지 못한 데이터, 즉 인플라이트(In-flight) 데이터의 총량이 수신자가 알려준 rwnd를 절대 넘지 않도록 전송량을 제한
 
 > 수학적으론 `(LastByteSent - LastByteAcked) <= rwnd` 를 철처하게 지킴
 
@@ -118,10 +118,10 @@ TODO: 사진
 > TCP 는 통신 전 반드시 양측의 상태를 초기화 하는 Handshaking 과정을 거쳐야 함
 
 ### Why 3-way Handshake?
-* 실패 시나리오 1: 반쪽 연결 (Half-open connection)
+* **실패 시나리오 1: 반쪽 연결 (Half-open connection)**
   * Client 가 보낸 연결 요청(SYN)이 지연되어서, Client 가 포기하고 꺼버린 한참 뒤에 Server 에 도착하는 경우
   * Server 혼자 수락(SYN-ACK) 하고 메모리를 낭비하며 Client 를 영원히 기다리는 경우
-* 실패 시나리오 2: 중복 데이터 수락 (Dup data accepted)
+* **실패 시나리오 2: 중복 데이터 수락 (Dup data accepted)**
   * 옛날 연결에서 길을 읽고 떠돌던 데이터 Packet 이, 새로운 연결을 맺어지기도 전에 갑자기 Server 에 도착
   * Server 측에서 새 데이터 인 줄 알고 잘못 수락해 버림
 
@@ -138,8 +138,6 @@ TODO: 사진
 
 ### 4-way Handshake (연결 종료)와 TIME_WAIT
 > 각 방향의 연결을 독립적으로 닫음 (어느 쪽이든 먼저 끊을 수 있음)
-
-각 방향의 연결을 독립적으로 닫습니다. (어느 쪽이든 먼저 끊을 수 있음)
 
 1. `Host A -> Host B (FIN)`: 나 더 이상 보낼 데이터 없어
 2. `Host B -> Host A (ACK)`: 알겠어, 잠시만 (남은 데이터 처리 중)
