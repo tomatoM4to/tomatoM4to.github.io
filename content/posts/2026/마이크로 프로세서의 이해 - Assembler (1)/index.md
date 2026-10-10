@@ -1,6 +1,6 @@
 ---
 title: "마이크로 프로세서의 이해 - Assembler (1)"
-description: "어셈블러 기본기"
+description: "어셈블러 문법, 분기처리, loop에 대해 소개하고 간단한 예시코드"
 date: "2026-10-09"
 keywords: "Assembler, KNU"
 ---
