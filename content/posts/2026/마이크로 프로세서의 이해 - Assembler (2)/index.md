@@ -133,3 +133,202 @@ LSL R2, R1, 2  ; 80 → 20 x 4
 ASR R3, R1, 2  ; 5  → 20 / 4
 AND R4, R1, 3  ; 0  → 20 % 4
 ```
+
+## Addressing Mode
+
+Register에 저장된 값은 단순한 데이터일 수도 있고 **메모리 주소** 일수도 있다. 마치 C언어의 Pointer처럼 메모리로부터 값을 읽어오는 명령어가 ASM에 존재한다.
+
+| 예시 | 의미 |
+| `COPY R1, 10` | 정수 10을 직접 사용 |
+| `COPY R1, R2` | R2의 값을 사용 |
+| `LOAD R1, x` | x주소에 저장된 값을 읽음 |
+| `LEA R1, x` | x의 주소를 읽음 |
+| `LDR R1, R2, offset` | R2+offset 에 저장된 주소를 통해 값을 읽음 |
+| `STR R1, R2, offset` | R1의 값을 R2+offset 이 가리키는 메모리에 저장 |
+
+> `LDR`과 `STR`의 offset은 16비트 정수이며 레지스터를 직접 지정할 수 없다.
+
+### LOAD와 LEA의 차이
+
+```asm
+.ORIGIN 0x2000
+  LOAD R1, x  ; R1 ← M[x]
+  LEA R2, x   ; R2 ← x의 주소
+  SWI 255
+
+x:  .FILL 42
+```
+> `M[x]`는 메모리의 x번지에 저장된 내용을 뜻
+
+해당 프로그램을 `ORIGIN`을 기준으로 조소를 배치하면 다음과 같아진다.
+
+```text
+0x2000  LOAD R1, x
+0x2001  LEA R2, x
+0x2002  SWI 255
+0x2003  x: .FILL 42
+```
+
+그리고 R1와 R2에는 다음과 같은 값이 들어온다.
+* **R1: 42**
+* **R2: 0x2003**
+
+### LDR과 STR (레지스터 간접 어드레싱)
+```asm
+LDR R1, R2, offset   ; R1 ← M[R2 + offset]
+STR R1, R2, offset   ; M[R2 + offset] ← R1
+```
+> offset: 기준 주소에 더할 정수
+
+가령 R2에 `5000`이 저정되어 있고 메모리 `5003`번지에 77이 있다면 `LDR R1, R2, 3` 실행수 R1에는 77이 들어가게 된다.
+
+## Pointer의 구현
+
+다음 코드는 ASM으로 이렇게 변환이 가능하다.
+```c
+int x = 10, y;
+int *p = &x;
+
+*p = 99;
+y = *p;
+```
+
+```asm
+.ORIGIN 0x2000
+
+; int *p = &x;
+LEA R1, x     ; R1 = 0x2009
+STORE R1, p   ; M[0x200B] = 0x2009
+
+; *p = 99;
+COPY R3, 99
+LOAD R1, p    ; R1 = 0x2009
+STR R3, R1, 0 ; M[0x200B] = 99
+
+; y = *p;
+LOAD R1, p    ; R1 = 0x2009
+LDR R2, R1, 0 ; R2 = M[0x2009] = 9
+STORE R2, y   ; M[0x200A] = 99
+
+SWI 255
+
+x: .FILL 10   ; 0x2009
+y: .BLOCK 1   ; 0x200A
+p: .BLOCK 1   ; 0x200B
+```
+> C언어의 Pointer나 Type은 어셈블리 수준에서 직접 구분되지 않는다.
+
+## Array의 구현
+C언어의 배열은 ASM에선 이렇게 표현할 수 있다.
+
+```text
+C
+int arr[4];
+
+ASM
+arr: .BLOCK 4
+```
+> TOY에선 주소 하나가 데이터 하나를 나타내므로 a[i]주소는 `a의 시작주소 +i` 로 나타낼 수 있다.
+
+
+### 고정된 인덱스 접근
+
+```C
+arr[2] = 22;
+x = arr[2];
+```
+```asm
+LEA R1, arr
+COPY R2, 22
+STR R2, R1, 2   ; a[2] = 22
+
+LDR R3, R1, 2   ; R3 = a[2]
+STORE R3, x
+
+SWI 255
+
+arr: .BLOCK 4
+x: .BLOCK 1
+```
+
+### 변수로 인덱스 지정하기
+
+```C
+int i = 2;
+arr[i] = 99;
+```
+```asm
+LEA R1, arr
+LOAD R2, i
+ADD R1, R1, R2
+
+COPY R3, 99
+STR R3, R1, 0
+
+SWI 255
+
+arr: .BLOCK 4
+i: .FILL 2
+```
+
+### 배열 순회와 반복문
+
+```C
+int arr[4] = {10, 20, 30, 40};
+int sum = 0;
+
+for (int i = 0; i < 4; i++) {
+  sum += a[i];
+}
+```
+
+```asm
+.ORIGIN 0x2000
+
+  LEA R1, arr
+  COPY R2, 0  ; sum
+  COPY R3, 4  ; 반봇 횟수
+
+loop:
+  LDR R4, R1, 0
+  ADD R2, R2, R4   ; sum += a[i]
+
+  ADD R1, R1, 1    ; 다음 원소로 이동
+  SUB R3, R3, 1    ; 남은 반복 횟수 감소
+  BR p, loop
+
+  STORE R2, sum
+  SWI 255
+
+arr:
+  .FILL 10
+  .FILL 20
+  .FILL 30
+  .FILL 40
+sum:
+  .FILL 0
+```
+
+## BRR과 BR
+
+BR 명령어에도 간접 어드레싱 방법이 존재한다. 예를들어 아래와 같은 ASM코드가 있다고 하면
+
+```asm
+  LEA R1, target
+  BRR nzp, R1, 0
+
+target:
+  SWI 255
+```
+
+`target`주소로 분기한다. 단, `BRR`은 해당 메모리의 내용을 읽어오는 것이 아니라 계산한 주소 자체를 PC에 기록하는 명령어다.
+
+굳이 `BRR`이 필요한 이유는, TOY의 한계 떼문인데, TOY 명령어는 32비트이기 때문에 주소를 포함한 모든 정보를 32비트에 표현해야 하기에, `LOAD`, `STORE`, `LEA`, `BR`은 실제 기계어에서 PC를 기준으로 한 16비트 상대주소를 사용한다.
+
+접근 가능한 범위는 다음과 같다.
+
+$
+PC-32768 \leq addr \leq PC+32767
+$
+
+이런 경우 가까운 메모리 위치에 먼 주소를 저장해 두고, 해당 주소를 레지스터로 읽은 뒤, `LDR`, `STR`, `BRR` 등으로 접근할 수 있다.
