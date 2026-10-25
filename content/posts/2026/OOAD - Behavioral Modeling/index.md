@@ -5,7 +5,7 @@ date: "2026-10-26"
 keywords: "OOAD, KNU"
 ---
 
-![uml](/img/OOAD/ump.webp)
+![uml](/img/OOAD/uml.webp)
 
 ## Behavioral Modeling
 

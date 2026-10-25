@@ -5,7 +5,7 @@ date: "2026-10-23"
 keywords: "OOAD, KNU"
 ---
 
-![uml](/img/OOAD/ump.webp)
+![uml](/img/OOAD/uml.webp)
 
 ## Functional Modeling - Activity Diagram
 Activity Diagram은 UML을 Behavior Diagram중 하나로, 시스템이나 비즈니스 프로세스에서 작업들이 어떤 순서와 조건으로 수행되는지를 표현하는 다이애그램이다.

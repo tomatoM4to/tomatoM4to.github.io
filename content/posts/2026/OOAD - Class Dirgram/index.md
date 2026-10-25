@@ -5,7 +5,7 @@ date: "2026-10-25"
 keywords: "OOAD, KNU"
 ---
 
-![uml](/img/OOAD/ump.webp)
+![uml](/img/OOAD/uml.webp)
 
 ## Structural Modeling - 구조 모델링
 Structural Modeling은 시스템을 구성하는 Objects와 객체간 Relationships를 식별하고 표현하는 모델링 과정이다.

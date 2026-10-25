@@ -5,7 +5,7 @@ date: "2026-10-24"
 keywords: "OOAD, KNU"
 ---
 
-![uml](/img/OOAD/ump.webp)
+![uml](/img/OOAD/uml.webp)
 
 ## Functional Modeling – Use Case Diagram
 Use Case Diagram은 UML의 Behavior Diagram중 하나로, 시스템 외부의 사용자가 시스템과 어떻게 상호작용하며 어떤 기능을 이용할 수 있는지를 표현하는 다이어그램이다.
