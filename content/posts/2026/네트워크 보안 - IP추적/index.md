@@ -1,6 +1,6 @@
 ---
 title: "네트워크 보안 - IP추적"
-description: "네트워크 보안을 배우기 전 기본적인 네트워크 지식에 대해 정리"
+description: "네트워크 보안, IP추적"
 date: "2026-10-24"
 keywords: "Network, KNU"
 ---

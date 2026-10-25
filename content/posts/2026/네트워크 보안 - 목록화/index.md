@@ -1,6 +1,6 @@
 ---
 title: "네트워크 보안 - 목록화"
-description: "네트워크 보안을 배우기 전 기본적인 네트워크 지식에 대해 정리"
+description: "공격 전 대상의 정보를 수집하는 목록화에 대한 소개"
 date: "2026-10-24"
 keywords: "Network, KNU"
 ---
