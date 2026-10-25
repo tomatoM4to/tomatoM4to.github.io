@@ -5,6 +5,8 @@ date: "2026-10-23"
 keywords: "OOAD, KNU"
 ---
 
+![uml](/img/OOAD/ump.webp)
+
 ## Functional Modeling - Activity Diagram
 Activity Diagram은 UML을 Behavior Diagram중 하나로, 시스템이나 비즈니스 프로세스에서 작업들이 어떤 순서와 조건으로 수행되는지를 표현하는 다이애그램이다.
 
@@ -116,7 +118,7 @@ and pay for the glasses.
 > 결론적으로, Activity Diagram은 모든 세부 동작을 반드시 그리는 것이 아니라 분석 목적과 범위에 맞는 수준으로 행동의 추상화 수준을 결정하는 것이 매우 중요하다.
 
 ## Summary and Discussion
-### What is the purpose of an Activity Diagram?
+#### What is the purpose of an Activity Diagram?
 Activity Diagram의 목적은 시스템 또는 비즈니스 프로세스의 동작을 작업 간 제어 프름과 데이터 흐름으르로 모델링 하는 기법이다.
 
 이를 구체화 하면
@@ -128,7 +130,7 @@ Activity Diagram의 목적은 시스템 또는 비즈니스 프로세스의 동�
 
 여기서 중요한 점은 반드시 코드의 실행 순서만을 나타내지는 않난다는 점이다. 예를들어 병원 예약 시스템에서 환자가 정보를 입력하고, 직원이 확인하고, 시스템이 예약을 처리하는 전체 비즈니스 프로세스를 표현할 수 있다.
 
-### Why use Activity Diagram instead of Flowchart or SDL?
+#### Why use Activity Diagram instead of Flowchart or SDL?
 Flowchart는 절차를 설명하는 데 간단하고 효과적이지만, Activity Diagram은 복잡한 시스템의 행동을 더 체계적으로 표현할 수 있다는 장점이 있다.
 
 Flowchart도 표기법을 확장하면 데이터나 병렬 처리를 표현 사능하지만 일반적으론 이렇다는 점이다.

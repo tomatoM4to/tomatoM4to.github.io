@@ -5,6 +5,8 @@ date: "2026-10-25"
 keywords: "OOAD, KNU"
 ---
 
+![uml](/img/OOAD/ump.webp)
+
 ## Structural Modeling - 구조 모델링
 Structural Modeling은 시스템을 구성하는 Objects와 객체간 Relationships를 식별하고 표현하는 모델링 과정이다.
 
@@ -289,7 +291,6 @@ TransactionLineItem "0..*" -- "1" Item
 ### Step 3. Diagram 작성
 
 ```text
-
 classDiagram
 direction TB
 class Student {
@@ -338,3 +339,12 @@ SoftwareCopy "1" -- "0..*" Loan
 | Dependency는? | 일시적인 사용 관계 |
 | Textual Analysis란? | Use Case의 문장을 분석하여 클래스 후보 등을 도출 |
 | Class Diagram은 어떻게 만드는가? | 후보 도출 → 책임 검토 → 작성 → 개선 → 패턴 적용 |
+
+## Summary and Discussion
+#### CRC Card는 클래스의 핵심 요소를 식별하고 정리하기 위한 도구다.
+#### Class Diagram과 Object Diagram은 객체지향 시스템의 구조를 표현한다.
+#### Class Diagram은 클래스와 클래스 간 관계를 표현하는 다이어그램이다.
+#### Should all symbols and semantics be represented in a class diagram?
+아니다. 모든 UML 기호와 의미를 하나의 Class Diagram에 표현할 필요는 없다.
+#### First drawn class diagram is not changed, isn't it?
+아니다. Class Diagram은 반복적인 검토와 수정을 통해 발전한다.

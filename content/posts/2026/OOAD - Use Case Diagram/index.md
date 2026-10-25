@@ -5,6 +5,8 @@ date: "2026-10-24"
 keywords: "OOAD, KNU"
 ---
 
+![uml](/img/OOAD/ump.webp)
+
 ## Functional Modeling – Use Case Diagram
 Use Case Diagram은 UML의 Behavior Diagram중 하나로, 시스템 외부의 사용자가 시스템과 어떻게 상호작용하며 어떤 기능을 이용할 수 있는지를 표현하는 다이어그램이다.
 
@@ -113,5 +115,17 @@ Actor 또는 Use Case 사이에서 일반적인 개념과 특수한 개념의 �
 시나리오는 유즈케이스가 실제로 수행되는 하나의 구체적인 실행 사례다.
 
 ## Use Case Description – 유즈케이스 명세서
-유즈케이스 다이어그램이 기능의 전체 구조를 보여준다면, 유즈케이스 명세서는 개별 기능의 구체적인 동작을 설명한다.
+Use Case Description은 개별 Use Case의 실행 과정과 Actor 및 시스템의 상호작용을 구체적으로 기술하는 문서다.
 
+Use Case Diagram이 전체 기능과 관계를 시각적으로 표현한다면, Use Case Description은 각 기능의 동작을 글로 설명한다.
+
+## Example
+![use-case-CD-Selection-Company](/img/OOAD/use-case-CD-Selection-Company.webp)
+
+## Summary and Discussion
+#### Use Case Description은 후속 분석과 설계의 기반이다
+#### Use Case Diagram은 시스템의 주요 기능을 시각적으로 표현한다
+#### Activity Diagram의 목적은 무엇인가?
+Activity Diagram은 시스템이나 비즈니스 프로세스에서 작업이 어떤 순서와 조건으로 수행되는지 표현하는 다이어그램이다.
+#### 왜 비즈니스 기능을 표현할 때 Use Case Diagram을 사용하는가?
+각 다이어그램의 표현 목적과 추상화 수준이 다르기 때문
