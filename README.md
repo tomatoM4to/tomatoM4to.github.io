@@ -1,96 +1,37 @@
-# Blog Project
+# Overview
+React와 Vite 기반의 Markdown 블로그입니다. SSR로 빠르게 개발하고, 실제 배포는 SSG로 생성한 정적 산출물을 GitHub Pages에 올립니다. 두 환경은 렌더러를 공유하지만 데이터 제공 방식과 실행 시점이 달라 동작이 완전히 같지는 않습니다.
 
-React와 Vite를 사용하여 구축된 블로그 프로젝트입니다. SSR(Server-Side Rendering)과 SSG(Static Site Generation)를 모두 지원하며, 마크다운 기반의 콘텐츠 관리를 제공합니다.
+클라이언트가 요청할 데이터는 빌드 시 JSON 에셋으로 생성해 GitHub Pages를 정적 API 서버처럼 활용합니다. 클라이언트에서는 [Rethinking Web Caching](https://conferences.sigcomm.org/hotnets/2024/papers/hotnets24-124.pdf)의 아이디어를 적용해, 미리 전달한 버전 맵과 Service Worker로 캐시 재검증에 필요한 네트워크 레이턴시를 줄입니다.
 
-## 기술 스택 (Tech Stack)
-
-- **Core**: React 19, TypeScript
-- **Build Tool**: Vite 7
-- **Server**: Express (SSR 및 개발 서버용)
-- **Routing**: React Router 7
-- **Markdown**: react-markdown, remark-gfm, gray-matter
-- **Utilities**: tsx (TypeScript 실행)
-- **Analysis**: rollup-plugin-visualizer (번들 사이즈 분석)
-
-## 시작하기 (Getting Started)
-
-### 설치 (Installation)
-
-프로젝트 의존성을 설치합니다.
-
+# Commands
 ```bash
-npm install
+npm install          # 의존성 설치
+npm run dev          # SSR 개발 서버
+npm run build        # 배포용 전체 빌드: HTML·JSON·에셋·ETag 맵
+npm run start:ssg    # 전체 빌드 후 dist/ 정적 서빙
+npm run start:ssr    # 빌드 후 Express SSR 실행
+
+npm run build:client # 클라이언트 번들 생성
+npm run build:server # SSR 렌더러 번들 생성
+npm run build:ssr    # 클라이언트·서버 번들 생성
+npm run build:ssg    # 번들 빌드 후 정적 HTML 생성
+npm run build:api    # 정적 JSON 생성
+
+npm run convert      # public/img/ 하위 폴더의 JPG·JPEG·PNG를 WebP로 변환
 ```
 
-### 개발 서버 실행 (Development)
+# Posting
+- `content/posts/<연도>/<글 ID>/index.md`에 Markdown으로 작성합니다.
+- 글 ID는 연도와 무관하게 중복되지 않게 정하며, `/posts/<글 ID>` URL에 사용됩니다. 기존 ID 변경은 링크와 댓글 연결에 영향을 주므로 주의해야 합니다.
+- 이미지는 `public/img/<글 ID>/`에 두고 본문에서는 `/img/<글 ID>/파일명.webp`처럼 참조합니다.
 
-SSR 환경에서 개발 서버를 실행합니다. 변경 사항을 실시간으로 감지합니다.
-
-```bash
-npm run dev
-```
-
-### 빌드 (Build)
-
-프로젝트를 배포용으로 빌드합니다. 이 명령어는 SSG 빌드와 API 리소스 생성을 순차적으로 수행합니다.
-
-```bash
-npm run build
-```
-
-#### 세부 빌드 명령어
-
-필요에 따라 개별 빌드 명령어를 사용할 수 있습니다.
-
-- `npm run build:client`: 클라이언트 사이드 리소스 빌드 (`dist/`)
-- `npm run build:server`: 서버 사이드 렌더링용 리소스 빌드 (`dist/server/`)
-- `npm run build:ssr`: 클라이언트와 서버 리소스를 모두 빌드
-- `npm run build:ssg`: SSR 빌드 후 정적 HTML 파일 생성 (Static Site Generation)
-- `npm run build:api`: 콘텐츠 기반 API 리소스 생성
-
-### 번들 분석 (Bundle Analysis)
-
-`rollup-plugin-visualizer`를 사용하여 번들 사이즈를 분석할 수 있습니다.
-
-1. `vite.config.ts` 파일의 `plugins` 배열에서 `visualizer()`가 주석 처리되어 있지 않은지 확인합니다.
-2. 클라이언트 번들을 분석하기 위해 다음 명령어를 실행합니다.
-   ```bash
-   npm run build:client
-   ```
-3. 빌드가 완료되면 프로젝트 루트에 `stats.html` 파일이 생성됩니다. 이 파일을 브라우저에서 열어 번들 구성을 시각적으로 확인할 수 있습니다.
-
-### 실행 (Run)
-
-**SSR (Server-Side Rendering) 모드로 실행:**
-프로덕션 환경에서 Node.js 서버를 통해 SSR로 실행합니다.
-
-```bash
-npm run start:ssr
-```
-
-**SSG (Static Site Generation) 모드로 실행:**
-생성된 정적 파일(`dist/`)을 서빙합니다.
-
-```bash
-npm run start:ssg
-```
-
-## 프로젝트 구조 (Project Structure)
-
-```
-├── content/            # 블로그 포스트 마크다운 파일 (카테고리별 분류)
-├── public/             # 정적 에셋 (이미지, 파비콘 등)
-├── server/             # 서버 사이드 로직 및 빌드 스크립트
-│   ├── server.ts       # Express 서버 진입점
-│   ├── gen-static.ts   # SSG 생성 스크립트
-│   └── ...
-├── src/                # React 클라이언트 소스 코드
-│   ├── components/     # UI 컴포넌트
-│   ├── pages/          # 라우트 페이지 컴포넌트
-│   ├── hooks/          # 커스텀 React 훅
-│   ├── context/        # React Context
-│   ├── styles/         # CSS 스타일 파일
-│   ├── entry-client.tsx # 클라이언트 진입점
-│   └── entry-server.tsx # 서버 렌더링 진입점
-└── ...
+본문 앞에 YAML front matter를 작성해 각 글마다 메타데이터를 정의할 수 있습니다.
+```yaml
+---
+title: "글 제목"
+description: "글 요약"
+date: "2026-11-04"
+keywords: "JavaScript, Network"
+image: "/img/글 ID/cover.webp" # 선택
+---
 ```
