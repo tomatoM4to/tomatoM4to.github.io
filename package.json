@@ -13,7 +13,12 @@
     "build": "npm run build:ssg && npm run build:api && node scripts/inject-etag-map.js",
     "start:ssr": "cross-env NODE_ENV=production tsx watch --tsconfig tsconfig.server.json server/server.ts",
     "start:ssg": "serve dist",
-    "convert": "node scripts/img-to-webp.js"
+    "convert": "node scripts/img-to-webp.js",
+    "test": "playwright test --config tests/playwright.config.ts",
+    "test:e2e": "npm test -- --project=e2e",
+    "test:cache": "npm test -- --project=cache",
+    "test:typecheck": "tsc --project tests/tsconfig.json",
+    "test:report": "playwright show-report tests/artifacts/report"
   },
   "dependencies": {
     "@giscus/react": "^3.1.0",
@@ -38,6 +43,7 @@
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
+    "@playwright/test": "1.64.1",
     "@types/express": "^5.0.3",
     "@types/node": "^24.5.1",
     "@types/react": "^19.1.13",

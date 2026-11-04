@@ -1,0 +1,13 @@
+---
+title: "cache-existing"
+description: "배포 A부터 존재하는 캐시 테스트 글"
+date: "2026-01-01"
+keywords: "Cache, Test"
+image: "/cache-probe.svg"
+---
+
+# 기존 테스트 글
+
+배포 A와 B에서 유지되는 글입니다.
+
+![테스트 에셋](/cache-probe.svg)

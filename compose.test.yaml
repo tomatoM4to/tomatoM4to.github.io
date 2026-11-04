@@ -1,0 +1,32 @@
+name: tomatom4to-tests
+
+services:
+  static:
+    build:
+      context: .
+      dockerfile: tests/Dockerfile
+      target: static
+    volumes:
+      - /srv
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/"]
+      interval: 1s
+      timeout: 2s
+      retries: 10
+
+  test:
+    build:
+      context: .
+      dockerfile: tests/Dockerfile
+      target: test
+    init: true
+    shm_size: 1gb
+    # 동일 출처의 SW를 localhost에서 검증하고 Docker 소켓 없이 배포 링크만 교체한다.
+    network_mode: service:static
+    depends_on:
+      static:
+        condition: service_healthy
+    volumes_from:
+      - static:rw
+    volumes:
+      - ./tests/artifacts:/app/tests/artifacts

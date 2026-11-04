@@ -9,7 +9,7 @@ server {
     expires ${HTTP_CACHE_TTL};
     etag on;
 
-    access_log /dev/stdout combined;
+    access_log ${NGINX_ACCESS_LOG} combined;
     error_log /dev/stderr warn;
 
     # 정적 API는 실제 JSON 파일만 제공하며 HTML fallback을 사용하지 않는다.

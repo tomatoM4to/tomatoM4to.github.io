@@ -46,6 +46,8 @@ docker compose -f compose.ssg.yaml logs -f static
 docker compose -f compose.ssg.yaml down
 ```
 
+프로젝트의 E2E·캐시 테스트는 [tests/README.md](tests/README.md)를 참고하세요. Docker 안에서 Node·TypeScript·Playwright Test로 실행합니다.
+
 # Posting
 - `content/posts/<연도>/<글 ID>/index.md`에 Markdown으로 작성합니다.
 - 글 ID는 연도와 무관하게 중복되지 않게 정하며, `/posts/<글 ID>` URL에 사용됩니다. 기존 ID 변경은 링크와 댓글 연결에 영향을 주므로 주의해야 합니다.
