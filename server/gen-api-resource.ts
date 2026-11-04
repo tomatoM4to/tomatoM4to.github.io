@@ -97,7 +97,7 @@ async function createTagContentList(sortedContentList: Item[]) {
   const postMap = await getAllPostPaths();
 
   for (const [postName, filePath] of postMap) {
-    genMarkdownJSON(postName, filePath);
+    await genMarkdownJSON(postName, filePath);
     randDelay()
   }
   await genRecentPostList(sortedContentList);
