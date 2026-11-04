@@ -19,7 +19,9 @@ const CS_TAGS = new Set([
   'OS',
   'Big Data',
   '자격증',
-  'Paper'
+  'Paper',
+  'OOAD',
+  'Assembler'
 ]);
 
 const LANGUAGE_TAGS = new Set([
