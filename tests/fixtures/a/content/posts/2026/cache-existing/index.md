@@ -11,3 +11,16 @@ image: "/cache-probe.svg"
 배포 A와 B에서 유지되는 글입니다.
 
 ![테스트 에셋](/cache-probe.svg)
+
+```typescript
+const answer = 42;
+```
+
+$$
+x^2 + y^2
+$$
+
+```mermaid
+flowchart LR
+    A[SSR] --> B[Hydration]
+```

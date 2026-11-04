@@ -9,6 +9,9 @@ test('정적 글 직접 접속과 클라이언트 탐색', async ({ page }) => {
   await page.goto('/posts/cache-existing', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('heading', { name: 'cache-existing', exact: true })).toBeVisible();
   await expect(page.getByRole('img', { name: '테스트 에셋' })).toBeVisible();
+  await expect(page.locator('article')).toContainText('const answer = 42;');
+  await expect(page.locator('.katex')).toBeVisible();
+  await expect(page.locator('.mermaid-wrapper svg')).toBeVisible();
 
   await page.getByRole('link', { name: 'tomatoM4to', exact: true }).click();
   await expect(page.locator('section h3')).toHaveText(['cache-existing']);

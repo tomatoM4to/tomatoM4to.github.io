@@ -239,6 +239,19 @@ for (const serviceWorkers of ['block', 'allow'] as const) {
             const state = await readState(nextPage);
             evidence.firstVisitSnapshot = state;
             expect(state.versions[RECENT_PATH].document).toBe(mapB[RECENT_PATH]);
+            if (enabled) {
+              expect(state.versions[RECENT_PATH].worker).toBe(mapB[RECENT_PATH]);
+              const timing = await nextPage.evaluate(() => {
+                const sync = performance.getEntriesByName('app:cache-sync')[0] as PerformanceMeasure;
+                const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+                return { syncMs: sync.duration, status: sync.detail.status, hydrationAt: performance.getEntriesByName('app:hydrate-start')[0].startTime, loadAt: navigation.loadEventEnd };
+              });
+              evidence.bootstrap = timing;
+              expect(timing.status).toBe('ready');
+              if (slowLoad) {
+                expect(timing.hydrationAt).toBeLessThan(timing.loadAt);
+              }
+            }
 
             // 실패는 유지하되 이후 맵 반영·새로고침 진단도 수집한다. xfail이나 재시도로 숨기지 않는다.
             await expect.soft(nextPage.locator('section h3'), '첫 접속에서 새 글이 표시되어야 한다')

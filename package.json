@@ -17,6 +17,7 @@
     "test": "playwright test --config tests/playwright.config.ts",
     "test:e2e": "npm test -- --project=e2e",
     "test:cache": "npm test -- --project=cache",
+    "test:performance": "npm test -- --project=performance",
     "test:typecheck": "tsc --project tests/tsconfig.json",
     "test:report": "playwright show-report tests/artifacts/report"
   },

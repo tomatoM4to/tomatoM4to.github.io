@@ -37,5 +37,9 @@ export default defineConfig({
       name: 'cache',
       testMatch: '**/cache/**/*.spec.ts',
     },
+    {
+      name: 'performance',
+      testMatch: '**/performance/**/*.spec.ts',
+    },
   ],
 });

@@ -15,6 +15,7 @@ const CACHE_NAME = 'tomato-etag-cache-v3';
 
 /** @type {string} 캐시 내에 ETag 맵을 저장하기 위해 사용하는 내부 키 */
 const ETAG_MAP_CACHE_KEY = '/__etag_map__';
+const CACHE_BYPASS_PARAM = '__sw_bypass';
 
 /**
  * 서비스 워커 설치(Install) 이벤트
@@ -50,17 +51,32 @@ self.addEventListener('activate', (event) => {
  * 이 맵은 네트워크 요청 없이 캐시된 응답의 유효성을 검증하는 데 사용됩니다.
  */
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'UPDATE_ETAG_MAP') {
-    const etagMap = event.data.payload || {};
-    event.waitUntil(
-      caches.open(CACHE_NAME).then((cache) => {
-        return cache.put(
-          new Request(ETAG_MAP_CACHE_KEY),
-          new Response(JSON.stringify(etagMap))
-        );
-      })
-    );
+  if (event.data?.type !== 'UPDATE_ETAG_MAP') {
+    return;
   }
+
+  const port = event.ports[0];
+  const etagMap = event.data.payload;
+  if (!etagMap || typeof etagMap !== 'object' || Array.isArray(etagMap)
+      || !Object.values(etagMap).every(version => typeof version === 'string')) {
+    port?.postMessage({ type: 'ETAG_MAP_ERROR' });
+    port?.close();
+    return;
+  }
+
+  event.waitUntil((async () => {
+    try {
+      const cache = await caches.open(CACHE_NAME);
+      await cache.put(ETAG_MAP_CACHE_KEY, new Response(JSON.stringify(etagMap)));
+      // 메시지 수신이 아니라 저장 완료를 확인한 뒤 클라이언트의 hydration을 허용한다.
+      port?.postMessage({ type: 'ETAG_MAP_READY' });
+    } catch (error) {
+      console.error('Failed to save ETag map', error);
+      port?.postMessage({ type: 'ETAG_MAP_ERROR' });
+    } finally {
+      port?.close();
+    }
+  })());
 });
 
 /**
@@ -85,12 +101,23 @@ async function getEtagMap() {
  * "HTML은 네트워크 우선", "에셋은 ETag 검증 기반 캐시" 전략을 수행합니다.
  */
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
+  if (event.request.method !== 'GET') {
+    return;
+  }
 
   const url = new URL(event.request.url);
 
   // CORS 이슈 및 불필요한 추적 방지를 위해 동일 출처(Same-origin) 요청만 처리
-  if (url.origin !== location.origin) return;
+  if (url.origin !== location.origin) {
+    return;
+  }
+
+  // 초기 맵 동기화 실패 시 이전 맵으로 캐시를 판정하지 않는 API 전용 경로다.
+  if (url.pathname.startsWith('/api/') && url.searchParams.has(CACHE_BYPASS_PARAM)) {
+    url.searchParams.delete(CACHE_BYPASS_PARAM);
+    event.respondWith(fetch(new Request(url, event.request), { cache: 'no-cache' }));
+    return;
+  }
 
   event.respondWith(
     (async () => {
@@ -101,9 +128,11 @@ self.addEventListener('fetch', (event) => {
        */
       if (event.request.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname === '/' || url.pathname.startsWith('/posts/')) {
         try {
-          const networkResponse = await fetch(event.request);
+          const networkResponse = await fetch(event.request, { cache: 'no-cache' });
           const cache = await caches.open(CACHE_NAME);
-          event.waitUntil(cache.put(event.request, networkResponse.clone()));
+          if (networkResponse.ok) {
+            event.waitUntil(cache.put(event.request, networkResponse.clone()));
+          }
           return networkResponse;
         } catch (err) {
           const cache = await caches.open(CACHE_NAME);
@@ -156,7 +185,11 @@ self.addEventListener('fetch', (event) => {
        * 새로운 응답을 네트워크에서 가져와 현재 ETag와 함께 캐시에 저장합니다.
        */
       try {
-        const networkResponse = await fetch(event.request);
+        // 새 맵의 버전에 이전 HTTP 캐시 본문을 연결하지 않도록 재검증한다.
+        const networkResponse = await fetch(event.request, { cache: 'no-cache' });
+        if (!networkResponse.ok) {
+          return networkResponse;
+        }
         const responseToCache = networkResponse.clone();
 
         const statusHeader = cachedResponse ? 'MISS-ETAG-MISMATCH' : 'MISS-NOT-IN-CACHE';

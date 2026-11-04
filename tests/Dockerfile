@@ -43,6 +43,9 @@ COPY package.json package-lock.json ./
 RUN npm ci --ignore-scripts
 
 COPY tsconfig.json ./
+COPY src/lib/serviceWorker.ts ./src/lib/serviceWorker.ts
+COPY src/vite-env.d.ts ./src/vite-env.d.ts
+COPY shared ./shared
 COPY tests ./tests
 RUN npm run test:typecheck
 
