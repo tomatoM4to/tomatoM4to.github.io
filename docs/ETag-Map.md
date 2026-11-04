@@ -4,8 +4,10 @@
 # Checkpoint
 - 이 맵은 HTTP 서버의 `ETag` 응답 헤더가 아닌 자체 버전 정보다. [생성기](../scripts/inject-etag-map.js)는 JSON·HTML·MD를 MD5로 계산하고, 글 HTML은 원본 Markdown 해시를 사용한다. 나머지 에셋은 `파일명-크기`이므로 같은 이름·크기의 내용 변경을 구분하지 못한다.
 - 키는 디코딩된 URL 경로다. `/index.html`은 `/`, 다른 HTML은 확장자를 뺀 경로로 등록하며, `server/`와 `template.html`은 맵에서 제외한다. [Service Worker](../public/sw.js)도 조회 전에 `pathname`을 디코딩한다.
+- 맵 전달을 `load`까지 미루면서 React를 먼저 시작하면 초기 effect의 JSON 요청이 이전 맵으로 처리될 수 있다. 나중에 맵만 갱신해도 이미 표시한 목록은 바뀌지 않으므로, 메시지 전송이 아니라 저장 완료 응답을 hydration의 선행 조건으로 삼는다. 재현 조건과 검증 범위는 [테스트 문서](testing.md#재현-조건과-판정)에 기록한다.
 - [초기 동기화](../src/lib/serviceWorker.ts)는 버전 맵이 있는 프로덕션 문서에서 `load`를 기다리지 않고 SW를 등록한다. 현재 controller에 맵을 보내고, SW가 `/__etag_map__` 저장을 끝냈다는 MessageChannel 응답을 받은 뒤 [루트 hydration](../src/entry-client.tsx)을 시작한다. 재방문은 기존 controller와 바로 동기화하며 스크립트 업데이트 검사를 기다리지 않는다. 준비 중 controller가 교체되면 새 controller의 응답을 기다린다.
-- 동기화는 최대 2초 기다린다. 제어 SW 없이 등록이 거부되면 일반 요청으로 시작한다. 시간 초과·저장 실패 시에는 hydration을 진행하되 해당 문서의 동일 출처 GET `/api/` fetch에 요청마다 고유한 `__sw_bypass` query와 HTTP 재검증을 적용한다. 현재 SW는 이 요청을 저장·캐시 조회 없이 처리하며, ACK를 모르는 이전 SW도 URL이 달라 기존 응답을 재사용하지 못한다. 이 실패 경로의 API 요청에는 오프라인 캐시 fallback이 없다.
+- 2초는 동기화 시작부터 controller 확보와 맵 저장 확인 응답까지의 전체 대기 제한이다. 최초 방문에는 SW 다운로드·설치의 네트워크 대기가 포함될 수 있고, 기존 controller가 있으면 주로 메시지 전달과 로컬 저장을 기다린다. 응답이 먼저 오면 즉시 진행하며, 리소스별 캐시 버전 비교는 이후 fetch 시점에 수행한다.
+- 제어 SW 없이 등록이 거부되면 일반 요청으로 시작한다. 시간 초과·저장 실패 시에는 hydration을 진행하되 해당 문서의 동일 출처 GET `/api/` fetch에 요청마다 고유한 `__sw_bypass` query와 HTTP 재검증을 적용한다. 현재 SW는 이 요청을 저장·캐시 조회 없이 처리하며, ACK를 모르는 이전 SW도 URL이 달라 기존 응답을 재사용하지 못한다. 이 실패 경로의 API 요청에는 오프라인 캐시 fallback이 없다.
 - hydration 이후 `controllerchange`에는 같은 문서의 맵을 다시 전달한다. SPA 이동으로 새 배포 맵을 받지는 않는다. 맵은 여전히 탭 간 공유되며, 다른 탭의 맵 덮어쓰기나 hydration 전에 브라우저가 요청한 에셋의 순서는 이번 동기화로 보장하지 않는다.
 - 최초 방문에 에셋을 미리 캐시하지 않는다. SW가 제어하는 요청으로 응답과 `X-SW-ETag`가 저장된 뒤에야 버전 일치 시 `HIT-0-RTT` 응답이 가능하다. 맵에 버전이 없는 리소스는 이 경로로 반환하지 않는다.
 - 네트워크 우선 대상은 내비게이션, `.html`, `/`, `/posts/` 경로다. `/api/posts/`는 버전 비교 대상이다. HTML에 맵 항목이 있어도 HTML 요청에서는 버전 비교를 생략한다.

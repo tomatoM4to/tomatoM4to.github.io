@@ -46,7 +46,7 @@ docker compose -f compose.ssg.yaml logs -f static
 docker compose -f compose.ssg.yaml down
 ```
 
-프로젝트의 E2E·캐시 테스트는 [tests/README.md](tests/README.md)를 참고하세요. Docker 안에서 Node·TypeScript·Playwright Test로 실행합니다.
+프로젝트의 E2E·캐시·성능 테스트는 [테스트 문서](docs/testing.md)를 참고하세요. Docker 안에서 Node·TypeScript·Playwright Test로 실행합니다.
 
 # Posting
 - `content/posts/<연도>/<글 ID>/index.md`에 Markdown으로 작성합니다.
