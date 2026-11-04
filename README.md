@@ -20,6 +20,12 @@ npm run build:api    # 정적 JSON 생성
 npm run convert      # public/img/ 하위 폴더의 JPG·JPEG·PNG를 WebP로 변환
 ```
 
+# Docker
+```bash
+# Dev
+docker compose -f compose.dev.yaml up --build --watch
+```
+
 # Posting
 - `content/posts/<연도>/<글 ID>/index.md`에 Markdown으로 작성합니다.
 - 글 ID는 연도와 무관하게 중복되지 않게 정하며, `/posts/<글 ID>` URL에 사용됩니다. 기존 ID 변경은 링크와 댓글 연결에 영향을 주므로 주의해야 합니다.

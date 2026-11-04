@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import { createServer as createHttpServer } from 'node:http';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import express from 'express';
@@ -27,6 +28,7 @@ const PROJECT_ROOT = process.cwd();
 let recentContentList: Item[] | null = null;
 
 const app = express();
+const httpServer = createHttpServer(app);
 
 // '/api/:postname.md' 로 하면 req.params 에 .md 가 포함되지 않음
 app.get('/api/posts/:postname/index.json', async (req, res) => {
@@ -105,7 +107,11 @@ let vite: ViteDevServer | undefined;
 if (!isProduction) {
   const { createServer } = await import('vite')
   vite = await createServer({
-    server: { middlewareMode: true },
+    server: {
+      middlewareMode: true,
+      // Docker에서 공개한 HTTP 포트로 HMR WebSocket도 연결한다.
+      hmr: { server: httpServer },
+    },
     appType: 'custom',
     base,
   })
@@ -160,6 +166,6 @@ app.use('*all', async (req, res) => {
   }
 })
 
-app.listen(port, () => {
+httpServer.listen(port, () => {
   console.log(`Server started at http://localhost:${port}`)
 })
