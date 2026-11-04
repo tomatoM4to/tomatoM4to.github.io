@@ -1,0 +1,24 @@
+server {
+    listen 80;
+    server_name localhost;
+
+    root /srv/site;
+    index index.html;
+
+    # HTTP 캐시의 만료 시간을 줄여 재검증을 관찰한다. SW의 Cache Storage에는 적용되지 않는다.
+    expires ${HTTP_CACHE_TTL};
+    etag on;
+
+    access_log /dev/stdout combined;
+    error_log /dev/stderr warn;
+
+    # 정적 API는 실제 JSON 파일만 제공하며 HTML fallback을 사용하지 않는다.
+    location /api/ {
+        try_files $uri =404;
+    }
+
+    # SSG가 생성한 /tags.html 등을 확장자 없는 URL에서도 제공한다.
+    location / {
+        try_files $uri $uri.html $uri/ =404;
+    }
+}

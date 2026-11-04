@@ -21,9 +21,29 @@ npm run convert      # public/img/ 하위 폴더의 JPG·JPEG·PNG를 WebP로 �
 ```
 
 # Docker
+## 개발 서버 · Express SSR
+`http://localhost:5173`에서 개발합니다. 소스 변경은 Compose Watch로 동기화하고 Vite HMR·서버 watch로 반영합니다. Markdown 변경은 서버를 재시작하고, 의존성 파일 변경은 이미지를 재빌드합니다.
+
 ```bash
-# Dev
 docker compose -f compose.dev.yaml up --build --watch
+```
+
+## 정적 서버 · Nginx SSG
+GitHub Pages의 정적 배포를 로컬에서 확인하는 환경입니다. Docker에서 전체 빌드로 생성한 HTML·JSON·에셋을 Nginx가 `http://localhost:4173`에서 제공합니다. 소스나 글을 변경해도 자동 반영되지 않으며, 아래 `up --build -d` 명령을 다시 실행해 산출물을 재빌드하고 서버를 교체합니다.
+
+SSG 서버는 HTTP 캐시 TTL을 기본 1초로 설정하고 ETag·Last-Modified 조건부 요청을 지원합니다. `HTTP_CACHE_TTL` 환경 변수로 TTL을 변경할 수 있습니다(예: `10m`). 변경 후 `docker compose -f compose.ssg.yaml up -d`로 반영합니다. 이 TTL은 SW의 Cache Storage를 만료시키지 않습니다.
+
+확장자 없는 페이지는 대응하는 `.html`을 제공하고, 없는 파일은 404를 반환합니다. GitHub Pages의 CDN까지 재현하는 환경은 아닙니다.
+
+```bash
+# 전체 빌드 및 정적 서버 실행·갱신
+docker compose -f compose.ssg.yaml up --build -d
+
+# 요청 로그 확인
+docker compose -f compose.ssg.yaml logs -f static
+
+# 정적 서버 종료
+docker compose -f compose.ssg.yaml down
 ```
 
 # Posting

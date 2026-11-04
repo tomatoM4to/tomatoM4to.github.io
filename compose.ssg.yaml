@@ -1,0 +1,11 @@
+name: tomatom4to-ssg
+
+services:
+  static:
+    build:
+      context: .
+      dockerfile: Dockerfile.ssg
+    environment:
+      HTTP_CACHE_TTL: ${HTTP_CACHE_TTL:-1s}
+    ports:
+      - "127.0.0.1:4173:80"

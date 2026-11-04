@@ -1,0 +1,18 @@
+FROM node:24-bookworm-slim AS build
+
+WORKDIR /app
+RUN chown node:node /app
+USER node
+
+COPY --chown=node:node package.json package-lock.json ./
+RUN npm ci
+
+COPY --chown=node:node . .
+RUN npm run build
+
+FROM nginx:1.30.6-alpine
+
+ENV HTTP_CACHE_TTL=1s
+
+COPY nginx/default.conf.template /etc/nginx/templates/default.conf.template
+COPY --from=build /app/dist /srv/site
