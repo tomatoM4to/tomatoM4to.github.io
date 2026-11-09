@@ -19,6 +19,21 @@ test('정적 글 직접 접속과 클라이언트 탐색', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'cache-existing', exact: true })).toBeVisible();
 });
 
+test('글 직접 접속은 상세 API 재요청 없이 초기 데이터로 hydration한다', async ({ page }) => {
+  const requests: string[] = [];
+  await page.route(/\/api\/posts\/.*\/index\.json(?:\?.*)?$/, route => {
+    requests.push(route.request().url());
+    return route.abort('failed');
+  });
+
+  await page.goto('/posts/cache-existing', { waitUntil: 'domcontentloaded' });
+  await page.getByRole('button', { name: 'Switch to dark mode' }).click();
+  await expect(page.getByRole('button', { name: 'Switch to light mode' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'cache-existing', exact: true })).toBeVisible();
+  await expect(page.locator('article')).toContainText('const answer = 42;');
+  expect(requests).toEqual([]);
+});
+
 test('정적 라우팅·캐시 헤더·조건부 요청·404', async ({ request }) => {
   for (const urlPath of ['/tags', '/search']) {
     const response = await request.get(urlPath);

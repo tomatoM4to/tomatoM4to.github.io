@@ -17,9 +17,9 @@ npm run test:unit
 
 - 실행 대상은 `server/*.test.ts`이며 기존 Playwright 명령과 독립적이다. [전용 타입 설정](../tsconfig.test.json)은 테스트가 가져오는 서버 코드도 검사하며 파일을 생성하지 않는다.
 - [HTML 생성기](../server/gen-static.test.ts)와 [JSON 생성기](../server/gen-api-resource.test.ts)는 전달받은 입력과 임시 출력 경로로 산출물을 검사한다. 파일 시스템을 포함하는 통합 테스트이며 브라우저나 실제 콘텐츠 로더는 사용하지 않는다. 생성 모듈의 경계는 [SSG 문서](SSG.md#checkpoints)를 따른다.
-- [메타 생성 테스트](../server/meta.test.ts)는 실제 SSR·SSG에서 사용하는 함수를 호출한다. 제목과 설명은 HTML 구조가 아닌 텍스트이므로 특수문자가 태그나 속성의 경계를 바꾸지 않아야 한다. React 렌더러나 가짜 메타 생성 함수를 거치지 않고 이 계약을 검증한다.
+- [메타 유닛 테스트](../server/meta.test.ts)는 기본 메타데이터를 검사한다. 특수문자의 경계 보존은 [브라우저 테스트](../tests/e2e/metadata.spec.ts)에서 실제 생성 결과를 HTML로 파싱해 검증한다. 안전한 엔티티 표기가 여러 가지이므로 특정 문자열 표현을 정답으로 고정하지 않는다.
 - `utils.ts`는 import 시 작업 디렉터리를 고정한다. 테스트 프로세스에서 임시 경로로 이동해 모듈을 로드한 뒤 원래 경로로 복구하고, 종료 시 임시 입력을 제거한다. 같은 모듈 인스턴스가 사용하는 입력을 테스트별로 초기화하므로 파일 안의 테스트는 순차 실행한다.
-- 중복 글 ID·필수 메타데이터·날짜 검증과 HTML 치환·직렬화는 정상 계약을 기대하는 회귀 테스트다. 현재 구현에서 검증이나 이스케이프가 빠진 경우 테스트는 실패하며, 기존 동작을 정답으로 고정하거나 실패를 skip·todo로 숨기지 않는다.
+- 중복 글 ID·필수 메타데이터·날짜 검증과 HTML 치환·직렬화는 정상 계약을 기대하는 회귀 테스트다. 메타데이터 검증은 목록 외 로딩 경로에서도 유지해야 하며, 실제 윤년 날짜를 거부해서는 안 된다. 삽입 데이터에 들어 있는 템플릿 표식은 원문으로 보존해야 한다. 현재 구현에서 검증이나 이스케이프가 빠진 경우 테스트는 실패하며, 기존 동작을 정답으로 고정하거나 실패를 skip·todo로 숨기지 않는다.
 
 ## 실행과 결과
 
@@ -53,7 +53,8 @@ docker compose -f compose.test.yaml run --build --rm test npm run test:performan
 | 위치 | 검증 대상 |
 | --- | --- |
 | [e2e](../tests/e2e/static-site.spec.ts) | SW를 차단한 글 직접 접속·SPA 탐색, 코드 블록·수식·Mermaid, 정적 라우팅·조건부 요청·404 |
-| [e2e/request-failures.spec.ts](../tests/e2e/request-failures.spec.ts) | 홈·태그·글의 응답 순서 역전, 검색 JSON 전체 성공·일부 HTTP 오류·네트워크 실패 |
+| [e2e/metadata.spec.ts](../tests/e2e/metadata.spec.ts) | 메타 생성 결과의 DOM 값·태그 수·속성 경계 보존 |
+| [e2e/request-failures.spec.ts](../tests/e2e/request-failures.spec.ts) | 응답 순서 역전·JSON 반환 지연·이전 요청 실패, 검색 JSON 전체 성공·HTTP 오류·네트워크 실패·JSON 해석 실패 |
 | [cache/refresh.spec.ts](../tests/cache/refresh.spec.ts) | SW 허용/차단 × 일반/느린 이미지 로딩에서 배포 후 첫 접속의 목록과 캐시 재사용 |
 | [cache/bootstrap.spec.ts](../tests/cache/bootstrap.spec.ts) | 검색·태그 직접 접속, SW 미지원·등록 실패, 맵 저장 실패 응답·확인 응답 유실 |
 | [performance](../tests/performance/bootstrap.spec.ts) | SW 미지원 기준선·최초 설치·캐시 준비 후 재방문·등록 지연 실패의 로컬 측정 |
@@ -70,6 +71,7 @@ docker compose -f compose.test.yaml run --build --rm test npm run test:performan
 ## 재현 조건과 판정
 
 - 요청 실패 E2E는 SW를 차단하고 API 응답을 제어한다. 이전 응답을 보류한 상태에서 현재 경로의 결과가 먼저 표시된 것을 확인한 뒤 이전 응답을 해제한다. 응답 취소도 허용하며, 취소하지 않는 구현에서는 늦은 응답이 화면과 글 메타데이터를 덮지 않아야 한다. 글 경로 간 전환은 `popstate`로 같은 React 루트에서 재현한다.
+- `json()` 반환 지연은 본문을 읽은 뒤 결과 전달만 보류해, 네트워크 취소만으로 막을 수 없는 오래된 결과 반영을 검사한다. 이전 요청이 실패해도 현재 요청의 로딩 표시를 종료해서는 안 되며, 글 화면을 떠난 뒤에는 이전 응답이 다른 화면의 메타데이터를 변경해서는 안 된다. 글 직접 접속은 상세 API를 차단한 채 hydration과 사용자 입력을 확인해 초기 데이터 경로도 보호한다.
 - 검색 JSON 일부가 실패하면 사용자가 검색 자료의 불완전함을 알 수 있는 오류 안내가 있어야 한다. 일부 결과를 계속 제공할지 여부는 강제하지 않으며, 전체 성공 시 후속 페이지의 글도 검색되는지 함께 확인한다. 이 테스트는 실제 HTTP 캐시나 SW 캐시 적중을 판정하는 테스트와 구분한다.
 - `cache-probe.svg`는 같은 URL의 이미지 내용 갱신을 확인하는 에셋이다. 썸네일 표시 검증이 아니며, 새 맵 반영 이후 fetch한 본문과 캐시 재사용을 확인한다.
 - `cache-load-gate.svg`는 `load` 이벤트를 늦추는 장치다. B 문서에 숨긴 eager 이미지를 삽입하고 [Nginx](../tests/nginx-delay.conf)에서 해당 응답만 초당 256바이트로 제한한다. 고유 query로 이전 이미지 캐시를 피한다. 자연 접속 결과와 이 통제 조건의 결과를 구분하며, 특정 실사이트 이미지가 원인이었다고 단정하지 않는다.

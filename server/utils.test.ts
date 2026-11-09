@@ -136,11 +136,49 @@ describe('콘텐츠 로딩', () => {
     });
   }
 
-  for (const date of ['not-a-date', '2026-02-30']) {
+  for (const [field, value] of [
+    ['title', ['잘못된 제목']],
+    ['description', null],
+    ['date', 20261109],
+    ['keywords', ['Network']],
+  ] as const) {
+    test(`필수 필드 ${field}의 잘못된 타입을 거부한다`, async () => {
+      await writePost('2026/invalid-type', { ...metadata, [field]: value });
+
+      await assert.rejects(getSortedContentList, new RegExp(field, 'i'));
+    });
+  }
+
+  for (const date of ['not-a-date', '2026-02-30', '2025-02-29', '1900-02-29', '2026-1-09', '2026-11-09T00:00:00Z']) {
     test(`유효하지 않은 날짜 ${date}를 거부한다`, async () => {
       await writePost('2026/invalid-date', { ...metadata, date });
 
       await assert.rejects(getSortedContentList, /date/i);
+    });
+  }
+
+  test('실제 윤년의 2월 29일을 문자열로 유지하고 날짜순으로 정렬한다', async () => {
+    await writePost('2000/century-leap', { ...metadata, date: '2000-02-29' });
+    await writePost('2024/leap', { ...metadata, date: '2024-02-29' });
+
+    const items = await getSortedContentList();
+
+    assert.deepEqual(items.map(({ id, date }) => ({ id, date })), [
+      { id: 'leap', date: '2024-02-29' },
+      { id: 'century-leap', date: '2000-02-29' },
+    ]);
+  });
+
+  for (const [name, load] of [
+    ['글 상세', () => getMarkdown('incomplete')],
+    ['초기 데이터', () => createInitialData('posts/incomplete')],
+    ['태그 집계', getTags],
+  ] as const) {
+    test(`${name}에서도 필수 메타데이터 누락을 거부한다`, async () => {
+      const { title, ...incomplete } = metadata;
+      await writePost('2026/incomplete', incomplete);
+
+      await assert.rejects(load, /title/i);
     });
   }
 });
@@ -187,6 +225,19 @@ describe('HTML 생성', () => {
       assert.equal(createHTML(input), `<head>${input.head}</head><main>${input.body}</main><script>window.__INITIAL_DATA__ = ${input.initialData}</script>`);
     });
   }
+
+  test('삽입한 HTML과 초기 데이터 안의 템플릿 표식을 다시 치환하지 않는다', () => {
+    const head = '<title><!--app-html--></title>';
+    const body = '<pre><!--app-window--></pre>';
+    const data = { content: '<!--app-head--> <!--app-html--> <!--app-window-->', tags: {} };
+    const html = createHTML({ template, head, body, initialData: JSON.stringify(data) });
+
+    assert.ok(html.startsWith(`<head>${head}</head><main>${body}</main>`));
+    const script = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
+    assert.ok(script);
+    const restored: unknown = runInNewContext(`${script}; JSON.stringify(window.__INITIAL_DATA__)`, { window: {} });
+    assert.equal(restored, JSON.stringify(data));
+  });
 
   test('본문의 script 종료 문자열이 데이터 스크립트를 닫지 않고 복원된다', () => {
     const data = { content: '<script>example()</script>\n</ScRiPt>\n<!-- 예제 -->', tags: {} };

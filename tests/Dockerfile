@@ -46,6 +46,7 @@ COPY tsconfig.json ./
 COPY src/lib/serviceWorker.ts ./src/lib/serviceWorker.ts
 COPY src/vite-env.d.ts ./src/vite-env.d.ts
 COPY shared ./shared
+COPY server/meta.ts ./server/meta.ts
 COPY tests ./tests
 RUN npm run test:typecheck
 
