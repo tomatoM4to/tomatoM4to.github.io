@@ -5,46 +5,10 @@ import { PassThrough } from 'node:stream';
 
 import {
   SITE_NAME,
-  DEFAULT_DESC,
-  DEFAULT_KEYWORDS,
-  DEFAULT_IMAGE,
-  makeURL,
   type InitialData
 } from '@shared/common';
 import App from '@src/App';
-
-function generateMeta({
-  url,
-  title,
-  desc,
-  keywords,
-  image,
-  type = 'website',
-  date,
-} : {
-  url: string,
-  title?: string,
-  desc?: string,                // 검색 결과 제목 하단에 노출되는 1~2줄 요약
-  keywords?: string,            // 레거시 검색 엔진을 위한 태그(쉽표로 구분)
-  image?: string,               // SNS 공유 썸네일 이미지 (Open Graph Image)
-  type: 'website' | 'article',  // website: 메인 페이지, 목록, article: 블로그 포스트, 뉴스 기사 등 구체적인 콘텐츠
-  date?: string,                // ISO 8601 형식 권장
-}): string {
-  return (
-    `<title>${title ?? SITE_NAME}</title>
-    <meta name="description" content="${desc ?? DEFAULT_DESC}" />
-    <meta name="keywords" content="${keywords ?? DEFAULT_KEYWORDS}" />
-    <meta property="og:title" content="${title ?? SITE_NAME}" />
-    <meta property="og:description" content="${desc ?? DEFAULT_DESC}" />
-    <meta property="og:type" content="${type}" />
-    <meta property="og:url" content="${makeURL(url)}" />
-    <meta property="og:image" content="${image ? makeURL(image) : DEFAULT_IMAGE}" />
-    <meta name="twitter:card" content="summary_large_image" />${date ? `
-    <meta property="article:published_time" content="${date}" />` : ''}
-    <meta name="author" content="tomatoM4to" />
-    <link rel="canonical" href="${makeURL(url)}" />`
-  );
-}
+import { generateMeta } from '../server/meta.ts';
 
 export async function render({
   url,
