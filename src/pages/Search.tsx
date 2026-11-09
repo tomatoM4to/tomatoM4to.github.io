@@ -21,7 +21,8 @@ export default function Search() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>("");
   const [loadProgress, setLoadProgress] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [loadStatus, setLoadStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const isLoading = loadStatus === 'loading';
 
   useHead({
     title: `${SITE_NAME} - search`,
@@ -29,51 +30,56 @@ export default function Search() {
   }, []);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const { signal } = controller;
+    async function fetchPage(page: number): Promise<ContentList> {
+      const response = await fetch(`/api/recent/${page}.json`, { signal });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    }
+
     (async function getData() {
       try {
-        setIsLoading(true);
+        setLoadStatus('loading');
+        setSearchList([]);
         setLoadProgress(0);
 
-        // 첫 번째 페이지 fetch로 전체 개수 파악
-        const response = await fetch(`/api/recent/1.json`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const result: ContentList = await response.json();
-        const totalPages = Math.ceil(result.len / POSTS_PER_PAGE);
-        let allPosts = [...result.data];
+        const result = await fetchPage(1);
+        if (signal.aborted) return;
+        const totalPages = Math.max(1, Math.ceil(result.len / POSTS_PER_PAGE));
+        const allPosts = [...result.data];
         let loadedCount = 1;
         setLoadProgress((loadedCount / totalPages) * 100);
 
-        // 남은 페이지를 CONCURRENT_FETCH_COUNT개씩 병렬로 fetch
         for (let i = 2; i <= totalPages; i += CONCURRENT_FETCH_COUNT) {
-          const batch: Promise<Response>[] = [];
+          const batch: Promise<ContentList>[] = [];
           for (let j = i; j < i + CONCURRENT_FETCH_COUNT && j <= totalPages; j++) {
-            batch.push(fetch(`/api/recent/${j}.json`));
+            batch.push(fetchPage(j));
           }
 
-          const results = await Promise.allSettled(batch);
-
-          for (const res of results) {
-            if (res.status === 'fulfilled' && res.value.ok) {
-              const data: ContentList = await res.value.json();
-              allPosts = [...allPosts, ...data.data];
-            }
-            loadedCount++;
+          const results = await Promise.all(batch);
+          if (signal.aborted) return;
+          for (const result of results) {
+            allPosts.push(...result.data);
           }
 
-          setSearchList([...allPosts]);
+          loadedCount += results.length;
           setLoadProgress((loadedCount / totalPages) * 100);
         }
 
         setSearchList(allPosts);
-        setIsLoading(false);
+        setLoadStatus('ready');
       }
       catch (err) {
+        if (signal.aborted) return;
+        controller.abort();
         console.error(err);
-        setIsLoading(false);
+        setLoadStatus('error');
       }
     })();
+    return () => controller.abort();
   }, []);
 
   useEffect(() => {
@@ -97,7 +103,7 @@ export default function Search() {
   }, [debouncedSearchQuery, searchList]);
 
   const isSearching =
-    !isLoading &&
+    loadStatus === 'ready' &&
     searchQuery.trim() !== "" &&
     searchQuery !== debouncedSearchQuery;
 
@@ -113,7 +119,7 @@ export default function Search() {
           autoFocus
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          disabled={isLoading}
+          disabled={loadStatus !== 'ready'}
           className="pl-10 h-11"
         />
       </div>
@@ -133,7 +139,15 @@ export default function Search() {
         </div>
       )}
 
-      {!isLoading && (
+      {loadStatus === 'error' && (
+        <Card role="alert" className="border-destructive">
+          <CardContent className="py-6 text-destructive">
+            검색 자료를 불러오지 못했습니다. 새로고침 후 다시 시도해주세요.
+          </CardContent>
+        </Card>
+      )}
+
+      {loadStatus === 'ready' && (
         <div className="max-h-[60vh] overflow-y-auto rounded-lg border border-border">
           {searchQuery.trim() === "" ? (
             <SearchResultSupport support="검색어를 입력해주세요." />

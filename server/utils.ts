@@ -8,6 +8,41 @@ export type { Item, ContentList, Render } from "@server/types.ts";
 
 const PROJECT_ROOT = process.cwd();
 const POSTS_DIR = path.join(PROJECT_ROOT, 'content', 'posts');
+const REQUIRED_META_FIELDS = ['title', 'description', 'date', 'keywords'] as const;
+const POST_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+function addPostPath(postMap: Map<string, string>, postName: string, filePath: string) {
+  const previousPath = postMap.get(postName);
+  if (previousPath) {
+    throw new Error(`Duplicate post ID "${postName}": ${previousPath}, ${filePath}`);
+  }
+  postMap.set(postName, filePath);
+}
+
+export async function readPost(filePath: string): Promise<GrayMatterFile<string>> {
+  const markdown = matter(await fs.readFile(filePath, 'utf8'));
+  const metadata: Record<string, unknown> = markdown.data;
+
+  for (const field of REQUIRED_META_FIELDS) {
+    if (typeof metadata[field] !== 'string') {
+      throw new Error(`Invalid ${field} in ${filePath}: expected a string`);
+    }
+  }
+
+  const date = metadata.date;
+  if (typeof date !== 'string' || !POST_DATE_PATTERN.test(date)) {
+    throw new Error(`Invalid date in ${filePath}: expected YYYY-MM-DD`);
+  }
+  const timestamp = Date.parse(`${date}T00:00:00.000Z`);
+  if (!Number.isFinite(timestamp) || new Date(timestamp).toISOString().slice(0, 10) !== date) {
+    throw new Error(`Invalid date in ${filePath}: ${date}`);
+  }
+  if (metadata.image !== undefined && typeof metadata.image !== 'string') {
+    throw new Error(`Invalid image in ${filePath}: expected a string`);
+  }
+
+  return markdown;
+}
 
 /**
  * content/posts 하위의 연도 폴더(2021, 2022, ...)를 모두 스캔하여
@@ -27,12 +62,12 @@ export async function getAllPostPaths(): Promise<Map<string, string>> {
       const posts = await fs.readdir(yearDir, { withFileTypes: true });
       for (const post of posts) {
         if (post.isDirectory()) {
-          postMap.set(post.name, path.join(yearDir, post.name, 'index.md'));
+          addPostPath(postMap, post.name, path.join(yearDir, post.name, 'index.md'));
         }
       }
     } else {
       // 하위 호환: 연도 폴더 없이 바로 포스트 폴더가 있는 경우
-      postMap.set(entry.name, path.join(POSTS_DIR, entry.name, 'index.md'));
+      addPostPath(postMap, entry.name, path.join(POSTS_DIR, entry.name, 'index.md'));
     }
   }
 
@@ -54,11 +89,11 @@ export function getAllPostPathsSync(): Map<string, string> {
       const posts = fsSync.readdirSync(yearDir, { withFileTypes: true });
       for (const post of posts) {
         if (post.isDirectory()) {
-          postMap.set(post.name, path.join(yearDir, post.name, 'index.md'));
+          addPostPath(postMap, post.name, path.join(yearDir, post.name, 'index.md'));
         }
       }
     } else {
-      postMap.set(entry.name, path.join(POSTS_DIR, entry.name, 'index.md'));
+      addPostPath(postMap, entry.name, path.join(POSTS_DIR, entry.name, 'index.md'));
     }
   }
 
@@ -83,29 +118,12 @@ export async function createInitialData(url: string): Promise<InitialData> {
   }
   // url 은 "posts/postname" 형태
   const postName = url.replace(/^posts\//, '');
-  const filePath = await resolvePostPath(postName);
-  let fileContent;
-  try {
-    fileContent = await fs.readFile(filePath, 'utf-8');
-  }
-  catch (err) {
-    console.error(`[ERROR] File not found or unreadable: ${filePath}`, err);
-    throw new Error(`File not found: ${filePath}`);
-  }
-  return { post: matter(fileContent), tags };
+  return { post: await getMarkdown(postName), tags };
 }
 
 
 export async function getMarkdown(name: string): Promise<GrayMatterFile<string>> {
-  const filePath = await resolvePostPath(name);
-  try {
-    const fileContent = await fs.readFile(filePath, 'utf-8');
-    return matter(fileContent);
-  }
-  catch (err) {
-    console.error(`[ERROR] File not found or unreadable: ${filePath}`, err);
-    throw new Error(`File not found: ${filePath}`);
-  }
+  return readPost(await resolvePostPath(name));
 }
 
 
@@ -126,14 +144,12 @@ export function createHTML({
   body: string,
   initialData: string // JSON
 }) {
-  const html = template
-    .replace(`<!--app-head-->`, head ?? '')
-    .replace(`<!--app-html-->`, body ?? '')
-    .replace(
-      `<!--app-window-->`,
-      `<script>window.__INITIAL_DATA__ = ${initialData}</script>`
-    );
-    return html;
+  const safeData = initialData.replace(/</g, '\\u003c');
+  return template.replace(/<!--app-(?:head|html|window)-->/g, marker => {
+    if (marker === '<!--app-head-->') return head ?? '';
+    if (marker === '<!--app-html-->') return body ?? '';
+    return `<script>window.__INITIAL_DATA__ = ${safeData}</script>`;
+  });
 }
 
 export async function getSortedContentList(): Promise<Item[]> {
@@ -141,8 +157,7 @@ export async function getSortedContentList(): Promise<Item[]> {
   const newContentList: Item[] = [];
 
   for (const [postName, filePath] of postMap) {
-    const fileContent = await fs.readFile(filePath, 'utf-8');
-    const meta = matter(fileContent);
+    const meta = await readPost(filePath);
     newContentList.push({
       id: postName,
       title: meta.data.title,
@@ -165,8 +180,7 @@ export async function getTags(): Promise<Record<string, number>> {
   const tagCount: Record<string, number> = {};
 
   for (const [, filePath] of postMap) {
-    const fileContent = await fs.readFile(filePath, 'utf-8');
-    const meta = matter(fileContent);
+    const meta = await readPost(filePath);
 
     if (meta.data.keywords) {
       for (const keyword of meta.data.keywords.split(',')) {

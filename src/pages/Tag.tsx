@@ -55,25 +55,29 @@ export default function Tag({ initialTags }: TagProps) {
       setIsLoading(false);
       return;
     }
+    const controller = new AbortController();
+    const { signal } = controller;
     (async function getData() {
       setIsLoading(true);
       setContentList(null);
       try {
-        const response = await fetch(`/api/tags/${tag}.json`);
+        const response = await fetch(`/api/tags/${tag}.json`, { signal });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const result: ContentList = await response.json();
+        if (signal.aborted) return;
         setContentList(result);
         setTotalPage(Math.ceil(result.len / POSTS_PER_PAGE));
       }
       catch (err) {
-        console.error(err);
+        if (!signal.aborted) console.error(err);
       }
       finally {
-        setIsLoading(false);
+        if (!signal.aborted) setIsLoading(false);
       }
     })();
+    return () => controller.abort();
   }, [tag]);
 
   const allTags = Object.entries(initialTags ?? {}) as TagEntry[];

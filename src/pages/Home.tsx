@@ -51,22 +51,26 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const { signal } = controller;
     (async function getData() {
       try {
-        const response = await fetch(`/api/recent/${currentPage}.json`);
+        const response = await fetch(`/api/recent/${currentPage}.json`, { signal });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const result: ContentList = await response.json();
+        if (signal.aborted) return;
         setPostList(result.data);
         setTotalPages(Math.ceil(result.len / POSTS_PER_PAGE));
       }
       catch (err) {
-        console.error(err);
+        if (!signal.aborted) console.error(err);
       } finally {
-        setIsFirstLoad(false);
+        if (!signal.aborted) setIsFirstLoad(false);
       }
     })();
+    return () => controller.abort();
   }, [currentPage]);
 
   return (

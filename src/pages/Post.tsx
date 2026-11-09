@@ -43,13 +43,17 @@ export default function Post({ initialData }: { initialData: GrayMatterFile<stri
     if (!networkMountRef.current) {
       return;
     }
+    const controller = new AbortController();
+    const { signal } = controller;
+    setContent(null);
     async function getData() {
       try {
-        const response = await fetch(`/api/posts/${post}/index.json`);
+        const response = await fetch(`/api/posts/${post}/index.json`, { signal });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const result: GrayMatterFile<string> = await response.json();
+        if (signal.aborted) return;
         setContent(result.content);
         setMeta({
           title: result.data?.title || '',
@@ -68,10 +72,11 @@ export default function Post({ initialData }: { initialData: GrayMatterFile<stri
         })
       }
       catch (err) {
-        console.error(err);
+        if (!signal.aborted) console.error(err);
       }
     }
     getData();
+    return () => controller.abort();
   }, [post]);
 
   return (

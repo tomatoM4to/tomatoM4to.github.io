@@ -249,5 +249,7 @@ for (const failure of ['http', 'network', 'json'] as const) {
     await failed;
     await expect(page.getByRole('alert')).toBeVisible();
     await expect(page.getByRole('alert')).toContainText(/실패|오류|불러오|일부/);
+    await expect(page.getByPlaceholder('포스트 제목, 요약으로 검색...')).toBeDisabled();
+    await expect(page.locator('h3')).toHaveCount(0);
   });
 }
