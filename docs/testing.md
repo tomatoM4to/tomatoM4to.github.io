@@ -1,8 +1,23 @@
 # Overview
 
-실제 앱과 [SSG 생성기](SSG.md)에 테스트 전용 글·에셋을 입력하고, Docker의 Nginx와 Playwright Test로 사용자 동작·캐시 최신성·초기 동기화 비용을 검증한다. 테스트는 TypeScript로 작성하며 실제 `content/posts`는 테스트 빌드에 포함하지 않는다.
+[서버 유닛 테스트](../server/utils.test.ts)는 코드 옆에 두고 Node 내장 테스트 러너와 기존 `tsx`로 실행한다. 임시 디렉터리의 입력으로 서버 함수의 계약을 검증하며 실제 `content/posts`를 읽거나 수정하지 않는다.
+
+기존 `tests/`는 실제 앱과 [SSG 생성기](SSG.md)에 테스트 전용 글·에셋을 입력하고, Docker의 Nginx와 Playwright Test로 사용자 동작·캐시 최신성·초기 동기화 비용을 검증한다. 실제 `content/posts`는 테스트 빌드에 포함하지 않는다.
 
 # Checkpoint
+
+## 서버 유닛 테스트
+
+Node와 프로젝트 의존성이 설치된 환경에서 프로젝트 루트의 다음 명령으로 실행한다. 브라우저·Nginx·정적 배포 빌드는 필요하지 않다.
+
+```bash
+npm run test:unit:typecheck
+npm run test:unit
+```
+
+- 실행 대상은 `server/*.test.ts`이며 기존 Playwright 명령과 독립적이다. [전용 타입 설정](../tsconfig.test.json)은 테스트가 가져오는 서버 코드도 검사하며 파일을 생성하지 않는다.
+- `utils.ts`는 import 시 작업 디렉터리를 고정한다. 테스트 프로세스에서 임시 경로로 이동해 모듈을 로드한 뒤 원래 경로로 복구하고, 종료 시 임시 입력을 제거한다. 같은 모듈 인스턴스가 사용하는 입력을 테스트별로 초기화하므로 파일 안의 테스트는 순차 실행한다.
+- 중복 글 ID·필수 메타데이터·날짜 검증과 HTML 치환·직렬화는 정상 계약을 기대하는 회귀 테스트다. 현재 구현에서 검증이나 이스케이프가 빠진 경우 테스트는 실패하며, 기존 동작을 정답으로 고정하거나 실패를 skip·todo로 숨기지 않는다.
 
 ## 실행과 결과
 

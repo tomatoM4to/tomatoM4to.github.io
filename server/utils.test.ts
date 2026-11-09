@@ -1,0 +1,209 @@
+import assert from 'node:assert/strict';
+import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { after, beforeEach, describe, test } from 'node:test';
+import { runInNewContext } from 'node:vm';
+import type { Item } from './types.ts';
+
+const originalDirectory = process.cwd();
+const projectDirectory = await mkdtemp(path.join(tmpdir(), 'blog-utils-test-'));
+const postsDirectory = path.join(projectDirectory, 'content', 'posts');
+
+async function loadUtils() {
+  process.chdir(projectDirectory);
+  try {
+    return await import('./utils.ts');
+  } finally {
+    process.chdir(originalDirectory);
+  }
+}
+
+const {
+  createHTML,
+  createInitialData,
+  createTemplate,
+  getAllPostPaths,
+  getAllPostPathsSync,
+  getItemFromTag,
+  getMarkdown,
+  getSortedContentList,
+  getTags,
+} = await loadUtils();
+
+const metadata = {
+  title: '테스트 글',
+  description: '테스트 요약',
+  date: '2026-11-09',
+  keywords: 'Network, JavaScript',
+};
+
+async function writePost(directory: string, data: Record<string, unknown> = metadata, content = '# 테스트 본문\n') {
+  const destination = path.join(postsDirectory, directory);
+  await mkdir(destination, { recursive: true });
+  const frontMatter = Object.entries(data).map(([key, value]) => `${key}: ${JSON.stringify(value)}`).join('\n');
+  await writeFile(path.join(destination, 'index.md'), `---\n${frontMatter}\n---\n${content}`, 'utf8');
+}
+
+beforeEach(async () => {
+  await rm(postsDirectory, { recursive: true, force: true });
+  await mkdir(postsDirectory, { recursive: true });
+});
+
+after(async () => {
+  await rm(projectDirectory, { recursive: true, force: true });
+});
+
+describe('글 경로 탐색', () => {
+  for (const [name, getPaths] of [
+    ['비동기', getAllPostPaths],
+    ['동기', getAllPostPathsSync],
+  ] as const) {
+    test(`${name}: 연도별 글과 기존 평면 경로를 찾고 일반 파일은 제외한다`, async () => {
+      await writePost('2026/한글 글');
+      await writePost('legacy');
+      await writeFile(path.join(postsDirectory, 'README.md'), '글이 아닌 파일');
+      await writeFile(path.join(postsDirectory, '2026', 'README.md'), '글이 아닌 파일');
+
+      assert.deepEqual(Object.fromEntries(await getPaths()), {
+        '한글 글': path.join(postsDirectory, '2026', '한글 글', 'index.md'),
+        legacy: path.join(postsDirectory, 'legacy', 'index.md'),
+      });
+    });
+
+    test(`${name}: 글이 없으면 빈 맵을 반환한다`, async () => {
+      assert.equal((await getPaths()).size, 0);
+    });
+
+    test(`${name}: 연도가 달라도 중복 글 ID를 조용히 덮어쓰지 않는다`, async () => {
+      await writePost('2025/duplicate');
+      await writePost('2026/duplicate');
+
+      await assert.rejects(async () => { await getPaths(); }, /duplicate/i);
+    });
+  }
+});
+
+describe('콘텐츠 로딩', () => {
+  test('글 ID로 본문과 문자열 메타데이터를 읽는다', async () => {
+    await writePost('2026/한글 글');
+
+    const result = await getMarkdown('한글 글');
+
+    assert.deepEqual(result.data, metadata);
+    assert.equal(result.content, '# 테스트 본문\n');
+  });
+
+  test('글 상세 초기 데이터는 본문과 전체 태그 집계를 포함한다', async () => {
+    await writePost('2026/selected');
+    await writePost('2025/other', { ...metadata, keywords: 'Network' });
+
+    const result = await createInitialData('posts/selected');
+
+    assert.deepEqual(result.tags, { Network: 2, JavaScript: 1 });
+    assert.deepEqual(result.post?.data, metadata);
+    assert.equal(result.post?.content, '# 테스트 본문\n');
+  });
+
+  test('목록 화면의 초기 데이터에는 태그 집계만 포함한다', async () => {
+    await writePost('2026/selected');
+
+    assert.deepEqual(await createInitialData('tags'), { tags: { Network: 1, JavaScript: 1 } });
+  });
+
+  test('파일명 순서와 무관하게 날짜 내림차순으로 목록을 만들고 image 생략을 허용한다', async () => {
+    await writePost('2025/a-old', { ...metadata, date: '2025-12-31' });
+    await writePost('2026/z-new', { ...metadata, image: '/img/new.webp' });
+
+    assert.deepEqual(await getSortedContentList(), [
+      { id: 'z-new', ...metadata, image: '/img/new.webp' },
+      { id: 'a-old', ...metadata, date: '2025-12-31', image: undefined },
+    ]);
+  });
+
+  test('글이 없으면 목록과 태그 집계가 비어 있다', async () => {
+    assert.deepEqual(await getSortedContentList(), []);
+    assert.deepEqual(await getTags(), {});
+  });
+
+  for (const field of ['title', 'description', 'date', 'keywords'] as const) {
+    test(`필수 필드 ${field} 누락을 목록 생성 전에 거부한다`, async () => {
+      const incomplete: Record<string, unknown> = { ...metadata };
+      delete incomplete[field];
+      await writePost('2026/incomplete', incomplete);
+
+      await assert.rejects(getSortedContentList, new RegExp(field, 'i'));
+    });
+  }
+
+  for (const date of ['not-a-date', '2026-02-30']) {
+    test(`유효하지 않은 날짜 ${date}를 거부한다`, async () => {
+      await writePost('2026/invalid-date', { ...metadata, date });
+
+      await assert.rejects(getSortedContentList, /date/i);
+    });
+  }
+});
+
+describe('태그', () => {
+  test('쉼표로 나눈 태그의 주변 공백을 제거해 집계한다', async () => {
+    await writePost('2026/first', { ...metadata, keywords: ' Network , JavaScript ' });
+    await writePost('2026/second', { ...metadata, keywords: 'Network, TypeScript' });
+
+    assert.deepEqual(await getTags(), { Network: 2, JavaScript: 1, TypeScript: 1 });
+  });
+
+  test('부분 문자열이 아닌 태그 전체로 필터링하고 입력 순서를 유지한다', async () => {
+    const items: Item[] = [
+      { id: 'first', ...metadata, keywords: ' JavaScript , Network ', image: '' },
+      { id: 'second', ...metadata, keywords: 'JavaScriptCore', image: '' },
+      { id: 'third', ...metadata, keywords: 'JavaScript', image: '' },
+    ];
+
+    assert.deepEqual(await getItemFromTag(items, 'JavaScript'), { len: 2, data: [items[0], items[2]] });
+    assert.deepEqual(await getItemFromTag(items, 'Script'), { len: 0, data: [] });
+    assert.equal(items.length, 3);
+  });
+});
+
+describe('HTML 생성', () => {
+  const template = '<head><!--app-head--></head><main><!--app-html--></main><!--app-window-->';
+
+  test('템플릿의 본문, 메타 태그, 초기 데이터를 삽입한다', () => {
+    assert.equal(createHTML({
+      template,
+      head: '<title>제목</title>',
+      body: '<p>본문</p>',
+      initialData: '{"tags":{}}',
+    }), '<head><title>제목</title></head><main><p>본문</p></main><script>window.__INITIAL_DATA__ = {"tags":{}}</script>');
+  });
+
+  for (const field of ['head', 'body', 'initialData'] as const) {
+    test(`${field}의 문자열 치환 토큰을 원문 그대로 보존한다`, () => {
+      const tokens = "문자열 $& $$ $` $'";
+      const input = { template, head: '', body: '', initialData: '{}' };
+      input[field] = field === 'initialData' ? JSON.stringify({ content: tokens }) : tokens;
+
+      assert.equal(createHTML(input), `<head>${input.head}</head><main>${input.body}</main><script>window.__INITIAL_DATA__ = ${input.initialData}</script>`);
+    });
+  }
+
+  test('본문의 script 종료 문자열이 데이터 스크립트를 닫지 않고 복원된다', () => {
+    const data = { content: '<script>example()</script>\n</ScRiPt>\n<!-- 예제 -->', tags: {} };
+    const html = createHTML({ template, head: '', body: '', initialData: JSON.stringify(data) });
+
+    assert.equal([...html.matchAll(/<\/script\s*>/gi)].length, 1);
+    const script = html.match(/<script>([\s\S]*?)<\/script>/i)?.[1];
+    assert.ok(script);
+    const restored: unknown = runInNewContext(`${script}; JSON.stringify(window.__INITIAL_DATA__)`, { window: {} });
+    assert.equal(restored, JSON.stringify(data));
+  });
+
+  test('프로젝트 dist의 HTML 템플릿을 읽는다', async () => {
+    const distDirectory = path.join(projectDirectory, 'dist');
+    await mkdir(distDirectory, { recursive: true });
+    await writeFile(path.join(distDirectory, 'index.html'), template, 'utf8');
+
+    assert.equal(await createTemplate(), template);
+  });
+});
