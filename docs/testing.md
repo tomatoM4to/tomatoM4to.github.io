@@ -66,7 +66,7 @@ docker compose -f compose.test.yaml run --build --rm test npm run test:performan
 - FCP는 첫 콘텐츠 표시, `app:hydrate-start`는 hydration 호출, 테마 버튼 마운트와 목록 DOM 표시는 각각 별도의 시점이다. 테마 버튼 클릭도 확인하지만 이 값들을 hydration 전체 완료 시간이나 사용자 입력 지연으로 해석하지 않는다.
 - 로컬 Nginx·Chromium의 소수 표본이며 외부 폰트·CPU·스토리지·네트워크에 영향을 받는다. 서로 다른 캐시 준비 상태의 수치를 단순 비교해 개선율을 계산하거나, 100ms 미만 표본으로 실서비스 전체의 성능 상한을 판단하지 않는다.
 
-# Architecture
+# Diagram
 
 ```mermaid
 flowchart LR
