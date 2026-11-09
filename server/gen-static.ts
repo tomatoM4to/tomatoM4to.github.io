@@ -1,75 +1,40 @@
-import fs from "node:fs";
-import path from "node:path";
-import { pathToFileURL } from "node:url";
-import {
-  createHTML,
-  createTemplate,
-  createInitialData,
-  getAllPostPathsSync,
-  type Render,
-  randDelay
-} from '@server/utils.ts';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { createHTML } from '@server/utils.ts';
+import type { Render } from '@server/types.ts';
+import type { InitialData } from '@shared/common.ts';
 
-const PROJECT_ROOT = process.cwd();
+export async function generateStaticPages({
+  postNames,
+  template,
+  render,
+  loadInitialData,
+  outputDirectory,
+}: {
+  postNames: string[];
+  template: string;
+  render: Render;
+  loadInitialData: (route: string) => Promise<InitialData>;
+  outputDirectory: string;
+}) {
+  const routes = ['', 'search', 'tags', ...postNames.map(name => `posts/${name}`)];
+  await fs.mkdir(outputDirectory, { recursive: true });
+  await fs.writeFile(path.join(outputDirectory, 'template.html'), template, 'utf8');
 
-// 연도 폴더 구조에서 포스트 이름만 추출하여 flat 한 경로 생성
-const postNames = [...getAllPostPathsSync().keys()];
+  for (const route of routes) {
+    const initialData = await loadInitialData(route);
+    const rendered = await render({ url: route, initialData });
+    const html = createHTML({
+      template,
+      head: rendered.head,
+      body: rendered.body,
+      initialData: JSON.stringify(initialData),
+    });
+    const cleanRoute = route.replace(/\?/g, '_').replace(/%20/g, '-');
+    const filePath = path.join(outputDirectory, route === '' ? 'index.html' : `${cleanRoute}.html`);
 
-const pages: string[] = [
-  "",
-  "search",
-  "tags",
-  ...postNames.map((postname) => `posts/${postname}`),
-];
-
-const DIST_PATH = path.join(PROJECT_ROOT, 'dist');
-const template = await createTemplate();
-
-async function generatePage(route: string) {
-  const initialData = await createInitialData(route);
-
-  // Replace "?" with "_" for filenames
-  const cleanRoute = route.replace(/\?/g, "_").replace(/%20/g, "-");
-  const entryUrl = pathToFileURL(path.join(DIST_PATH, "server", "entry-server.js")).href;
-  const render: Render = (await import(entryUrl)).render;
-  const html = await render({url: route, initialData: initialData});
-
-  // clone the template with template.html [this file if that page not required SSG then SSR will use]
-  if (route === "") {
-    const filePath = path.join(DIST_PATH, "template.html");
-    console.log(`✅ Generated: ${filePath}`);
-    fs.writeFileSync(filePath, template, "utf-8");
-  }
-  const outputHtml = createHTML({
-    template: template,
-    head: html.head,
-    body: html.body,
-    initialData: JSON.stringify(initialData)
-  });
-
-  // Ensure directory exists before writing file
-  const outputDir = path.join(DIST_PATH, path.dirname(cleanRoute));
-  if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true }); // Create parent directories if needed
-  }
-
-  const filePath = path.join(
-    DIST_PATH,
-    route === "/" || route === "" ? "index.html" : `${cleanRoute}.html`
-  );
-
-  fs.writeFileSync(filePath, outputHtml, "utf-8");
-  console.log(`✅ Generated: ${filePath}`);
-};
-
-
-async function generatePagesSequentially() {
-  // copyContentToDistDirectory();
-  for (const route of pages) {
-    await generatePage(route);
-    await randDelay();
+    await fs.mkdir(path.dirname(filePath), { recursive: true });
+    await fs.writeFile(filePath, html, 'utf8');
   }
 }
-
-generatePagesSequentially();
 

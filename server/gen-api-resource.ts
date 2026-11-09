@@ -1,106 +1,61 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import matter from 'gray-matter';
-import {
-  getAllPostPaths,
-  getItemFromTag,
-  getSortedContentList,
-  getTags,
-  type Item,
-  randDelay
-} from '@server/utils.ts';
-import { POSTS_PER_PAGE } from '@shared/common.ts';
+import type { GrayMatterFile } from 'gray-matter';
+import { getItemFromTag } from '@server/utils.ts';
+import type { Item } from '@server/types.ts';
+import { POSTS_PER_PAGE, type TagsData } from '@shared/common.ts';
 
+export async function generatePostJSON({
+  postName,
+  markdown,
+  outputDirectory,
+}: {
+  postName: string;
+  markdown: GrayMatterFile<string>;
+  outputDirectory: string;
+}) {
+  const destination = path.join(outputDirectory, 'api', 'posts', postName);
+  const { orig, ...content } = markdown;
 
-const PROJECT_ROOT = process.cwd();
-
-
-async function genMarkdownJSON(postName: string, filePath: string) {
-  const destPath = path.join(PROJECT_ROOT, 'dist/api/posts', postName);
-
-  let fileContent: string;
-  try {
-    fileContent = await fs.readFile(filePath, 'utf-8');
-  }
-  catch (err: any) {
-    if (err.code === 'ENOENT') {
-      throw new Error(`File not found : ${filePath}`);
-    }
-    throw err;
-  }
-
-  const { orig, ...content } = matter(fileContent);
-
-  await fs.mkdir(destPath, { recursive: true });
-  await fs.writeFile(
-    path.join(destPath, 'index.json'),
-    JSON.stringify(content)
-  );
-
-  console.log(`🎉 Created content JSON to: ${destPath}`);
+  await fs.mkdir(destination, { recursive: true });
+  await fs.writeFile(path.join(destination, 'index.json'), JSON.stringify(content), 'utf8');
 }
 
+export async function generateRecentPostLists({
+  contentList,
+  outputDirectory,
+}: {
+  contentList: Item[];
+  outputDirectory: string;
+}) {
+  for (let offset = 0; offset < contentList.length; offset += POSTS_PER_PAGE) {
+    const destination = path.join(outputDirectory, 'api', 'recent');
+    const page = offset / POSTS_PER_PAGE + 1;
+    const content = {
+      len: contentList.length,
+      data: contentList.slice(offset, offset + POSTS_PER_PAGE),
+    };
 
-async function genRecentPostList(sortedContentList: Item[]) {
-  let buffer: Item[] = [];
-  let index = 1;
-  for (const post of sortedContentList) {
-    buffer.push(post);
-    if (buffer.length >= POSTS_PER_PAGE) {
-      const destPath = path.join(PROJECT_ROOT, 'dist/api/recent');
-      await fs.mkdir(destPath, { recursive: true });
-      await fs.writeFile(
-        path.join(destPath, `${index++}.json`),
-        JSON.stringify({
-          len: sortedContentList.length,
-          data: buffer
-        })
-      );
-      buffer = [];
-      console.log(`🐍 Created content JSON to: ${destPath}`);
-      randDelay()
-    }
-  }
-
-  if (buffer.length > 0) {
-    const destPath = path.join(PROJECT_ROOT, 'dist/api/recent');
-    await fs.mkdir(destPath, { recursive: true });
-    await fs.writeFile(
-      path.join(destPath, `${index++}.json`),
-      JSON.stringify({
-        len: sortedContentList.length,
-        data: buffer
-      })
-    );
-    console.log(`🐍 Created content JSON to: ${destPath}`);
+    await fs.mkdir(destination, { recursive: true });
+    await fs.writeFile(path.join(destination, `${page}.json`), JSON.stringify(content), 'utf8');
   }
 }
 
-async function createTagContentList(sortedContentList: Item[]) {
-  const allTags = await getTags();
-  const destPath = path.join(PROJECT_ROOT, 'dist/api/tags');
-  await fs.mkdir(destPath, { recursive: true });
-  for (const [tag, _] of Object.entries(allTags)) {
-    const tagContent = await getItemFromTag(sortedContentList, tag);
-    const newDestPath = path.join(destPath, `${tag}.json`);
-    await fs.writeFile(
-      newDestPath,
-      JSON.stringify(tagContent)
-    );
-    console.log(`❄️ Created Tag-Content JSON to: ${newDestPath}`);
-    randDelay()
+export async function generateTagLists({
+  contentList,
+  tags,
+  outputDirectory,
+}: {
+  contentList: Item[];
+  tags: TagsData;
+  outputDirectory: string;
+}) {
+  const destination = path.join(outputDirectory, 'api', 'tags');
+  await fs.mkdir(destination, { recursive: true });
+
+  for (const tag of Object.keys(tags)) {
+    const content = await getItemFromTag(contentList, tag);
+    await fs.writeFile(path.join(destination, `${tag}.json`), JSON.stringify(content), 'utf8');
   }
 }
-
-(async function main() {
-  const sortedContentList = await getSortedContentList();
-  const postMap = await getAllPostPaths();
-
-  for (const [postName, filePath] of postMap) {
-    await genMarkdownJSON(postName, filePath);
-    randDelay()
-  }
-  await genRecentPostList(sortedContentList);
-  await createTagContentList(sortedContentList);
-})();
 
