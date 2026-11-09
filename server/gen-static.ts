@@ -17,7 +17,7 @@ export async function generateStaticPages({
   loadInitialData: (route: string) => Promise<InitialData>;
   outputDirectory: string;
 }) {
-  const routes = ['', 'search', 'tags', ...postNames.map(name => `posts/${name}`)];
+  const routes = ['', 'search', 'tags', 'license', ...postNames.map(name => `posts/${name}`)];
   await fs.mkdir(outputDirectory, { recursive: true });
   await fs.writeFile(path.join(outputDirectory, 'template.html'), template, 'utf8');
 

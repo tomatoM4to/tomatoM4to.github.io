@@ -35,7 +35,7 @@ test('글 직접 접속은 상세 API 재요청 없이 초기 데이터로 hydra
 });
 
 test('정적 라우팅·캐시 헤더·조건부 요청·404', async ({ request }) => {
-  for (const urlPath of ['/tags', '/search']) {
+  for (const urlPath of ['/tags', '/search', '/license']) {
     const response = await request.get(urlPath);
     expect(response.status()).toBe(200);
     expect(response.headers()['content-type']).toContain('text/html');
@@ -60,4 +60,26 @@ test('정적 라우팅·캐시 헤더·조건부 요청·404', async ({ request 
   for (const urlPath of ['/missing-test-page', '/api/missing-test.json']) {
     expect((await request.get(urlPath)).status()).toBe(404);
   }
+});
+
+test('라이선스는 정적 본문·직접 접속·새로고침·내부 이동을 지원한다', async ({ page, request }) => {
+  const staticResponse = await request.get('/license');
+  expect(staticResponse.status()).toBe(200);
+  expect(await staticResponse.text()).toMatch(/<h1[^>]*>Open Source Licenses<\/h1>/);
+
+  const response = await page.goto('/license', { waitUntil: 'domcontentloaded' });
+  expect(response?.status()).toBe(200);
+  await expect(page.getByRole('heading', { name: 'Open Source Licenses', exact: true })).toBeVisible();
+  expect(await page.evaluate(() => window.__ETAG_MAP__?.['/license'])).toEqual(expect.any(String));
+
+  const reloaded = await page.reload({ waitUntil: 'domcontentloaded' });
+  expect(reloaded?.status()).toBe(200);
+  await expect(page.getByRole('heading', { name: 'Open Source Licenses', exact: true })).toBeVisible();
+  await page.getByRole('link', { name: 'tomatoM4to', exact: true }).click();
+  await expect(page.locator('section h3')).toHaveText(['cache-existing']);
+  const timeOrigin = await page.evaluate(() => performance.timeOrigin);
+  await page.getByRole('link', { name: 'License', exact: true }).click();
+  await expect(page).toHaveURL('/license');
+  await expect(page.getByRole('heading', { name: 'Open Source Licenses', exact: true })).toBeVisible();
+  expect(await page.evaluate(() => performance.timeOrigin)).toBe(timeOrigin);
 });

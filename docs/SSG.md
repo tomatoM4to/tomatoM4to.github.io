@@ -3,7 +3,7 @@
 
 # Checkpoints
 - [생성 모듈](../server/gen-static.ts)은 import 시 콘텐츠나 빌드 산출물을 읽지 않는다. [HTML 실행 진입점](../server/build-static.ts)과 [JSON 실행 진입점](../server/build-api.ts)이 실제 입력을 준비하며, 생성 함수는 전달받은 데이터·렌더러·출력 경로만 사용한다. 빌드 경로를 고정하거나 실행을 import에 결합하지 않아야 [격리된 생성기 테스트](testing.md#서버-유닛-테스트)를 유지할 수 있다.
-- [HTML 생성 대상](../server/gen-static.ts)은 `/`, `/search`, `/tags`, `/posts/<글 ID>`다. 루트는 `index.html`, 나머지는 `<경로>.html`로 저장한다. React 라우트에 있는 `/license`는 생성 대상에 없다.
+- [HTML 생성 대상](../server/gen-static.ts)은 `/`, `/search`, `/tags`, `/license`, `/posts/<글 ID>`다. 루트는 `index.html`, 나머지는 `<경로>.html`로 저장한다. Footer 등에서 노출하는 페이지는 정적 HTML도 제공해 직접 접속과 새로고침을 지원해야 한다.
 - 글 ID는 연도를 제외한 폴더명이다. HTML·JSON·클라이언트 링크·ETag 키가 같은 글을 가리켜야 하며, HTML 생성기의 `?` → `_`, `%20` → `-` 치환은 다른 경로 생성 코드에 공통 적용되지 않는다.
 - 중복 글 ID와 잘못된 메타데이터는 자동 보정하거나 덮어쓰지 않고 빌드를 실패시킨다. [공통 콘텐츠 로더](../server/utils.ts)의 문자열 필드·실제 날짜 검증을 HTML·상세 JSON·목록·태그 집계에서 동일하게 적용해야 한다. 날짜는 `YYYY-MM-DD` 문자열이며 `image`는 생략할 수 있다.
 - [정적 API 생성기](../server/gen-api-resource.ts)는 글 상세, 페이지별 최근 글, 태그별 글 목록 JSON을 만든다. 목록 계약은 `{ len, data }`이며, 최근 글은 페이지 단위로 생성하고 태그별 목록은 브라우저에서 페이지를 나눈다.
