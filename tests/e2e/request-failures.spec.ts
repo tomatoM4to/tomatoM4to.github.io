@@ -517,6 +517,20 @@ test('검색 JSON이 모두 준비되면 후속 페이지의 글도 검색된다
   await expect(page.locator('h3')).toHaveText([searchPosts[POSTS_PER_PAGE].title]);
 });
 
+test('빈 제목의 글도 ID를 제목으로 표시하고 본문 로딩을 완료한다', async ({ page }) => {
+  const post = { ...posts[0], title: '' };
+  await mockRecentPages(page, [post]);
+  await page.route(url => url.pathname === `/api/posts/${post.id}/index.json`, route => (
+    route.fulfill({ json: { data: post, content: '빈 제목의 본문' } })
+  ));
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.getByRole('link').filter({ has: page.getByRole('heading', { name: post.id, exact: true }) }).click();
+  await expect(page.locator('header h1')).toHaveText(post.id);
+  await expect(page.locator('article')).toHaveText('빈 제목의 본문');
+  await expect(page).toHaveTitle(post.id);
+  await expect(page.locator('[data-slot="skeleton"]')).toHaveCount(0);
+});
+
 for (const failure of ['http', 'network', 'json'] as const) {
   test(`검색 JSON 일부가 ${failure} 오류로 실패하면 불완전한 로딩을 알린다`, async ({ page }) => {
     await page.route(url => url.pathname === '/api/recent/1.json', route => route.fulfill({

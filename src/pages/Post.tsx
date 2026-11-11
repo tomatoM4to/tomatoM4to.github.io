@@ -65,7 +65,7 @@ export default function Post({ initialData }: { initialData: PostData | null }) 
           keywords: result.data?.keywords || '',
         });
         updateHead({
-          title: result.data.title,
+          title: result.data.title || post,
           url: makeURL(`posts/${encodePostId(post)}`),
           desc: result.data.description,
           keywords: result.data.keywords,
@@ -104,7 +104,7 @@ export default function Post({ initialData }: { initialData: PostData | null }) 
             </Button>
           </CardContent>
         </Card>
-      ) : content === null || meta.title === '' ? (
+      ) : content === null ? (
         <PostSkeleton />
       ) : (
         <Suspense fallback={<PostSkeleton />}>

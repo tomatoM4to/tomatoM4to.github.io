@@ -35,6 +35,10 @@ before(async () => {
     '---',
     'SSR 테스트 본문',
   ].join('\n'));
+  const emptyTitleDirectory = path.join(directory, 'content', 'posts', '2026', 'empty-title');
+  await mkdir(emptyTitleDirectory, { recursive: true });
+  await writeFile(path.join(emptyTitleDirectory, 'index.md'), '---\ntitle: ""\ndescription: ""\ndate: "2026-11-10"\nkeywords: ""\n---\n빈 제목의 본문');
+
   const listener = createServer();
   listener.listen(0, '127.0.0.1');
   await once(listener, 'listening');
@@ -107,4 +111,12 @@ test('글의 쿼리는 콘텐츠 조회와 canonical에서 제외하고 원문 I
   assert.ok(html.includes('<title>SSR 테스트 제목</title>'));
   assert.ok(html.includes('SSR 테스트 본문'));
   assert.ok(html.includes(`href="https://tomatom4to.github.io${pathname}"`));
+});
+
+test('빈 제목의 글도 직접 접속하면 ID 제목과 정적 본문을 제공한다', async () => {
+  const response = await fetch(`${baseURL}/posts/empty-title`);
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.ok(html.includes('<title>empty-title</title>'));
+  assert.ok(html.includes('빈 제목의 본문'));
 });

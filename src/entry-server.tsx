@@ -53,7 +53,7 @@ export async function render({
     const { title, description, image, keywords, date } = initialData.post.data;
     head = generateMeta({
       url: pathname,
-      title: `${title}`,
+      title: title || decodeURIComponent(pathname.slice('posts/'.length)),
       desc: description,
       keywords: keywords,
       date: date,
