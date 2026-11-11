@@ -49,9 +49,11 @@ test('글 ID 경로에 메타데이터와 본문을 저장하고 원본 Buffer�
   });
 });
 
-test('글이 없으면 최근 글 페이지를 생성하지 않는다', async () => {
+test('글이 없어도 홈과 검색에 필요한 첫 목록을 빈 성공 응답으로 생성한다', async () => {
   await generateRecentPostLists({ contentList: [], outputDirectory });
-  assert.deepEqual(await readdir(outputDirectory), []);
+  const destination = path.join(outputDirectory, 'api', 'recent');
+  assert.deepEqual(await readdir(destination), ['1.json']);
+  assert.deepEqual(JSON.parse(await readFile(path.join(destination, '1.json'), 'utf8')), { len: 0, data: [] });
 });
 
 test('글 5개는 순서와 전체 개수를 유지한 한 페이지로 저장한다', async () => {

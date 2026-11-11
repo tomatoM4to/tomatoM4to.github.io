@@ -27,7 +27,7 @@ export async function generateRecentPostLists({
   contentList: Item[];
   outputDirectory: string;
 }) {
-  for (let offset = 0; offset < contentList.length; offset += POSTS_PER_PAGE) {
+  for (let offset = 0; offset < Math.max(1, contentList.length); offset += POSTS_PER_PAGE) {
     const destination = path.join(outputDirectory, 'api', 'recent');
     const page = offset / POSTS_PER_PAGE + 1;
     const content: ContentList = {
