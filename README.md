@@ -3,6 +3,10 @@ React와 Vite 기반의 Markdown 블로그입니다. SSR로 빠르게 개발하�
 
 클라이언트가 요청할 데이터는 빌드 시 JSON 에셋으로 생성해 GitHub Pages를 정적 API 서버처럼 활용합니다. 클라이언트에서는 [Rethinking Web Caching](https://conferences.sigcomm.org/hotnets/2024/papers/hotnets24-124.pdf)의 아이디어를 적용해, 미리 전달한 버전 맵과 Service Worker로 캐시 재검증에 필요한 네트워크 레이턴시를 줄입니다.
 
+이 캐시 정책은 글·JSON·에셋을 배포 단위로 생성하는 정적 블로그를 전제로 합니다. 캐시 판단의 기준은 HTML에 포함된 빌드 시점의 버전 맵이며, 새 배포의 맵은 HTML을 다시 받을 때 반영됩니다. 실시간 데이터 변경을 반영해야 하는 서비스에는 별도의 최신성 정책이 필요합니다.
+
+Service Worker는 문서별로 맵을 분리해 탭 사이의 덮어쓰기를 막고, 응답 캐시는 URL별로 공유합니다. 배포 후에도 열려 있는 이전 문서가 캐시에 없는 리소스를 요청하면 새 배포의 응답을 받을 수 있습니다. 이 프로젝트는 배포 경계에서 이전 문서와 새 리소스가 함께 사용될 수 있음을 허용합니다. 자세한 정책과 검증 범위는 [캐시 설계 문서](docs/ETag-Map.md)를 참고하세요.
+
 # Commands
 ```bash
 npm install          # 의존성 설치
