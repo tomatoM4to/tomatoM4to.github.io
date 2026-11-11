@@ -2,7 +2,7 @@
 title: "cache-existing"
 description: "배포 A부터 존재하는 캐시 테스트 글"
 date: "2026-01-01"
-keywords: "Cache, Test"
+keywords: "Cache, Test, C++, C#, R&D, 한글 태그, 100%"
 image: "/cache-probe.svg"
 ---
 

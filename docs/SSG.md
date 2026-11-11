@@ -4,12 +4,14 @@
 # Checkpoints
 - [생성 모듈](../server/gen-static.ts)은 import 시 콘텐츠나 빌드 산출물을 읽지 않는다. [HTML 실행 진입점](../server/build-static.ts)과 [JSON 실행 진입점](../server/build-api.ts)이 실제 입력을 준비하며, 생성 함수는 전달받은 데이터·렌더러·출력 경로만 사용한다. 빌드 경로를 고정하거나 실행을 import에 결합하지 않아야 [격리된 생성기 테스트](testing.md#서버-유닛-테스트)를 유지할 수 있다.
 - [HTML 생성 대상](../server/gen-static.ts)은 `/`, `/search`, `/tags`, `/license`, `/posts/<글 ID>`다. 루트는 `index.html`, 나머지는 `<경로>.html`로 저장한다. Footer 등에서 노출하는 페이지는 정적 HTML도 제공해 직접 접속과 새로고침을 지원해야 한다.
-- 글 ID는 연도를 제외한 폴더명이다. HTML·JSON·클라이언트 링크·ETag 키가 같은 글을 가리켜야 하며, HTML 생성기의 `?` → `_`, `%20` → `-` 치환은 다른 경로 생성 코드에 공통 적용되지 않는다.
+- 글 ID는 연도를 제외한 폴더명이다. HTML·JSON·ETag 키는 원문을 유지하고 URL 경계에서만 인코딩한다. 파일명을 자동 치환하면 서로 다른 ID가 같은 산출물을 덮어쓸 수 있으므로 [생성기 테스트](../server/gen-static.test.ts)에서 `%20` 리터럴과 하이픈 이름의 독립성을 유지한다.
+- 글 ID·태그는 Windows 금지 문자·예약 이름·끝 공백/마침표를 거부한다. 생성 파일명은 확장자를 포함해 UTF-8 255바이트로 제한한다. 한글·공백·`+ # & %`는 허용하며, 태그의 쉼표는 front matter 구분자다. 이는 [Windows 이름 규칙](https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file)과 [Linux 파일명 제약](https://man7.org/linux/man-pages/man7/pathname.7.html)을 바탕으로 정한 배포 정책이며, 전체 경로 길이나 파일시스템별 유니코드 정규화까지 보장하지 않는다.
 - 중복 글 ID와 잘못된 메타데이터는 자동 보정하거나 덮어쓰지 않고 빌드를 실패시킨다. [공통 콘텐츠 로더](../server/utils.ts)의 문자열 필드·실제 날짜 검증을 HTML·상세 JSON·목록·태그 집계에서 동일하게 적용해야 한다. 날짜는 `YYYY-MM-DD` 문자열이며 `image`는 생략할 수 있다.
 - [정적 API 생성기](../server/gen-api-resource.ts)는 글 상세, 페이지별 최근 글, 태그별 글 목록 JSON을 만든다. 목록 계약은 `{ len, data }`이며, 최근 글은 페이지 단위로 생성하고 태그별 목록은 브라우저에서 페이지를 나눈다.
 - Express의 `/api/tags/all-tags.json`에 대응하는 전체 태그 집계 파일은 별도로 생성하지 않는다. 현재 태그 화면은 HTML에 주입된 `initialData.tags`를 사용한다.
 - 빌드는 클라이언트·서버 번들 → HTML → JSON → [ETag 맵 주입](ETag-Map.md) 순서다. 일부 단계만 실행하면 최신 배포 산출물이 완성되지 않는다. [배포 워크플로](../.github/workflows/deploy.yml)는 `npm run build` 후 `dist/`를 업로드한다.
 - `npm run start:ssg`는 산출물의 로컬 확인용이다. 서버별 URL 해석이 다를 수 있으므로 확장자 없는 직접 접근과 새로고침은 GitHub Pages에서도 확인해야 한다. SPA 내부 이동 성공만으로 해당 HTML 파일의 존재를 판단할 수 없다.
+- 태그 HTML은 선택 쿼리 없이 생성된다. `/tags?tag=...` 직접 접속에서는 초기 HTML과 클라이언트의 선택 상태가 달라 React의 hydration 복구 경고가 발생할 수 있다. 태그 조회는 복구 후 동작하며, 요청 쿼리로 렌더링하는 [Express SSR](SSR.md)과 구분해야 한다.
 
 # Diagrams
 ## 정적 산출물 생성과 배포 후 사용

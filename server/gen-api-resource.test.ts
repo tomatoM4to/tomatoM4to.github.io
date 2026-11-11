@@ -89,3 +89,15 @@ test('파일 저장 실패를 호출자에게 전달한다', async () => {
   await assert.rejects(generateRecentPostLists({ contentList, outputDirectory }), /EEXIST|ENOTDIR/);
   await assert.rejects(generateTagLists({ contentList, tags: { Network: 6 }, outputDirectory }), /EEXIST|ENOTDIR/);
 });
+
+test('글 ID와 태그의 URL 특수문자를 JSON 파일명에 그대로 보존한다', async () => {
+  const id = '한글 C# & 100%20';
+  const tags = { 'C++': 1, 'C#': 1, 'R&D': 1, '한글 태그': 1, '100%': 1 };
+  const posts = [{ ...contentList[0], id, keywords: Object.keys(tags).join(',') }];
+  await generatePostJSON({ postName: id, markdown: matter('본문'), outputDirectory });
+  await generateTagLists({ contentList: posts, tags, outputDirectory });
+  assert.equal(JSON.parse(await readFile(path.join(outputDirectory, 'api', 'posts', id, 'index.json'), 'utf8')).content, '본문');
+  for (const tag of Object.keys(tags)) {
+    assert.deepEqual(JSON.parse(await readFile(path.join(outputDirectory, 'api', 'tags', `${tag}.json`), 'utf8')), { len: 1, data: posts });
+  }
+});

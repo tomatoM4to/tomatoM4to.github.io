@@ -14,6 +14,10 @@ export type InitialData = {
   tags: TagsData;
 };
 
+export function encodePostId(id: string): string {
+  return encodeURI(id).replace(/[?#]/g, encodeURIComponent);
+}
+
 export function makeURL(url: string): string {
   if (url.length > 0 && url[0] === '/') {
     return `${SITE_DOMAIN}${url}`;

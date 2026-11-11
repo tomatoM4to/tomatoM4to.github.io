@@ -7,6 +7,8 @@
 - [초기 데이터](../server/utils.ts)는 모든 페이지의 태그 집계와 글 상세의 `post`를 포함한다. 홈 목록·검색 데이터·선택한 태그의 글 목록은 브라우저에서 JSON을 요청하므로 전체 화면이 서버에서 완성되지는 않는다.
 - 콘텐츠 조회·Vite 템플릿 변환·메타데이터와 canonical URL은 쿼리를 제외한 경로를 기준으로 한다. 태그 선택과 페이지 번호를 유지하기 위해 React Router에는 쿼리를 포함한 URL을 전달한다.
 - 요청 경로의 기준은 마운트 전 URL이다. Express 미들웨어에서는 `req.path`에서 마운트 경로가 제외되므로 `req.originalUrl`에서 쿼리를 분리한 뒤 경로만 디코딩한다. 한글·공백이 포함된 글 ID와 쿼리 문자열은 서로 다른 경계에서 처리해야 한다. 근거는 [Express 요청 URL 계약](https://expressjs.com/en/5x/api/request/#reqoriginalurl)이다.
+- 태그는 쿼리 값과 API 경로의 인코딩 규칙을 구분한다. 글 ID는 원래 pathname에서 한 번 디코딩해 사용한다. 라우터의 매개변수는 리터럴 `%2F`까지 `/`로 바꿀 수 있으므로 [URL 회귀 테스트](../tests/e2e/content-urls.spec.ts)에서 원문 ID·상세 API·canonical의 일치를 확인한다.
+- 글 링크는 기존 한글·공백·`&`·쉼표의 pathname 표기를 유지한다. [Giscus의 pathname 매핑](https://github.com/giscus/giscus/blob/main/client.ts)은 URL 표기를 댓글 검색어로 사용하므로 불필요한 추가 인코딩으로 기존 댓글 연결이 달라지지 않도록 한다. `#`와 `%`는 URL 경계를 보존하도록 이스케이프한다.
 - [Mount Context](../src/context/Mount.tsx)는 초기 렌더링과 이후 탐색을 구분한다. 글 상세는 처음에는 주입 데이터를 사용하고, 이후에는 API를 요청한다. 메타 태그도 초기 HTML 생성과 클라이언트 갱신 경로가 나뉜다.
 - 초기 메타 태그에 들어가는 제목과 설명은 HTML이 아닌 텍스트다. [메타 생성 함수](../server/meta.ts)를 React 렌더링과 분리해 [태그·속성 경계 보존 테스트](../tests/e2e/metadata.spec.ts)를 직접 적용한다.
 - [HTML 삽입](../server/utils.ts)은 원본 템플릿의 삽입 지점만 처리해야 한다. 본문 속 같은 표식과 치환 토큰은 원문으로 보존하고, 초기 JSON은 스크립트 경계를 닫지 않으면서 동일한 데이터로 복원되어야 한다.

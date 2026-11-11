@@ -10,8 +10,22 @@ const PROJECT_ROOT = process.cwd();
 const POSTS_DIR = path.join(PROJECT_ROOT, 'content', 'posts');
 const REQUIRED_META_FIELDS = ['title', 'description', 'date', 'keywords'] as const;
 const POST_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const INVALID_FILENAME_CHARACTERS = /[<>:"/\\|?*\u0000-\u001f]/;
+const RESERVED_FILENAME = /^(?:CON|PRN|AUX|NUL|COM[1-9¹²³]|LPT[1-9¹²³])(?:\.|$)/i;
+const MAX_FILENAME_BYTES = 255;
+
+export function validateContentName(name: string, field: 'post ID' | 'tag', filePath: string) {
+  let reason = '';
+  if (!name) reason = 'expected a non-empty filename';
+  else if (INVALID_FILENAME_CHARACTERS.test(name)) reason = 'contains a forbidden filename character';
+  else if (/[. ]$/.test(name)) reason = 'filename must not end with a dot or space';
+  else if (RESERVED_FILENAME.test(name)) reason = 'reserved Windows filename';
+  else if (Buffer.byteLength(`${name}.html`, 'utf8') > MAX_FILENAME_BYTES) reason = 'generated filename exceeds 255 UTF-8 bytes';
+  if (reason) throw new Error(`Invalid ${field} ${JSON.stringify(name)} in ${filePath}: ${reason}`);
+}
 
 function addPostPath(postMap: Map<string, string>, postName: string, filePath: string) {
+  validateContentName(postName, 'post ID', filePath);
   const previousPath = postMap.get(postName);
   if (previousPath) {
     throw new Error(`Duplicate post ID "${postName}": ${previousPath}, ${filePath}`);
@@ -26,6 +40,12 @@ export async function readPost(filePath: string): Promise<GrayMatterFile<string>
   for (const field of REQUIRED_META_FIELDS) {
     if (typeof metadata[field] !== 'string') {
       throw new Error(`Invalid ${field} in ${filePath}: expected a string`);
+    }
+  }
+
+  if (typeof metadata.keywords === 'string' && metadata.keywords) {
+    for (const keyword of metadata.keywords.split(',')) {
+      validateContentName(keyword.trim(), 'tag', filePath);
     }
   }
 
@@ -102,6 +122,7 @@ export function getAllPostPathsSync(): Map<string, string> {
 
 /** postName 으로 실제 파일 경로를 찾는다 */
 async function resolvePostPath(postName: string): Promise<string> {
+  validateContentName(postName, 'post ID', POSTS_DIR);
   const postMap = await getAllPostPaths();
   const resolved = postMap.get(postName);
   if (resolved) return resolved;
@@ -177,7 +198,7 @@ export async function getSortedContentList(): Promise<Item[]> {
 
 export async function getTags(): Promise<Record<string, number>> {
   const postMap = await getAllPostPaths();
-  const tagCount: Record<string, number> = {};
+  const tagCount = new Map<string, number>();
 
   for (const [, filePath] of postMap) {
     const meta = await readPost(filePath);
@@ -185,11 +206,11 @@ export async function getTags(): Promise<Record<string, number>> {
     if (meta.data.keywords) {
       for (const keyword of meta.data.keywords.split(',')) {
         const trimmed = keyword.trim();
-        tagCount[trimmed] = (tagCount[trimmed] || 0) + 1;
+        tagCount.set(trimmed, (tagCount.get(trimmed) || 0) + 1);
       }
     }
   }
-  return tagCount;
+  return Object.fromEntries(tagCount);
 }
 
 

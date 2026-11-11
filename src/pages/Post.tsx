@@ -1,9 +1,9 @@
 import { useNetworkMount } from "@src/hooks/useMount";
 import { useEffect, useState, lazy, Suspense } from "react";
-import { useParams } from "react-router";
+import { useLocation } from "react-router";
 import { type GrayMatterFile } from "gray-matter";
 import { updateHead } from "@src/hooks/useHead";
-import { makeURL } from "@shared/common";
+import { encodePostId, makeURL } from "@shared/common";
 import { Badge } from "@src/ui/badge";
 import { Button } from "@src/ui/button";
 import { Card, CardContent } from "@src/ui/card";
@@ -22,7 +22,7 @@ type PostMeta = {
 }
 
 export default function Post({ initialData }: { initialData: GrayMatterFile<string> | null }) {
-  const { post } = useParams();
+  const post = decodeURIComponent(useLocation().pathname.slice('/posts/'.length));
   const { networkMountRef } = useNetworkMount();
   const [error, setError] = useState<'request' | 'timeout' | null>(null);
   const [retryCount, setRetryCount] = useState(0);
@@ -58,7 +58,8 @@ export default function Post({ initialData }: { initialData: GrayMatterFile<stri
     }, POST_REQUEST_TIMEOUT_MS);
     async function getData() {
       try {
-        const response = await fetch(`/api/posts/${post}/index.json`, { signal });
+        const encodedPost = encodeURIComponent(`${post}`);
+        const response = await fetch(`/api/posts/${encodedPost}/index.json`, { signal });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -71,10 +72,9 @@ export default function Post({ initialData }: { initialData: GrayMatterFile<stri
           description: result.data?.description || '',
           keywords: result.data?.keywords || '',
         });
-        const encodedPost = encodeURIComponent(`${post}`);
         updateHead({
           title: result.data.title,
-          url: makeURL(`posts/${encodedPost}`),
+          url: makeURL(`posts/${encodePostId(post)}`),
           desc: result.data.description,
           keywords: result.data.keywords,
           type: 'article',

@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { encodePostId } from "@shared/common";
 import { ReactNode } from "react";
 import { Badge } from "@src/ui/badge";
 import { Calendar } from "lucide-react";
@@ -47,7 +48,7 @@ export function Item({post, loading}: {post?: ItemType, loading?: boolean}) {
   if (!post) return null;
 
   return (
-    <Link to={`/posts/${post.id}`} className="block group">
+    <Link to={`/posts/${encodePostId(post.id)}`} className="block group">
       <div className="bg-transparent border-b border-border py-7 transition-all duration-300 hover:bg-muted/30 hover:px-4 hover:-mx-4 hover:rounded-lg hover:border-transparent">
         <h3 className="text-xl font-medium group-hover:text-primary transition-colors duration-300 leading-tight mb-2">
           {post.id}

@@ -29,6 +29,7 @@ const {
   getMarkdown,
   getSortedContentList,
   getTags,
+  validateContentName,
 } = await loadUtils();
 
 const metadata = {
@@ -73,6 +74,17 @@ describe('글 경로 탐색', () => {
 
     test(`${name}: 글이 없으면 빈 맵을 반환한다`, async () => {
       assert.equal((await getPaths()).size, 0);
+    });
+
+    test(`${name}: 생성 파일명 한도를 넘는 ID를 원본 경로와 함께 거부한다`, async () => {
+      const id = 'a'.repeat(251);
+      await writePost(`2026/${id}`);
+      await assert.rejects(async () => { await getPaths(); }, error => {
+        assert.ok(error instanceof Error);
+        assert.match(error.message, /Invalid post ID.*255 UTF-8 bytes/);
+        assert.ok(error.message.includes(path.join('2026', id, 'index.md')));
+        return true;
+      });
     });
 
     test(`${name}: 연도가 달라도 중복 글 ID를 조용히 덮어쓰지 않는다`, async () => {
@@ -192,6 +204,31 @@ describe('콘텐츠 로딩', () => {
 });
 
 describe('태그', () => {
+  test('URL 특수문자·한글·공백과 객체 속성 같은 이름을 원문 그대로 집계한다', async () => {
+    await writePost('2026/한글 C# & 100%20', { ...metadata, keywords: ' C++ , C#, R&D, 한글 태그, 100%, __proto__, constructor' });
+    assert.deepEqual(await getTags(), JSON.parse('{"C++":1,"C#":1,"R&D":1,"한글 태그":1,"100%":1,"__proto__":1,"constructor":1}'));
+    assert.equal((await getSortedContentList())[0].id, '한글 C# & 100%20');
+  });
+
+  for (const keywords of ['CI/CD', 'CI\\CD', 'question?mark', 'NUL.txt', 'C++,,R&D', 'end.']) {
+    test(`파일명으로 쓸 수 없는 태그 ${JSON.stringify(keywords)}는 원본 경로와 함께 거부한다`, async () => {
+      await writePost('2026/invalid-tag', { ...metadata, keywords });
+      for (const load of [getSortedContentList, getTags, () => getMarkdown('invalid-tag')]) {
+        await assert.rejects(load, error => {
+          assert.ok(error instanceof Error);
+          assert.match(error.message, /Invalid tag/);
+          assert.ok(error.message.includes(path.join('2026', 'invalid-tag', 'index.md')));
+          return true;
+        });
+      }
+    });
+  }
+
+  test('빈 keywords는 태그 없는 글로 허용한다', async () => {
+    await writePost('2026/no-tags', { ...metadata, keywords: '' });
+    assert.deepEqual(await getTags(), {});
+  });
+
   test('쉼표로 나눈 태그의 주변 공백을 제거해 집계한다', async () => {
     await writePost('2026/first', { ...metadata, keywords: ' Network , JavaScript ' });
     await writePost('2026/second', { ...metadata, keywords: 'Network, TypeScript' });
@@ -210,6 +247,21 @@ describe('태그', () => {
     assert.deepEqual(await getItemFromTag(items, 'Script'), { len: 0, data: [] });
     assert.equal(items.length, 3);
   });
+});
+
+test('콘텐츠 이름은 Windows 금지 문자·예약 이름·끝 공백 및 생성 파일명 길이를 검사한다', () => {
+  for (const field of ['post ID', 'tag'] as const) {
+    for (const name of ['', '.', '..', 'bad/name', 'bad\\name', 'a:b', 'a?b', 'a*b', '<name>', 'a|b', 'a"b', 'a\u0000b', 'a\u001fb', 'end ', 'end.', 'CON', 'nul.txt', 'COM¹', 'lpt9.log', '한'.repeat(84)]) {
+      assert.throws(() => validateContentName(name, field, 'source/index.md'), error => {
+        assert.ok(error instanceof Error);
+        assert.ok(error.message.includes(`Invalid ${field} ${JSON.stringify(name)} in source/index.md:`));
+        return true;
+      });
+    }
+    for (const name of ['한글 글 (1), async&await', 'C++', 'C#', 'R&D', '100%20', 'COM10', '한'.repeat(83) + 'a']) {
+      assert.doesNotThrow(() => validateContentName(name, field, 'source/index.md'));
+    }
+  }
 });
 
 describe('HTML 생성', () => {

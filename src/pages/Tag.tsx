@@ -61,7 +61,7 @@ export default function Tag({ initialTags }: TagProps) {
       setIsLoading(true);
       setContentList(null);
       try {
-        const response = await fetch(`/api/tags/${tag}.json`, { signal });
+        const response = await fetch(`/api/tags/${encodeURIComponent(tag)}.json`, { signal });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -101,7 +101,7 @@ export default function Tag({ initialTags }: TagProps) {
             }`}
             asChild
           >
-            <Link to={`?tag=${tagName}`}>
+            <Link to={`?${new URLSearchParams({ tag: tagName })}`}>
               {tagName} ({count})
             </Link>
           </Badge>
