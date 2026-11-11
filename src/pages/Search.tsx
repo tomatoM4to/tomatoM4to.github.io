@@ -12,6 +12,7 @@ import { Search as SearchIcon, Loader2 } from "lucide-react";
 
 const CONCURRENT_FETCH_COUNT = 2;
 const SEARCH_DEBOUNCE_DELAY_MS = 500;
+const SEARCH_REQUEST_TIMEOUT_MS = 10_000;
 
 
 export default function Search() {
@@ -30,12 +31,24 @@ export default function Search() {
   useEffect(() => {
     const controller = new AbortController();
     const { signal } = controller;
+    const timeouts = new Set<number>();
     async function fetchPage(page: number): Promise<ContentList> {
-      const response = await fetch(`/api/recent/${page}.json`, { signal });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const timeout = window.setTimeout(() => {
+        if (signal.aborted) return;
+        setLoadStatus('error');
+        controller.abort();
+      }, SEARCH_REQUEST_TIMEOUT_MS);
+      timeouts.add(timeout);
+      try {
+        const response = await fetch(`/api/recent/${page}.json`, { signal });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+      } finally {
+        window.clearTimeout(timeout);
+        timeouts.delete(timeout);
       }
-      return response.json();
     }
 
     (async function getData() {
@@ -77,7 +90,10 @@ export default function Search() {
         setLoadStatus('error');
       }
     })();
-    return () => controller.abort();
+    return () => {
+      controller.abort();
+      for (const timeout of timeouts) window.clearTimeout(timeout);
+    };
   }, []);
 
   useEffect(() => {

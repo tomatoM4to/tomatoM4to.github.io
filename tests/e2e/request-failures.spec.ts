@@ -517,6 +517,28 @@ test('검색 JSON이 모두 준비되면 후속 페이지의 글도 검색된다
   await expect(page.locator('h3')).toHaveText([searchPosts[POSTS_PER_PAGE].title]);
 });
 
+for (const delayedPage of [1, 2]) {
+  test(`검색 ${delayedPage}번째 목록이 응답하지 않아도 무한 로딩하지 않는다`, async ({ page }) => {
+    await page.clock.install();
+    await mockRecentPages(page);
+    const pending = await holdResponse(page, `/api/recent/${delayedPage}.json`, {
+      json: { len: posts.length, data: posts.slice((delayedPage - 1) * POSTS_PER_PAGE, delayedPage * POSTS_PER_PAGE) },
+    });
+    await page.goto('/search', { waitUntil: 'domcontentloaded' });
+    await pending.requested;
+    try {
+      await page.clock.fastForward(LIST_REQUEST_TIMEOUT_MS);
+      await expect(page.getByRole('alert')).toContainText('검색 자료를 불러오지 못했습니다.');
+      await expect(page.getByPlaceholder('포스트 제목, 요약으로 검색...')).toBeDisabled();
+      await expect(page.getByText('데이터 로딩 중...', { exact: true })).toHaveCount(0);
+    } finally {
+      await pending.release();
+    }
+    await expect(page.getByPlaceholder('포스트 제목, 요약으로 검색...')).toBeDisabled();
+    await expect(page.getByRole('alert')).toBeVisible();
+  });
+}
+
 test('빈 제목의 글도 ID를 제목으로 표시하고 본문 로딩을 완료한다', async ({ page }) => {
   const post = { ...posts[0], title: '' };
   await mockRecentPages(page, [post]);
@@ -529,6 +551,35 @@ test('빈 제목의 글도 ID를 제목으로 표시하고 본문 로딩을 완�
   await expect(page.locator('article')).toHaveText('빈 제목의 본문');
   await expect(page).toHaveTitle(post.id);
   await expect(page.locator('[data-slot="skeleton"]')).toHaveCount(0);
+});
+
+test('검색 JSON 결과 전달이 늦어도 시간 초과 이후 검색을 활성화하지 않는다', async ({ page }) => {
+  await page.clock.install();
+  await mockRecentPages(page);
+  await page.addInitScript(() => {
+    const readJSON = Response.prototype.json;
+    Response.prototype.json = async function (this: Response) {
+      const result: unknown = await readJSON.call(this);
+      if (this.url && new URL(this.url).pathname === '/api/recent/2.json') {
+        document.documentElement.dataset.testJsonPending = 'true';
+        await new Promise<void>(resolve => {
+          window.addEventListener('test:release-json', () => resolve(), { once: true });
+        });
+      }
+      return result;
+    };
+  });
+  await page.goto('/search', { waitUntil: 'domcontentloaded' });
+  await page.waitForFunction(() => document.documentElement.dataset.testJsonPending === 'true');
+  try {
+    await page.clock.fastForward(LIST_REQUEST_TIMEOUT_MS);
+    await expect(page.getByRole('alert')).toBeVisible();
+  } finally {
+    await page.evaluate(() => window.dispatchEvent(new Event('test:release-json')));
+    await settleUI(page);
+  }
+  await expect(page.getByPlaceholder('포스트 제목, 요약으로 검색...')).toBeDisabled();
+  await expect(page.getByRole('alert')).toBeVisible();
 });
 
 for (const failure of ['http', 'network', 'json'] as const) {
