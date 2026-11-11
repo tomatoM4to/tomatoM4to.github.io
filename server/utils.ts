@@ -151,7 +151,8 @@ export async function getMarkdown(name: string): Promise<MarkdownPost> {
 
 
 export async function createTemplate(): Promise<string> {
-  const p = path.join(PROJECT_ROOT, "dist", 'index.html');
+  const templatePath = path.join(PROJECT_ROOT, "dist", 'template.html');
+  const p = fsSync.existsSync(templatePath) ? templatePath : path.join(PROJECT_ROOT, "dist", 'index.html');
   return await fs.readFile(p, 'utf-8');
 }
 
