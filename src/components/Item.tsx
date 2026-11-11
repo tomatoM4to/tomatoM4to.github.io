@@ -37,7 +37,7 @@ export function Item({post, loading}: {post?: ItemType, loading?: boolean}) {
     <Link to={`/posts/${encodePostId(post.id)}`} className="block group">
       <div className="bg-transparent border-b border-border py-7 transition-all duration-300 hover:bg-muted/30 hover:px-4 hover:-mx-4 hover:rounded-lg hover:border-transparent">
         <h3 className="text-xl font-medium group-hover:text-primary transition-colors duration-300 leading-tight mb-2">
-          {post.id}
+          {post.title || post.id}
         </h3>
         <p className="text-muted-foreground text-base leading-relaxed mb-3 group-hover:text-foreground/80 transition-colors duration-300 line-clamp-1">
           {post.description}

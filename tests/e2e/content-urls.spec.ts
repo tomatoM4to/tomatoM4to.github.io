@@ -25,7 +25,7 @@ test('태그 링크·직접 접속·새로고침이 특수문자를 보존해 �
 test('글 링크와 상세 API·canonical은 원래 ID를 한 번 인코딩한다', async ({ page }) => {
   const ids = ['한글 글 (1), async&await', 'C# & C++', 'space%20post', 'literal%2Fpost'];
   const paths = ['%ED%95%9C%EA%B8%80%20%EA%B8%80%20(1),%20async&await', 'C%23%20&%20C++', 'space%2520post', 'literal%252Fpost'];
-  const posts = ids.map(id => ({ id, title: id, description: '경로 확인', date: '2026-11-11', keywords: 'Test', image: '' }));
+  const posts = ids.map(id => ({ id, title: `제목 ${id}`, description: '경로 확인', date: '2026-11-11', keywords: 'Test', image: '' }));
   await page.route(url => url.pathname === '/api/recent/1.json', route => route.fulfill({ json: { len: posts.length, data: posts } }));
   await page.route(url => url.pathname.startsWith('/api/posts/'), route => {
     const pathname = new URL(route.request().url()).pathname;
@@ -34,10 +34,11 @@ test('글 링크와 상세 API·canonical은 원래 ID를 한 번 인코딩한�
   });
   for (const post of posts) {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
-    const link = page.getByRole('link').filter({ has: page.getByRole('heading', { name: post.id, exact: true }) });
+    const link = page.getByRole('link').filter({ has: page.getByRole('heading', { name: post.title, exact: true }) });
     const postPath = `/posts/${paths[ids.indexOf(post.id)]}`;
     await expect(link).toHaveAttribute('href', postPath);
     await link.click();
+    await expect(page.getByRole('heading', { name: post.title, exact: true })).toBeVisible();
     await expect(page.locator('article')).toHaveText(`본문 ${post.id}`);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://tomatom4to.github.io${postPath}`);
     expect(decodeURIComponent(new URL(page.url()).pathname.slice('/posts/'.length))).toBe(post.id);
