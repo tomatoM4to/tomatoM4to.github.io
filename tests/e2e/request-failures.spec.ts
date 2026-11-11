@@ -3,6 +3,7 @@ import { POSTS_PER_PAGE, SITE_NAME } from '../../shared/common';
 import { selectRelease } from '../support/static-site';
 
 const POST_REQUEST_TIMEOUT_MS = 10_000;
+const LIST_REQUEST_TIMEOUT_MS = 10_000;
 
 const posts = Array.from({ length: POSTS_PER_PAGE * 3 }, (_, index) => ({
   id: `request-post-${index + 1}`,
@@ -61,6 +62,160 @@ async function holdResponse(page: Page, pathname: string, response: { json: unkn
 
 test.beforeEach(async () => {
   await selectRelease('a');
+});
+
+for (const screen of ['홈', '태그'] as const) {
+  const isHome = screen === '홈';
+  const pathname = isHome ? '/api/recent/2.json' : '/api/tags/Test.json';
+  const nextPathname = isHome ? '/api/recent/3.json' : '/api/tags/Cache.json';
+  const currentPosts = isHome ? posts.slice(POSTS_PER_PAGE, POSTS_PER_PAGE * 2) : [posts[1]];
+  const result = { len: isHome ? posts.length : 1, data: currentPosts };
+
+  async function openList(page: Page) {
+    if (isHome) {
+      await mockRecentPages(page);
+    } else {
+      await page.route(url => url.pathname === '/api/tags/Cache.json', route => route.fulfill({ json: { len: 1, data: [posts[0]] } }));
+    }
+    await page.goto(isHome ? '/' : '/tags', { waitUntil: 'domcontentloaded' });
+    if (!isHome) {
+      await expect(page.getByRole('button', { name: 'Switch to dark mode' })).toBeVisible();
+      await page.getByRole('link', { name: /^Cache \(/ }).click();
+    }
+    await expect(page.locator('h3')).toHaveText((isHome ? posts.slice(0, POSTS_PER_PAGE) : [posts[0]]).map(post => post.title));
+  }
+
+  async function selectCurrentList(page: Page) {
+    await page.getByRole('link', { name: isHome ? '2' : /^Test \(/, exact: isHome }).click();
+  }
+
+  for (const failure of ['http', 'network', 'json'] as const) {
+    test(`${screen}의 현재 목록이 ${failure} 오류로 실패하면 이전 목록을 숨기고 같은 요청을 재시도한다`, async ({ page }) => {
+      await openList(page);
+      let attempts = 0;
+      await page.route(url => url.pathname === pathname, route => {
+        if (++attempts > 1) return route.fulfill({ json: result });
+        if (failure === 'network') return route.abort('failed');
+        if (failure === 'json') return route.fulfill({ contentType: 'application/json', body: '{"len":' });
+        return route.fulfill({ status: 503, json: {} });
+      });
+      await selectCurrentList(page);
+      await expect(page.getByRole('alert')).toContainText('글 목록을 불러오지 못했습니다.');
+      await expect(page.locator('h3')).toHaveCount(0);
+      await page.getByRole('button', { name: '다시 시도', exact: true }).click();
+      await expect(page.locator('h3')).toHaveText(currentPosts.map(post => post.title));
+      await expect(page.getByRole('alert')).toHaveCount(0);
+      expect(new URL(page.url()).searchParams.get(isHome ? 'page' : 'tag')).toBe(isHome ? '2' : 'Test');
+      expect(attempts).toBe(2);
+    });
+  }
+
+  test(`${screen}의 빈 목록 성공 응답은 요청 실패로 표시하지 않는다`, async ({ page }) => {
+    await openList(page);
+    await page.route(url => url.pathname === pathname, route => route.fulfill({ json: { len: 0, data: [] } }));
+    const responded = page.waitForResponse(response => new URL(response.url()).pathname === pathname);
+    await selectCurrentList(page);
+    await responded;
+    await expect(page.locator('[data-slot="skeleton"]')).toHaveCount(0);
+    await expect(page.locator('h3')).toHaveCount(0);
+    await expect(page.getByRole('alert')).toHaveCount(0);
+  });
+
+  test(`${screen} 목록 응답이 지연되면 시간 초과를 안내하고 재시도로 복구한다`, async ({ page }) => {
+    await page.clock.install();
+    await openList(page);
+    const pending = await holdResponse(page, pathname, { json: result });
+    await selectCurrentList(page);
+    await pending.requested;
+    try {
+      await expect(page.locator('h3')).toHaveCount(0);
+      await page.clock.fastForward(LIST_REQUEST_TIMEOUT_MS);
+      await expect(page.getByRole('alert')).toContainText('글 목록을 불러오는 시간이 초과되었습니다.');
+      await expect(page.locator('[data-slot="skeleton"]')).toHaveCount(0);
+    } finally {
+      await pending.release();
+    }
+    await page.getByRole('button', { name: '다시 시도', exact: true }).click();
+    await expect(page.locator('h3')).toHaveText(currentPosts.map(post => post.title));
+    await page.clock.fastForward(LIST_REQUEST_TIMEOUT_MS);
+    await expect(page.getByRole('alert')).toHaveCount(0);
+  });
+
+  test(`${screen} 목록 JSON 결과가 늦게 반환돼도 시간 초과 뒤 재시도 결과를 덮지 않는다`, async ({ page }) => {
+    await page.clock.install();
+    await page.addInitScript(pathname => {
+      const readJSON = Response.prototype.json;
+      let delayed = false;
+      Response.prototype.json = async function (this: Response) {
+        const result: unknown = await readJSON.call(this);
+        if (!delayed && this.url && new URL(this.url).pathname === pathname) {
+          delayed = true;
+          document.documentElement.dataset.testJsonPending = 'true';
+          await new Promise<void>(resolve => {
+            window.addEventListener('test:release-json', () => resolve(), { once: true });
+          });
+        }
+        return result;
+      };
+    }, pathname);
+    await openList(page);
+    let attempts = 0;
+    await page.route(url => url.pathname === pathname, route => route.fulfill({
+      json: ++attempts === 1 ? { len: 1, data: [posts[0]] } : result,
+    }));
+    await selectCurrentList(page);
+    await page.waitForFunction(() => document.documentElement.dataset.testJsonPending === 'true');
+    try {
+      await page.clock.fastForward(LIST_REQUEST_TIMEOUT_MS);
+      await expect(page.getByRole('alert')).toContainText('글 목록을 불러오는 시간이 초과되었습니다.');
+      await page.getByRole('button', { name: '다시 시도', exact: true }).click();
+      await expect(page.locator('h3')).toHaveText(currentPosts.map(post => post.title));
+    } finally {
+      await page.evaluate(() => window.dispatchEvent(new Event('test:release-json')));
+      await settleUI(page);
+    }
+    await expect(page.locator('h3')).toHaveText(currentPosts.map(post => post.title));
+    await expect(page.getByRole('alert')).toHaveCount(0);
+  });
+
+  test(`${screen} 목록 변경 후 이전 타이머가 현재 요청을 시간 초과로 바꾸지 않는다`, async ({ page }) => {
+    await page.clock.install();
+    await openList(page);
+    const previous = await holdResponse(page, pathname, { error: 'failed' });
+    const nextPosts = isHome ? posts.slice(POSTS_PER_PAGE * 2) : [posts[2]];
+    const current = await holdResponse(page, nextPathname, { json: { len: isHome ? posts.length : 1, data: nextPosts } });
+    await selectCurrentList(page);
+    await previous.requested;
+    try {
+      await page.clock.fastForward(LIST_REQUEST_TIMEOUT_MS / 2);
+      await page.getByRole('link', { name: isHome ? '3' : /^Cache \(/, exact: isHome }).click();
+      await current.requested;
+      await page.clock.fastForward(LIST_REQUEST_TIMEOUT_MS / 2);
+      await previous.release();
+      await expect(page.getByRole('alert')).toHaveCount(0);
+      await expect(page.locator('h3')).toHaveCount(0);
+      await expect(page.locator('[data-slot="skeleton"]')).not.toHaveCount(0);
+    } finally {
+      await previous.release();
+      await current.release();
+    }
+    await expect(page.locator('h3')).toHaveText(nextPosts.map(post => post.title));
+    await page.clock.fastForward(LIST_REQUEST_TIMEOUT_MS);
+    await expect(page.getByRole('alert')).toHaveCount(0);
+  });
+}
+
+test('홈 첫 목록 요청 실패도 빈 목록과 구분하고 재시도로 복구한다', async ({ page }) => {
+  let attempts = 0;
+  await page.route(url => url.pathname === '/api/recent/1.json', route => ++attempts === 1
+    ? route.fulfill({ status: 503, json: {} })
+    : route.fulfill({ json: { len: 1, data: [posts[0]] } }));
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('alert')).toContainText('글 목록을 불러오지 못했습니다.');
+  await expect(page.locator('h3')).toHaveCount(0);
+  await page.getByRole('button', { name: '다시 시도', exact: true }).click();
+  await expect(page.locator('h3')).toHaveText([posts[0].title]);
+  await expect(page.getByRole('alert')).toHaveCount(0);
 });
 
 test('홈에서 늦게 도착한 이전 페이지 응답이 현재 목록을 덮지 않는다', async ({ page }) => {

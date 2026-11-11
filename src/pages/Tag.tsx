@@ -5,6 +5,10 @@ import { type ContentList, ItemList, Item } from "@src/components/Item";
 import { Link, useSearchParams } from "react-router";
 import { Pagination } from "@src/components/Pagination";
 import { Badge } from "@src/ui/badge";
+import { Button } from "@src/ui/button";
+import { Card, CardContent } from "@src/ui/card";
+
+const LIST_REQUEST_TIMEOUT_MS = 10_000;
 
 type TagProps = {
   initialTags: TagsData;
@@ -42,6 +46,8 @@ export default function Tag({ initialTags }: TagProps) {
   const [contentList, setContentList] = useState<ContentList | null>(null);
   const [totalPage, setTotalPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<'request' | 'timeout' | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   useHead({
     title: `${SITE_NAME} - tags`,
@@ -53,13 +59,20 @@ export default function Tag({ initialTags }: TagProps) {
       setContentList(null);
       setTotalPage(1);
       setIsLoading(false);
+      setError(null);
       return;
     }
     const controller = new AbortController();
     const { signal } = controller;
+    setIsLoading(true);
+    setContentList(null);
+    setError(null);
+    const timeout = window.setTimeout(() => {
+      setError('timeout');
+      setIsLoading(false);
+      controller.abort();
+    }, LIST_REQUEST_TIMEOUT_MS);
     (async function getData() {
-      setIsLoading(true);
-      setContentList(null);
       try {
         const response = await fetch(`/api/tags/${encodeURIComponent(tag)}.json`, { signal });
         if (!response.ok) {
@@ -71,14 +84,20 @@ export default function Tag({ initialTags }: TagProps) {
         setTotalPage(Math.ceil(result.len / POSTS_PER_PAGE));
       }
       catch (err) {
-        if (!signal.aborted) console.error(err);
+        if (signal.aborted) return;
+        console.error(err);
+        setError('request');
       }
       finally {
+        window.clearTimeout(timeout);
         if (!signal.aborted) setIsLoading(false);
       }
     })();
-    return () => controller.abort();
-  }, [tag]);
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [tag, retryCount]);
 
   const allTags = Object.entries(initialTags ?? {}) as TagEntry[];
   const languageTags = allTags.filter(([tagName]) => LANGUAGE_TAGS.has(tagName)).sort(sortTagEntry);
@@ -125,6 +144,20 @@ export default function Tag({ initialTags }: TagProps) {
         <div className="mb-4">
           <h2 className="text-lg font-semibold">{tag} 태그가 포함된 글</h2>
         </div>
+      )}
+      {tag && error && (
+        <Card role="alert" className="border-destructive">
+          <CardContent className="space-y-4">
+            <p className="text-destructive">
+              {error === 'timeout'
+                ? '글 목록을 불러오는 시간이 초과되었습니다.'
+                : '글 목록을 불러오지 못했습니다.'}
+            </p>
+            <Button variant="outline" onClick={() => setRetryCount(count => count + 1)}>
+              다시 시도
+            </Button>
+          </CardContent>
+        </Card>
       )}
       {tag && isLoading && (
         <ItemList>

@@ -5,7 +5,10 @@ import { Pagination } from "@src/components/Pagination";
 import { SITE_NAME, SITE_DOMAIN, POSTS_PER_PAGE } from "@shared/common";
 import { useSearchParams } from "react-router";
 import { Skeleton } from "@src/ui/skeleton";
+import { Button } from "@src/ui/button";
+import { Card, CardContent } from "@src/ui/card";
 
+const LIST_REQUEST_TIMEOUT_MS = 10_000;
 
 function Profile() {
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
@@ -41,7 +44,9 @@ function Profile() {
 export default function Home() {
   const [postList, setPostList] = useState<ItemType[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
-  const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<'request' | 'timeout' | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
   const [searchParams] = useSearchParams();
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
 
@@ -53,6 +58,14 @@ export default function Home() {
   useEffect(() => {
     const controller = new AbortController();
     const { signal } = controller;
+    setIsLoading(true);
+    setError(null);
+    setPostList([]);
+    const timeout = window.setTimeout(() => {
+      setError('timeout');
+      setIsLoading(false);
+      controller.abort();
+    }, LIST_REQUEST_TIMEOUT_MS);
     (async function getData() {
       try {
         const response = await fetch(`/api/recent/${currentPage}.json`, { signal });
@@ -65,28 +78,48 @@ export default function Home() {
         setTotalPages(Math.ceil(result.len / POSTS_PER_PAGE));
       }
       catch (err) {
-        if (!signal.aborted) console.error(err);
+        if (signal.aborted) return;
+        console.error(err);
+        setError('request');
       } finally {
-        if (!signal.aborted) setIsFirstLoad(false);
+        window.clearTimeout(timeout);
+        if (!signal.aborted) setIsLoading(false);
       }
     })();
-    return () => controller.abort();
-  }, [currentPage]);
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [currentPage, retryCount]);
 
   return (
     <div className="w-full max-w-[820px] mx-auto">
       <Profile />
       <h2 className="text-2xl font-semibold tracking-tight mt-12 mb-12">최근 포스트</h2>
       <section className="mt-0">
+        {error && (
+          <Card role="alert" className="border-destructive">
+            <CardContent className="space-y-4">
+              <p className="text-destructive">
+                {error === 'timeout'
+                  ? '글 목록을 불러오는 시간이 초과되었습니다.'
+                  : '글 목록을 불러오지 못했습니다.'}
+              </p>
+              <Button variant="outline" onClick={() => setRetryCount(count => count + 1)}>
+                다시 시도
+              </Button>
+            </CardContent>
+          </Card>
+        )}
         <ItemList>
-          {isFirstLoad
-            ? Array.from({ length: 5 }).map((_, i) => <Item key={`skeleton-${i}`} loading />)
+          {isLoading
+            ? Array.from({ length: POSTS_PER_PAGE }).map((_, i) => <Item key={`skeleton-${i}`} loading />)
             : postList.map(post => (
               <Item post={post} key={post.id} />
             ))
           }
         </ItemList>
-        {!isFirstLoad && <Pagination currentPage={currentPage} totalPages={totalPages} />}
+        {totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} />}
       </section>
     </div>
   )

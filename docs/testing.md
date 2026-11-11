@@ -55,7 +55,7 @@ docker compose -f compose.test.yaml run --build --rm test npm run test:performan
 | [e2e](../tests/e2e/static-site.spec.ts) | SW를 차단한 글 직접 접속·SPA 탐색, 코드 블록·수식·Mermaid, 라이선스 정적 본문·새로고침·내부 이동, 정적 라우팅·조건부 요청·404 |
 | [e2e/metadata.spec.ts](../tests/e2e/metadata.spec.ts) | 메타 생성 결과의 DOM 값·태그 수·속성 경계 보존 |
 | [e2e/content-urls.spec.ts](../tests/e2e/content-urls.spec.ts) | 특수문자 태그의 실제 정적 JSON·링크·새로고침, 합성 목록 응답을 이용한 글 ID·상세 API·canonical 경계 |
-| [e2e/request-failures.spec.ts](../tests/e2e/request-failures.spec.ts) | 응답 순서 역전·JSON 반환 지연·이전 요청 실패, 글 상세 실패 안내·시간 초과·재시도·타이머 정리, 검색 JSON 전체 성공·HTTP 오류·네트워크 실패·JSON 해석 실패 |
+| [e2e/request-failures.spec.ts](../tests/e2e/request-failures.spec.ts) | 응답 순서 역전·JSON 반환 지연·이전 요청 실패, 글 상세·홈·태그 목록의 실패 안내·시간 초과·재시도·타이머 정리, 빈 목록 성공, 검색 JSON 전체 성공·HTTP 오류·네트워크 실패·JSON 해석 실패 |
 | [cache/refresh.spec.ts](../tests/cache/refresh.spec.ts) | SW 허용/차단 × 일반/느린 이미지 로딩에서 배포 후 첫 접속의 목록과 캐시 재사용 |
 | [cache/bootstrap.spec.ts](../tests/cache/bootstrap.spec.ts) | 검색·태그 직접 접속, SW 미지원·등록 실패, 맵 저장 실패 응답·확인 응답 유실 |
 | [cache/client-maps.spec.ts](../tests/cache/client-maps.spec.ts) | 문서 간 맵 격리, SW 재시작 후 맵 유지, 맵 누락 시 네트워크 요청, 종료된 문서와 이전 전역 맵 정리 |
@@ -78,6 +78,7 @@ docker compose -f compose.test.yaml run --build --rm test npm run test:performan
 - 요청 실패 E2E는 SW를 차단하고 API 응답을 제어한다. 이전 응답을 보류한 상태에서 현재 경로의 결과가 먼저 표시된 것을 확인한 뒤 이전 응답을 해제한다. 응답 취소도 허용하며, 취소하지 않는 구현에서는 늦은 응답이 화면과 글 메타데이터를 덮지 않아야 한다. 글 경로 간 전환은 `popstate`로 같은 React 루트에서 재현한다.
 - `json()` 반환 지연은 본문을 읽은 뒤 결과 전달만 보류해, 네트워크 취소만으로 막을 수 없는 오래된 결과 반영을 검사한다. 이전 요청이 실패해도 현재 요청의 로딩 표시를 종료해서는 안 되며, 글 화면을 떠난 뒤에는 이전 응답이 다른 화면의 메타데이터를 변경해서는 안 된다. 글 직접 접속은 상세 API를 차단한 채 hydration과 사용자 입력을 확인해 초기 데이터 경로도 보호한다.
 - 글 상세의 요청 실패와 시간 초과는 로딩 표시를 끝내고 재시도로 복구되어야 한다. 시간 경과는 Playwright Clock으로 제어하며, 응답 대기와 JSON 결과 전달 지연에 같은 10초 상한을 적용한다. 글 이동 뒤에는 이전 요청의 만료 시점을 지나도 현재 요청이 대기를 이어가야 하고, 성공한 요청의 타이머가 나중에 오류를 표시해서는 안 된다.
+- 홈·태그 목록은 HTTP·네트워크·JSON 해석 실패와 빈 목록 성공을 구분한다. 실패 시 이전 목록이 남지 않아야 하며 재시도는 같은 페이지·태그를 요청해야 한다. 응답 대기와 JSON 결과 전달 지연에 10초 상한을 적용하고, 이전 요청의 응답·실패·타이머가 현재 로딩과 재시도 결과를 바꾸지 않아야 한다. 홈 첫 요청 실패도 오류 안내를 표시해야 한다.
 - 검색 JSON 일부가 실패하면 오류를 안내하고 검색 입력을 비활성화해야 한다. 전체 성공 시 후속 페이지의 글도 검색되는지 함께 확인한다. 이 테스트는 실제 HTTP 캐시나 SW 캐시 적중을 판정하는 테스트와 구분한다.
 - `cache-probe.svg`는 같은 URL의 이미지 내용 갱신을 확인하는 에셋이다. 썸네일 표시 검증이 아니며, 새 맵 반영 이후 fetch한 본문과 캐시 재사용을 확인한다.
 - `cache-load-gate.svg`는 `load` 이벤트를 늦추는 장치다. B 문서에 숨긴 eager 이미지를 삽입하고 [Nginx](../tests/nginx-delay.conf)에서 해당 응답만 초당 256바이트로 제한한다. 고유 query로 이전 이미지 캐시를 피한다. 자연 접속 결과와 이 통제 조건의 결과를 구분하며, 특정 실사이트 이미지가 원인이었다고 단정하지 않는다.
