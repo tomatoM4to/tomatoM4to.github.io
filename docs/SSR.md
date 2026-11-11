@@ -21,6 +21,7 @@
 - 테마는 [HTML 초기 스크립트](../index.html)에서 복원하고 테마 버튼은 마운트 후 표시한다. Markdown·Giscus는 지연 로딩하며, Mermaid의 SVG 생성은 브라우저 effect에서 수행한다.
 - 버전 맵이 포함된 프로덕션 HTML은 [클라이언트 진입점](../src/entry-client.tsx)에서 SW의 맵 저장 확인 뒤 hydration한다. 초기 HTML은 먼저 표시되지만 React 이벤트와 effect의 JSON 요청은 이 준비가 끝난 뒤 시작한다. 개발 환경은 이 대기를 생략하며, 실패·시간 제한은 [캐시 정책](ETag-Map.md)을 따른다.
 - `npm run dev`는 Vite 미들웨어를 사용하는 SSR 환경이다. `npm run start:ssr`도 Express가 필요하므로 [SSG 배포](SSG.md)의 동작 검증을 대신하지 않는다.
+- 존재하지 않는 글·태그·목록 페이지와 생성 대상 밖의 경로는 SSR에서도 404로 처리한다. 잘못된 목록 번호를 다른 페이지로 해석하거나 알 수 없는 API에 HTML 성공 응답을 제공해서는 안 된다. [HTTP 계약 테스트](../server/server.test.ts)가 정적 배포와의 경계를 검증한다.
 
 # Diagrams
 

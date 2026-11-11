@@ -21,7 +21,7 @@ npm run test:unit:typecheck
 npm run test:unit
 ```
 
-- 실행 대상은 `server/*.test.ts`이며 기존 Playwright 명령과 독립적이다. [전용 타입 설정](../tsconfig.test.json)은 테스트가 가져오는 서버 코드도 검사하며 파일을 생성하지 않는다.
+- 실행 대상은 `server/*.test.ts`이며 기존 Playwright 명령과 독립적이다. [전용 타입 설정](../tsconfig.test.json)은 테스트가 가져오는 서버 코드와 별도 프로세스로 실행하는 Express 진입점도 검사하며 파일을 생성하지 않는다.
 - [HTML 생성기](../server/gen-static.test.ts)와 [JSON 생성기](../server/gen-api-resource.test.ts)는 전달받은 입력과 임시 출력 경로로 산출물을 검사한다. 파일 시스템을 포함하는 통합 테스트이며 브라우저나 실제 콘텐츠 로더는 사용하지 않는다. 생성 모듈의 경계는 [SSG 문서](SSG.md#checkpoints)를 따른다.
 - [버전 맵 주입 테스트](../server/inject-etag-map.test.ts)는 임시 산출물에 실제 주입 스크립트를 실행하고 삽입된 JavaScript를 평가해 키 보존을 검증한다. [SSR 통합 테스트](../server/server.test.ts)는 임시 프로젝트·테스트 글과 Express 개발 서버로 태그 API·초기 데이터 복원·쿼리 경계를 확인한다. 의존성은 기존 `node_modules`를 연결하며 실제 게시글은 복사하거나 읽지 않는다.
 - [메타 유닛 테스트](../server/meta.test.ts)는 기본 메타데이터를 검사한다. 특수문자의 경계 보존은 [브라우저 테스트](../tests/e2e/metadata.spec.ts)에서 실제 생성 결과를 HTML로 파싱해 검증한다. 안전한 엔티티 표기가 여러 가지이므로 특정 문자열 표현을 정답으로 고정하지 않는다.

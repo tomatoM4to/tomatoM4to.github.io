@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import { createServer as createHttpServer } from 'node:http';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import express from 'express';
+import express, { type Response } from 'express';
 import { ViteDevServer } from 'vite';
 import {
   createInitialData,
@@ -20,6 +20,7 @@ const port = process.env.PORT || 5173
 const base = process.env.BASE || '/'
 
 const PROJECT_ROOT = process.cwd();
+const PAGE_ROUTES = new Set(['', 'tags', 'search', 'license']);
 
 let recentContentList: Item[] | null = null;
 
@@ -35,20 +36,27 @@ app.get('/api/posts/:postname/index.json', async (req, res) => {
       'Content-Type': 'application/json'
     }).send(JSON.stringify(markdown));
   }
-  catch (e: any) {
-    vite?.ssrFixStacktrace(e);
-    console.log(e.stack);
-    res.status(500).end(e.stack);
+  catch (error: unknown) {
+    respondError(error, res);
   }
 });
 
 app.get('/api/recent/:index.json', async (req, res) => {
   try {
+    const { index } = req.params;
+    const page = Number(index);
+    if (!Number.isSafeInteger(page) || page < 1 || String(page) !== index) {
+      res.sendStatus(404);
+      return;
+    }
     if (!recentContentList) {
       recentContentList = await getSortedContentList();
     }
-    const { index } = req.params;
-    const parsedIndex = (parseInt(index) - 1) * POSTS_PER_PAGE;
+    if (page > Math.max(1, Math.ceil(recentContentList.length / POSTS_PER_PAGE))) {
+      res.sendStatus(404);
+      return;
+    }
+    const parsedIndex = (page - 1) * POSTS_PER_PAGE;
 
     const posts = recentContentList.slice(parsedIndex, parsedIndex + POSTS_PER_PAGE);
     const contentList: ContentList = {
@@ -57,10 +65,8 @@ app.get('/api/recent/:index.json', async (req, res) => {
     }
     res.status(200).json(contentList);
   }
-  catch (e: any) {
-    vite?.ssrFixStacktrace(e);
-    console.log(e.stack);
-    res.status(500).end(e.stack);
+  catch (error: unknown) {
+    respondError(error, res);
   }
 })
 
@@ -71,23 +77,36 @@ app.get('/api/tags/:tag.json', async (req, res) => {
     }
     const { tag } = req.params;
     const tagContent = await getItemFromTag(recentContentList, tag);
+    if (tagContent.len === 0) {
+      res.sendStatus(404);
+      return;
+    }
     res.status(200).json(tagContent);
   }
-  catch (e: any) {
-    vite?.ssrFixStacktrace(e);
-    console.log(e.stack);
-    res.status(500).end(e.stack);
+  catch (error: unknown) {
+    respondError(error, res);
   }
 })
 
 
-app.get('/api', (req, res) => {
-  console.log('api call route');
-  res.status(200).json({ message: 'API root endpoint' });
-});
-
 // Add Vite or respective production middlewares
 let vite: ViteDevServer | undefined;
+
+function respondError(error: unknown, res: Response) {
+  if (error instanceof URIError) {
+    res.sendStatus(400);
+    return;
+  }
+  if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
+    res.sendStatus(404);
+    return;
+  }
+  const failure = error instanceof Error ? error : new Error(String(error));
+  vite?.ssrFixStacktrace(failure);
+  console.error(failure);
+  res.status(500).end(isProduction ? 'Internal Server Error' : failure.stack);
+}
+
 if (!isProduction) {
   const { createServer } = await import('vite')
   vite = await createServer({
@@ -114,8 +133,13 @@ app.use('*all', async (req, res) => {
     // ex) '', 'tags', 'search', 'posts/postname'
     const url = req.originalUrl.replace(base, '')
     const pathname = url.split('?', 1)[0]
+    const contentPath = decodeURIComponent(pathname);
+    if (!PAGE_ROUTES.has(contentPath) && !(contentPath.startsWith('posts/') && contentPath.length > 'posts/'.length)) {
+      res.sendStatus(404);
+      return;
+    }
 
-    const initialData = await createInitialData(decodeURIComponent(pathname));
+    const initialData = await createInitialData(contentPath);
 
     let template: string;
     /** @type {import('../src/entry-server.tsx').render} */
@@ -144,10 +168,8 @@ app.use('*all', async (req, res) => {
 
     res.status(200).set({ 'Content-Type': 'text/html' }).send(html)
   }
-  catch (e: any) {
-    vite?.ssrFixStacktrace(e)
-    console.log(e.stack)
-    res.status(500).end(e.stack)
+  catch (error: unknown) {
+    respondError(error, res);
   }
 })
 

@@ -120,3 +120,17 @@ test('빈 제목의 글도 직접 접속하면 ID 제목과 정적 본문을 제
   assert.ok(html.includes('<title>empty-title</title>'));
   assert.ok(html.includes('빈 제목의 본문'));
 });
+
+test('생성 대상이 아닌 페이지와 JSON 요청은 HTML 성공 응답이나 서버 오류 대신 404를 반환한다', async () => {
+  for (const pathname of ['/missing-page', '/posts/', '/posts/missing-post', '/api', '/api/missing.json', '/api/posts/missing-post/index.json', '/api/tags/missing-tag.json']) {
+    const response = await fetch(`${baseURL}${pathname}`);
+    assert.equal(response.status, 404, pathname);
+  }
+});
+
+test('존재하지 않거나 올바른 정수가 아닌 최근 글 페이지를 성공 응답으로 처리하지 않는다', async () => {
+  for (const page of ['0', '-1', '01', '1extra', 'NaN', '2']) {
+    const response = await fetch(`${baseURL}/api/recent/${page}.json`);
+    assert.equal(response.status, 404, page);
+  }
+});

@@ -5,5 +5,5 @@
     "noEmit": true,
     "emitDeclarationOnly": false
   },
-  "include": ["server/*.test.ts"]
+  "include": ["server/*.test.ts", "server/server.ts"]
 }
