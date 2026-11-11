@@ -111,6 +111,14 @@ describe('콘텐츠 로딩', () => {
     assert.deepEqual(await createInitialData('tags'), { tags: { Network: 1, JavaScript: 1 } });
   });
 
+  test('posts 부분 문자열이 있는 다른 경로를 글 상세로 판별하지 않는다', async () => {
+    await writePost('2026/selected');
+
+    for (const route of ['reposts/selected', 'postscripts']) {
+      assert.deepEqual(await createInitialData(route), { tags: { Network: 1, JavaScript: 1 } });
+    }
+  });
+
   test('파일명 순서와 무관하게 날짜 내림차순으로 목록을 만들고 image 생략을 허용한다', async () => {
     await writePost('2025/a-old', { ...metadata, date: '2025-12-31' });
     await writePost('2026/z-new', { ...metadata, image: '/img/new.webp' });

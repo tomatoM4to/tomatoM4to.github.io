@@ -113,7 +113,7 @@ export async function createInitialData(url: string): Promise<InitialData> {
   // 모든 페이지에 태그 데이터 포함
   const tags = await getTags();
 
-  if (!url.includes('posts')) {
+  if (!url.startsWith('posts/')) {
     return { tags };
   }
   // url 은 "posts/postname" 형태

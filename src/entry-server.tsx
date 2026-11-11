@@ -17,41 +17,42 @@ export async function render({
   url: string,
   initialData: InitialData,
 }): Promise<{ body: string; head: string; }> {
+  const pathname = url.split('?', 1)[0];
   let head = '';
-  if (url === '') {
+  if (pathname === '') {
     // Home
     head = generateMeta({
-      url: url,
+      url: pathname,
       type: 'website'
     });
   }
-  if (url === 'tags') {
+  if (pathname === 'tags') {
     head = generateMeta({
-      url: url,
+      url: pathname,
       title: `${SITE_NAME} - tags`,
       type: 'website'
     });
   }
-  if (url === 'search') {
+  if (pathname === 'search') {
     // 검색 페이지는 noindex 처리 유지
     head = generateMeta({
-      url: url,
+      url: pathname,
       title: `${SITE_NAME} - search`,
       type: 'website',
     })
   }
-  if (url === 'license') {
+  if (pathname === 'license') {
     head = generateMeta({
-      url: url,
+      url: pathname,
       title: `${SITE_NAME} - license`,
       type: 'website',
     });
   }
-  if (url.includes('posts') && initialData.post?.data) {
+  if (pathname.startsWith('posts/') && initialData.post?.data) {
     // 개별 포스트 페이지
     const { title, description, image, keywords, date } = initialData.post.data;
     head = generateMeta({
-      url: url,
+      url: pathname,
       title: `${title}`,
       desc: description,
       keywords: keywords,

@@ -129,8 +129,9 @@ app.use('*all', async (req, res) => {
   try {
     // ex) '', 'tags', 'search', 'posts/postname'
     const url = req.originalUrl.replace(base, '')
+    const pathname = url.split('?', 1)[0]
 
-    const initialData = await createInitialData(decodeURIComponent(url));
+    const initialData = await createInitialData(decodeURIComponent(pathname));
 
     let template: string;
     /** @type {import('../src/entry-server.tsx').render} */
@@ -138,7 +139,7 @@ app.use('*all', async (req, res) => {
     if (!isProduction && vite) {
       // Always read fresh template in development
       template = await fs.readFile(path.join(PROJECT_ROOT, "index.html"), 'utf-8')
-      template = await vite.transformIndexHtml(url, template)
+      template = await vite.transformIndexHtml(pathname, template)
       const entryUrl = path.join(PROJECT_ROOT, 'src', 'entry-server.tsx');
       render = (await vite.ssrLoadModule(entryUrl)).render
     }
