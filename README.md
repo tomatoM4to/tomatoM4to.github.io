@@ -7,6 +7,11 @@ React와 Vite 기반의 Markdown 블로그입니다. SSR로 빠르게 개발하�
 
 Service Worker는 문서별로 맵을 분리해 탭 사이의 덮어쓰기를 막고, 응답 캐시는 URL별로 공유합니다. 배포 후에도 열려 있는 이전 문서가 캐시에 없는 리소스를 요청하면 새 배포의 응답을 받을 수 있습니다. 이 프로젝트는 배포 경계에서 이전 문서와 새 리소스가 함께 사용될 수 있음을 허용합니다. 자세한 정책과 검증 범위는 [캐시 설계 문서](docs/ETag-Map.md)를 참고하세요.
 
+# Checkpoints
+
+- 글의 대표 이미지 기능은 현재 지원하지 않습니다. `image` 필드와 관련 코드는 향후 지원 가능성을 열어두기 위해 남겨둔 것입니다. 본문에 삽입하는 이미지는 사용할 수 있습니다.
+- 검색은 GitHub Pages에서 검색에 필요한 전체 목록 JSON을 내려받은 뒤 브라우저에서 수행합니다. 일부 자료만으로 검색하면 실제로 있는 글이 검색 결과에서 누락될 수 있으므로, 전체 목록 JSON이 준비될 때까지 검색 입력을 비활성화하는 것은 의도된 정책입니다. 일부 요청이 실패해도 불완전한 자료로 검색을 활성화하지 않습니다. 관련 계약은 [검색 구현](src/pages/Search.tsx)과 [요청 실패 테스트](tests/e2e/request-failures.spec.ts)에서 확인할 수 있습니다.
+
 # Commands
 ```bash
 npm install          # 의존성 설치
@@ -67,6 +72,6 @@ title: "글 제목"
 description: "글 요약"
 date: "2026-11-04"
 keywords: "JavaScript, Network"
-image: "/img/글 ID/cover.webp" # 선택
+image: "/img/글 ID/cover.webp" # 선택, 대표 이미지 기능은 현재 미지원
 ---
 ```
