@@ -95,7 +95,7 @@ function main() {
     etagMap[urlPath] = getETagForFile(filePath, type);
   });
 
-  const etagMapJson = JSON.stringify(etagMap);
+  const etagMapJson = JSON.stringify(etagMap).replace(/</g, '\\u003c');
   const scriptTag = `<script id="etag-maps">window.__ETAG_MAP__ = ${etagMapJson};</script>`;
 
   // 2. Inject into all HTML files in dist
@@ -103,7 +103,7 @@ function main() {
     if (path.extname(filePath) === '.html') {
       let content = fs.readFileSync(filePath, 'utf-8');
       if (content.includes('<!--etag-maps-->')) {
-        content = content.replace('<!--etag-maps-->', scriptTag);
+        content = content.replace('<!--etag-maps-->', () => scriptTag);
         fs.writeFileSync(filePath, content, 'utf-8');
         console.log(`✅ Injected ETag map into: ${filePath}`);
       }
