@@ -3,6 +3,10 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: ["main"]
+  pull_request:
+    branches: ["main"]
+    paths-ignore:
+      - 'content/**'
   workflow_dispatch:
 
 permissions:
@@ -11,7 +15,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -21,27 +25,65 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check changes requiring tests
+        id: changes
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          if [[ "$EVENT_NAME" != "push" || "$BEFORE_SHA" =~ ^0+$ ]]; then
+            echo "test=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git fetch --no-tags --depth=1 origin "$BEFORE_SHA"
+          if git diff --quiet "$BEFORE_SHA" HEAD -- . ':(exclude)content/**'; then
+            echo "test=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "test=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
+      - name: Check app types
+        if: steps.changes.outputs.test == 'true'
+        run: npm run test:app:typecheck
+
+      - name: Check unit test types
+        if: steps.changes.outputs.test == 'true'
+        run: npm run test:unit:typecheck
+
+      - name: Check browser test types
+        if: steps.changes.outputs.test == 'true'
+        run: npm run test:typecheck
+
+      - name: Run unit tests
+        if: steps.changes.outputs.test == 'true'
+        run: npm run test:unit
+
       - name: Build
+        if: github.event_name != 'pull_request'
         run: npm run build
 
       - name: Setup Pages
+        if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
           path: './dist'
 
   deploy:
+    if: github.event_name != 'pull_request'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

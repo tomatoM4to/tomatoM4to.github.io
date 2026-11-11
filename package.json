@@ -17,6 +17,7 @@
     "test": "playwright test --config tests/playwright.config.ts",
     "test:unit": "tsx --tsconfig tsconfig.server.json --test server/*.test.ts",
     "test:unit:typecheck": "tsc --project tsconfig.test.json",
+    "test:app:typecheck": "tsc --project tsconfig.app.json",
     "test:e2e": "npm test -- --project=e2e",
     "test:cache": "npm test -- --project=cache",
     "test:performance": "npm test -- --project=performance",
