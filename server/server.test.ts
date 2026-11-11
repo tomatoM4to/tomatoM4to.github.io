@@ -79,6 +79,16 @@ after(async () => {
   if (directory) await rm(directory, { recursive: true, force: true });
 });
 
+test('all-tags도 다른 태그와 동일한 글 목록 계약으로 응답한다', async () => {
+  const response = await fetch(`${baseURL}/api/tags/all-tags.json`);
+  assert.equal(response.status, 200);
+  const result = await response.json();
+  assert.deepEqual(result, {
+    len: 1,
+    data: [{ id: postId, title: 'SSR 테스트 제목', description: 'SSR 테스트 요약', date: '2026-11-11', keywords: 'all-tags, __proto__' }],
+  });
+});
+
 test('태그 집계는 HTML 초기 스크립트 실행 뒤에도 객체 속성 이름을 보존한다', async () => {
   const response = await fetch(`${baseURL}/tags?tag=all-tags`);
   assert.equal(response.status, 200);

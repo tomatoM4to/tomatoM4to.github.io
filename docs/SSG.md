@@ -9,7 +9,7 @@
 - 중복 글 ID와 잘못된 메타데이터는 자동 보정하거나 덮어쓰지 않고 빌드를 실패시킨다. [공통 콘텐츠 로더](../server/utils.ts)의 문자열 필드·실제 날짜 검증을 HTML·상세 JSON·목록·태그 집계에서 동일하게 적용해야 한다. 날짜는 `YYYY-MM-DD` 문자열이며 `image`는 생략할 수 있다.
 - HTML 초기 데이터와 JSON 응답은 [공유 데이터 계약](../shared/common.ts)을 사용한다. Markdown 파서의 반환 타입을 브라우저 계약으로 사용하지 않으며, [콘텐츠 로더](../server/utils.ts)의 런타임 검증을 통과한 메타데이터만 해당 타입으로 취급한다. `image`의 선택 필드는 향후 확장을 위한 것으로 현재 대표 이미지 지원을 뜻하지 않는다.
 - [정적 API 생성기](../server/gen-api-resource.ts)는 글 상세, 페이지별 최근 글, 태그별 글 목록 JSON을 만든다. 목록 계약은 `{ len, data }`이며, 최근 글은 페이지 단위로 생성하고 태그별 목록은 브라우저에서 페이지를 나눈다.
-- Express의 `/api/tags/all-tags.json`에 대응하는 전체 태그 집계 파일은 별도로 생성하지 않는다. 현재 태그 화면은 HTML에 주입된 `initialData.tags`를 사용한다.
+- 전체 태그 집계는 HTML에 주입된 `initialData.tags`를 사용한다. 태그별 API의 이름 공간에는 집계용 예약 경로를 두지 않는다. `all-tags`도 일반 태그이며 [SSR 통합 테스트](../server/server.test.ts)에서 동일한 글 목록 계약을 검증한다.
 - 빌드는 클라이언트·서버 번들 → HTML → JSON → [ETag 맵 주입](ETag-Map.md) 순서다. 일부 단계만 실행하면 최신 배포 산출물이 완성되지 않는다. [배포 워크플로](../.github/workflows/deploy.yml)는 `npm run build` 후 `dist/`를 업로드한다.
 - `npm run start:ssg`는 산출물의 로컬 확인용이다. 서버별 URL 해석이 다를 수 있으므로 확장자 없는 직접 접근과 새로고침은 GitHub Pages에서도 확인해야 한다. SPA 내부 이동 성공만으로 해당 HTML 파일의 존재를 판단할 수 없다.
 - 태그 HTML은 선택 쿼리 없이 생성된다. `/tags?tag=...` 직접 접속에서는 초기 HTML과 클라이언트의 선택 상태가 달라 React의 hydration 복구 경고가 발생할 수 있다. 초기 HTML에는 태그 목록이 표시되며, 선택한 태그의 글 목록은 hydration 복구 후 JSON을 조회해 표시한다. 직접 접속·새로고침 후 조회가 동작하는 현재 상태를 수용한 제약이며, hydration 불일치 자체는 수정 대상에 포함하지 않는다. 검증 범위는 [테스트 문서](testing.md#재현-조건과-판정)를 따르며, 요청 쿼리로 렌더링하는 [Express SSR](SSR.md)과 구분해야 한다.

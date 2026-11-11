@@ -10,7 +10,6 @@ import {
   createTemplate,
   createHTML,
   getSortedContentList,
-  getTags,
   getItemFromTag
 } from '@server/utils.ts';
 import { POSTS_PER_PAGE, type Item, type ContentList } from '@shared/common.ts';
@@ -57,18 +56,6 @@ app.get('/api/recent/:index.json', async (req, res) => {
       data: posts
     }
     res.status(200).json(contentList);
-  }
-  catch (e: any) {
-    vite?.ssrFixStacktrace(e);
-    console.log(e.stack);
-    res.status(500).end(e.stack);
-  }
-})
-
-app.get('/api/tags/all-tags.json', async (req, res) => {
-  try {
-    const allTags = await getTags();
-    res.status(200).json(allTags);
   }
   catch (e: any) {
     vite?.ssrFixStacktrace(e);
