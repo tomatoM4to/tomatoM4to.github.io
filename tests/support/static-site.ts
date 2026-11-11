@@ -1,5 +1,6 @@
 import { readFile, rename, symlink } from 'node:fs/promises';
 import path from 'node:path';
+import type { Page } from '@playwright/test';
 
 const SITE_ROOT = '/srv';
 export const RECENT_PATH = '/api/recent/1.json';
@@ -10,6 +11,23 @@ export const HTTP_CACHE_TTL_MS = 1_000;
 export const TTL_MARGIN_MS = 200;
 
 export type Release = 'a' | 'b';
+
+export async function readWorkerMap(page: Page): Promise<Record<string, string>> {
+  const workerURL = new URL('/sw.js', page.url()).href;
+  const worker = page.context().serviceWorkers().find(worker => worker.url() === workerURL);
+  if (!worker) return {};
+
+  return worker.evaluate(async url => {
+    const { clients } = globalThis as typeof globalThis & {
+      clients: { matchAll(): Promise<{ id: string; url: string }[]> };
+    };
+    const client = (await clients.matchAll()).find(client => client.url === url);
+    if (!client) return {};
+
+    const response = await caches.match(`/__etag_map__/${client.id}`);
+    return response ? response.json() : {};
+  }, page.url());
+}
 
 export async function selectRelease(release: Release) {
   const nextLink = path.join(SITE_ROOT, 'site-next');

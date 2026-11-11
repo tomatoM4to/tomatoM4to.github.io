@@ -57,6 +57,7 @@ docker compose -f compose.test.yaml run --build --rm test npm run test:performan
 | [e2e/request-failures.spec.ts](../tests/e2e/request-failures.spec.ts) | 응답 순서 역전·JSON 반환 지연·이전 요청 실패, 검색 JSON 전체 성공·HTTP 오류·네트워크 실패·JSON 해석 실패 |
 | [cache/refresh.spec.ts](../tests/cache/refresh.spec.ts) | SW 허용/차단 × 일반/느린 이미지 로딩에서 배포 후 첫 접속의 목록과 캐시 재사용 |
 | [cache/bootstrap.spec.ts](../tests/cache/bootstrap.spec.ts) | 검색·태그 직접 접속, SW 미지원·등록 실패, 맵 저장 실패 응답·확인 응답 유실 |
+| [cache/client-maps.spec.ts](../tests/cache/client-maps.spec.ts) | 문서 간 맵 격리, SW 재시작 후 맵 유지, 맵 누락 시 네트워크 요청, 종료된 문서와 이전 전역 맵 정리 |
 | [performance](../tests/performance/bootstrap.spec.ts) | SW 미지원 기준선·최초 설치·캐시 준비 후 재방문·등록 지연 실패의 로컬 측정 |
 | [fixtures](../tests/fixtures) · [support](../tests/support/static-site.ts) | 두 배포의 입력과 배포 링크 교체·버전 맵·Nginx 로그 조회 |
 
@@ -64,7 +65,7 @@ docker compose -f compose.test.yaml run --build --rm test npm run test:performan
 
 - A는 기존 글 하나를 포함하고, B는 기존 글을 유지하면서 새 글과 변경된 SVG를 추가한다. 둘을 미리 전체 빌드해 두고 `/srv/site` 심볼릭 링크만 원자적으로 교체한다. 이전 산출물은 프로젝트 밖에 보관해 다음 Tailwind 소스 탐색에 섞이지 않게 한다.
 - A·B의 앱 번들과 SW는 같아야 하고 JSON·테스트 SVG의 버전은 달라야 한다. SVG는 현재 파일명·크기 기반 버전 정책으로 변경이 구분되도록 크기도 바꾼다. 동일 크기 에셋 변경이나 SW 스크립트 자체의 업그레이드는 이 배포 시나리오의 검증 대상이 아니다.
-- 각 테스트는 배포 A와 새 browser context에서 시작한다. 배포 전환 중에는 탭만 닫고 같은 context에서 새 탭으로 접속하여 SW·Cache Storage·HTTP 캐시를 유지한다. `--renew-anon-volumes`는 재실행 시 이전 빌드가 담긴 서버 볼륨이 재사용되는 것을 막는다.
+- 각 테스트는 배포 A와 새 browser context에서 시작한다. 기존 갱신 테스트는 배포 전환 중 탭만 닫고 같은 context에서 새 탭으로 접속하여 SW·Cache Storage·HTTP 캐시를 유지한다. 문서별 맵 테스트는 같은 context에 이전 문서와 새 문서를 함께 열어 맵 재전송 순서를 제어한다. `--renew-anon-volumes`는 재실행 시 이전 빌드가 담긴 서버 볼륨이 재사용되는 것을 막는다.
 - Nginx는 [공통 정적 서버 설정](../nginx/default.conf.template)과 HTTP TTL 1초를 사용한다. 이 TTL은 Cache Storage의 만료 시간이 아니다. 브라우저와 Nginx는 네트워크를 공유하여 같은 `http://localhost`에 접속하며, 러너는 배포 볼륨으로만 전환을 제어한다. Docker 소켓이나 관리 API는 사용하지 않는다.
 - 하나의 배포 링크를 공유하므로 `workers: 1`로 실행한다. 병렬화하려면 먼저 worker별 서버·볼륨을 분리해야 한다. 재시도는 새 context에서 첫 접속 실패를 가릴 수 있어 끈다.
 
@@ -79,7 +80,8 @@ docker compose -f compose.test.yaml run --build --rm test npm run test:performan
 - 캐시 준비는 controller·맵·저장 응답 상태로 기다린다. `HIT-0-RTT`뿐 아니라 Nginx 요청 수가 늘지 않았는지도 확인한다. SW를 거친 응답이라는 사실이나 짧은 소요 시간만으로 캐시 적중을 판정하지 않는다.
 - 첫 접속의 새 글 표시에는 `expect.soft`를 사용한다. 실패 상태를 유지한 채 맵 반영 뒤 에셋 갱신과 추가 새로고침 결과까지 수집하기 위한 것이다. 나중의 새로고침 성공으로 최초 실패를 덮지 않는다.
 - 리포트의 `cache-evidence`에는 실제 첫 목록 응답과 문서/SW/캐시 버전, `nginx-access`에는 서버 요청 기록이 들어간다. `first-visit` 이미지는 추가 새로고침 전 화면이다. 실패 시 자동 스크린샷은 진단용 새로고침 이후일 수도 있으므로 첫 접속 판정에는 해당 첨부를 사용한다.
-- 루트 동기화의 정책과 보장 범위는 [ETag-Map의 Checkpoint](ETag-Map.md#checkpoint)를 따른다. 이 테스트 통과가 여러 탭의 맵 충돌, 초기 에셋 전체의 최신성, GitHub Pages CDN 동작까지 보장하지는 않는다.
+- 문서별 맵 테스트는 같은 URL로 연 두 문서에서 B 문서의 저장 확인 이후 A 문서가 맵을 다시 전송해도 B 목록을 요청하는지 검사한다. 맵 진단은 SW의 클라이언트 목록에서 문서 URL에 대응하는 ID를 조회하므로, 해당 진단을 사용하는 테스트는 문서 URL을 구분한다. SW 재시작은 Chromium의 `ServiceWorker.stopWorker`와 `stopped` 상태 확인으로 재현하고 맵 재전송 없이 캐시 적중과 서버 요청 수를 확인한다.
+- 루트 동기화의 정책과 보장 범위는 [ETag-Map의 Checkpoints](ETag-Map.md#checkpoints)를 따른다. 문서별 맵 분리는 이전 배포의 응답 본문 보존을 보장하지 않으며, 초기 에셋 전체의 최신성과 GitHub Pages CDN 동작도 별도 검증 범위다.
 
 ## 성능 수치 해석
 

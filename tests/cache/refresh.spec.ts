@@ -10,6 +10,7 @@ import {
   readAccessLog,
   readReleaseFile,
   readReleaseMap,
+  readWorkerMap,
   requestCount,
   selectRelease,
 } from '../support/static-site';
@@ -17,12 +18,11 @@ import {
 const CACHE_READY_TIMEOUT_MS = 15_000;
 
 async function readState(page: Page) {
-  return page.evaluate(async (paths) => {
+  const workerMap = await readWorkerMap(page);
+  return page.evaluate(async ({ paths, workerMap }) => {
     const documentMap = (window as Window & {
       __ETAG_MAP__?: Record<string, string>;
     }).__ETAG_MAP__;
-    const response = await caches.match('/__etag_map__');
-    const workerMap: Record<string, string> = response ? await response.json() : {};
     const versions: Record<string, {
       document: string | null;
       worker: string | null;
@@ -44,19 +44,13 @@ async function readState(page: Page) {
       posts: Array.from(document.querySelectorAll('section h3'), element => element.textContent),
       versions,
     };
-  }, [RECENT_PATH, ASSET_PATH]);
+  }, { paths: [RECENT_PATH, ASSET_PATH], workerMap });
 }
 
 async function waitForMap(page: Page, version: string) {
-  await page.waitForFunction(async ({ path, version }) => {
-    const response = await caches.match('/__etag_map__');
-    if (!response) {
-      return false;
-    }
-
-    const map: Record<string, string> = await response.json();
-    return map[path] === version;
-  }, { path: RECENT_PATH, version }, { timeout: CACHE_READY_TIMEOUT_MS });
+  await expect.poll(async () => (await readWorkerMap(page))[RECENT_PATH], {
+    timeout: CACHE_READY_TIMEOUT_MS,
+  }).toBe(version);
 }
 
 async function waitForCached(page: Page, path: string, version: string) {

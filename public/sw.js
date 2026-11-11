@@ -15,6 +15,7 @@ const CACHE_NAME = 'tomato-etag-cache-v3';
 
 /** @type {string} 캐시 내에 ETag 맵을 저장하기 위해 사용하는 내부 키 */
 const ETAG_MAP_CACHE_KEY = '/__etag_map__';
+const ETAG_MAP_CACHE_PREFIX = `${ETAG_MAP_CACHE_KEY}/`;
 const CACHE_BYPASS_PARAM = '__sw_bypass';
 
 /**
@@ -41,7 +42,7 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
-    }).then(() => self.clients.claim())
+    }).then(() => self.clients.claim()).then(() => cleanupEtagMaps())
   );
 });
 
@@ -56,8 +57,9 @@ self.addEventListener('message', (event) => {
   }
 
   const port = event.ports[0];
+  const clientId = event.source?.id;
   const etagMap = event.data.payload;
-  if (!etagMap || typeof etagMap !== 'object' || Array.isArray(etagMap)
+  if (!clientId || !etagMap || typeof etagMap !== 'object' || Array.isArray(etagMap)
       || !Object.values(etagMap).every(version => typeof version === 'string')) {
     port?.postMessage({ type: 'ETAG_MAP_ERROR' });
     port?.close();
@@ -67,7 +69,7 @@ self.addEventListener('message', (event) => {
   event.waitUntil((async () => {
     try {
       const cache = await caches.open(CACHE_NAME);
-      await cache.put(ETAG_MAP_CACHE_KEY, new Response(JSON.stringify(etagMap)));
+      await cache.put(`${ETAG_MAP_CACHE_PREFIX}${clientId}`, new Response(JSON.stringify(etagMap)));
       // 메시지 수신이 아니라 저장 완료를 확인한 뒤 클라이언트의 hydration을 허용한다.
       port?.postMessage({ type: 'ETAG_MAP_READY' });
     } catch (error) {
@@ -77,16 +79,41 @@ self.addEventListener('message', (event) => {
       port?.close();
     }
   })());
+  event.waitUntil(cleanupEtagMaps());
 });
+
+async function cleanupEtagMaps() {
+  try {
+    const cache = await caches.open(CACHE_NAME);
+    const requests = await cache.keys();
+    await Promise.all(requests.map(async request => {
+      const pathname = new URL(request.url).pathname;
+      if (pathname === ETAG_MAP_CACHE_KEY) {
+        await cache.delete(request);
+        return;
+      }
+      if (!pathname.startsWith(ETAG_MAP_CACHE_PREFIX)) return;
+
+      const clientId = pathname.slice(ETAG_MAP_CACHE_PREFIX.length);
+      if (!await self.clients.get(clientId)) {
+        await cache.delete(request);
+      }
+    }));
+  } catch (error) {
+    console.error('Failed to clean ETag maps', error);
+  }
+}
 
 /**
  * 캐시에서 저장된 ETag 맵을 가져옵니다.
  * @returns {Promise<Object>} 경로명(Pathname)과 ETag 문자열이 매핑된 객체
  */
-async function getEtagMap() {
+async function getEtagMap(clientId) {
+  if (!clientId) return {};
+
   try {
     const cache = await caches.open(CACHE_NAME);
-    const response = await cache.match(ETAG_MAP_CACHE_KEY);
+    const response = await cache.match(`${ETAG_MAP_CACHE_PREFIX}${clientId}`);
     if (response) {
       return await response.json();
     }
@@ -149,7 +176,7 @@ self.addEventListener('fetch', (event) => {
       const cache = await caches.open(CACHE_NAME);
       const cachedResponse = await cache.match(event.request);
 
-      let etagMap = await getEtagMap();
+      const etagMap = await getEtagMap(event.clientId);
       let pathname = url.pathname;
 
       /**
