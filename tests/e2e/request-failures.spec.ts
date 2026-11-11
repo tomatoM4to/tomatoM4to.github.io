@@ -2,6 +2,8 @@ import { test, expect, type Page, type Route } from '@playwright/test';
 import { POSTS_PER_PAGE, SITE_NAME } from '../../shared/common';
 import { selectRelease } from '../support/static-site';
 
+const POST_REQUEST_TIMEOUT_MS = 10_000;
+
 const posts = Array.from({ length: POSTS_PER_PAGE * 3 }, (_, index) => ({
   id: `request-post-${index + 1}`,
   title: `request-post-${index + 1}`,
@@ -156,6 +158,140 @@ test('이전 태그 요청의 실패가 현재 요청의 로딩 표시를 끝내
   }
 
   await expect(page.locator('h3')).toHaveText([posts[1].title]);
+});
+
+for (const failure of ['http', 'network', 'json'] as const) {
+  test(`글 상세 JSON이 ${failure} 오류로 실패하면 안내 후 재시도할 수 있다`, async ({ page }) => {
+    await mockRecentPages(page, posts.slice(0, 1));
+    let attempts = 0;
+    await page.route(url => url.pathname === `/api/posts/${posts[0].id}/index.json`, route => {
+      attempts++;
+      if (attempts > 1) {
+        return route.fulfill({ json: { data: posts[0], content: '재시도한 본문' } });
+      }
+      if (failure === 'network') return route.abort('failed');
+      if (failure === 'json') {
+        return route.fulfill({ contentType: 'application/json', body: '{"content":' });
+      }
+      return route.fulfill({ status: 503 });
+    });
+
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.locator(`a[href="/posts/${posts[0].id}"]`).click();
+    await expect(page.getByRole('alert')).toContainText('글을 불러오지 못했습니다.');
+    await expect(page.locator('[data-slot="skeleton"]')).toHaveCount(0);
+    await page.getByRole('button', { name: '다시 시도', exact: true }).click();
+    await expect(page.locator('header h1')).toHaveText(posts[0].title);
+    await expect(page.locator('article')).toHaveText('재시도한 본문');
+    await expect(page.getByRole('alert')).toHaveCount(0);
+    await expect(page).toHaveTitle(posts[0].title);
+    expect(attempts).toBe(2);
+  });
+}
+
+test('글 상세 응답이 지연되면 시간 초과를 안내하고 재시도할 수 있다', async ({ page }) => {
+  await page.clock.install();
+  await mockRecentPages(page, posts.slice(0, 1));
+  const pending = await holdResponse(page, `/api/posts/${posts[0].id}/index.json`, {
+    json: { data: posts[0], content: '재시도한 본문' },
+  });
+
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.locator(`a[href="/posts/${posts[0].id}"]`).click();
+  await pending.requested;
+  try {
+    await page.clock.fastForward(POST_REQUEST_TIMEOUT_MS);
+    await expect(page.getByRole('alert')).toContainText('글을 불러오는 시간이 초과되었습니다.');
+    await expect(page.locator('[data-slot="skeleton"]')).toHaveCount(0);
+  } finally {
+    await pending.release();
+  }
+
+  await page.getByRole('button', { name: '다시 시도', exact: true }).click();
+  await expect(page.locator('article')).toHaveText('재시도한 본문');
+  await page.clock.fastForward(POST_REQUEST_TIMEOUT_MS);
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  await expect(page.locator('header h1')).toHaveText(posts[0].title);
+});
+
+test('글 JSON 결과 전달이 지연돼도 시간 초과 이후 재시도한 본문을 덮지 않는다', async ({ page }) => {
+  await page.clock.install();
+  await mockRecentPages(page, posts.slice(0, 1));
+  await page.addInitScript(() => {
+    const readJSON = Response.prototype.json;
+    let delayed = false;
+    Response.prototype.json = async function (this: Response) {
+      const result: unknown = await readJSON.call(this);
+      if (!delayed && this.url && new URL(this.url).pathname.startsWith('/api/posts/')) {
+        delayed = true;
+        document.documentElement.dataset.testJsonPending = 'true';
+        await new Promise<void>(resolve => {
+          window.addEventListener('test:release-json', () => resolve(), { once: true });
+        });
+      }
+      return result;
+    };
+  });
+  let attempts = 0;
+  await page.route(url => url.pathname === `/api/posts/${posts[0].id}/index.json`, route => {
+    attempts++;
+    return route.fulfill({ json: {
+      data: { ...posts[0], title: attempts === 1 ? '지연된 제목' : posts[0].title },
+      content: attempts === 1 ? '지연된 본문' : '재시도한 본문',
+    } });
+  });
+
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.locator(`a[href="/posts/${posts[0].id}"]`).click();
+  await page.waitForFunction(() => document.documentElement.dataset.testJsonPending === 'true');
+  try {
+    await page.clock.fastForward(POST_REQUEST_TIMEOUT_MS);
+    await expect(page.getByRole('alert')).toContainText('글을 불러오는 시간이 초과되었습니다.');
+    await page.getByRole('button', { name: '다시 시도', exact: true }).click();
+    await expect(page.locator('article')).toHaveText('재시도한 본문');
+  } finally {
+    await page.evaluate(() => window.dispatchEvent(new Event('test:release-json')));
+    await settleUI(page);
+  }
+
+  await page.clock.fastForward(POST_REQUEST_TIMEOUT_MS);
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  await expect(page.locator('article')).toHaveText('재시도한 본문');
+  await expect(page).toHaveTitle(posts[0].title);
+});
+
+test('글 이동 후 이전 타이머가 현재 요청을 시간 초과로 바꾸지 않는다', async ({ page }) => {
+  await page.clock.install();
+  await mockRecentPages(page, posts.slice(0, 1));
+  const previous = await holdResponse(page, `/api/posts/${posts[0].id}/index.json`, {
+    json: { data: posts[0], content: '이전 본문' },
+  });
+  const current = await holdResponse(page, `/api/posts/${posts[1].id}/index.json`, {
+    json: { data: posts[1], content: '현재 본문' },
+  });
+
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.locator(`a[href="/posts/${posts[0].id}"]`).click();
+  await previous.requested;
+  try {
+    await page.clock.fastForward(POST_REQUEST_TIMEOUT_MS / 2);
+    await page.evaluate(pathname => {
+      history.pushState({}, '', pathname);
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    }, `/posts/${posts[1].id}`);
+    await current.requested;
+    await page.clock.fastForward(POST_REQUEST_TIMEOUT_MS / 2);
+    await expect(page.getByRole('alert')).toHaveCount(0);
+    await expect(page.locator('[data-slot="skeleton"]')).not.toHaveCount(0);
+  } finally {
+    await previous.release();
+    await current.release();
+  }
+
+  await expect(page.locator('article')).toHaveText('현재 본문');
+  await page.clock.fastForward(POST_REQUEST_TIMEOUT_MS);
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  await expect(page).toHaveTitle(posts[1].title);
 });
 
 test('글 변경 후 이전 응답이 현재 본문과 메타데이터를 덮지 않는다', async ({ page }) => {

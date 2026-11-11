@@ -5,11 +5,14 @@ import { type GrayMatterFile } from "gray-matter";
 import { updateHead } from "@src/hooks/useHead";
 import { makeURL } from "@shared/common";
 import { Badge } from "@src/ui/badge";
+import { Button } from "@src/ui/button";
+import { Card, CardContent } from "@src/ui/card";
 import { Calendar } from "lucide-react";
 import PostSkeleton from "@src/components/PostSkeleton";
 
 const LazyMarkdown = lazy(() => import("@src/components/LazyMarkdown"));
 const LazyGiscus = lazy(() => import("@src/components/LazyGiscus"));
+const POST_REQUEST_TIMEOUT_MS = 10_000;
 
 type PostMeta = {
   title: string;
@@ -21,6 +24,8 @@ type PostMeta = {
 export default function Post({ initialData }: { initialData: GrayMatterFile<string> | null }) {
   const { post } = useParams();
   const { networkMountRef } = useNetworkMount();
+  const [error, setError] = useState<'request' | 'timeout' | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
   const [content, setContent] = useState<string | null>(() => {
     if (!networkMountRef.current && initialData) {
       return initialData.content;
@@ -46,6 +51,11 @@ export default function Post({ initialData }: { initialData: GrayMatterFile<stri
     const controller = new AbortController();
     const { signal } = controller;
     setContent(null);
+    setError(null);
+    const timeout = window.setTimeout(() => {
+      setError('timeout');
+      controller.abort();
+    }, POST_REQUEST_TIMEOUT_MS);
     async function getData() {
       try {
         const response = await fetch(`/api/posts/${post}/index.json`, { signal });
@@ -72,16 +82,37 @@ export default function Post({ initialData }: { initialData: GrayMatterFile<stri
         })
       }
       catch (err) {
-        if (!signal.aborted) console.error(err);
+        if (signal.aborted) return;
+        console.error(err);
+        setError('request');
+      }
+      finally {
+        window.clearTimeout(timeout);
       }
     }
     getData();
-    return () => controller.abort();
-  }, [post]);
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [post, retryCount]);
 
   return (
     <div className="w-full max-w-[820px] mx-auto">
-      {content === null || meta.title === '' ? (
+      {error ? (
+        <Card role="alert" className="border-destructive">
+          <CardContent className="space-y-4">
+            <p className="text-destructive">
+              {error === 'timeout'
+                ? '글을 불러오는 시간이 초과되었습니다.'
+                : '글을 불러오지 못했습니다.'}
+            </p>
+            <Button variant="outline" onClick={() => setRetryCount(count => count + 1)}>
+              다시 시도
+            </Button>
+          </CardContent>
+        </Card>
+      ) : content === null || meta.title === '' ? (
         <PostSkeleton />
       ) : (
         <Suspense fallback={<PostSkeleton />}>
