@@ -3,7 +3,6 @@ import { createServer as createHttpServer } from 'node:http';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import express from 'express';
-import type { GrayMatterFile } from 'gray-matter';
 import { ViteDevServer } from 'vite';
 import {
   createInitialData,
@@ -11,13 +10,11 @@ import {
   createTemplate,
   createHTML,
   getSortedContentList,
-  Item,
-  ContentList,
-  type Render,
   getTags,
   getItemFromTag
 } from '@server/utils.ts';
-import { POSTS_PER_PAGE } from '@shared/common.ts';
+import { POSTS_PER_PAGE, type Item, type ContentList } from '@shared/common.ts';
+import type { Render } from '@server/types.ts';
 
 const isProduction = process.env.NODE_ENV === 'production'
 const port = process.env.PORT || 5173
@@ -34,7 +31,7 @@ const httpServer = createHttpServer(app);
 app.get('/api/posts/:postname/index.json', async (req, res) => {
   try {
     const { postname } = req.params;
-    const markdown: GrayMatterFile<string> = await getMarkdown(postname);
+    const markdown = await getMarkdown(postname);
     res.status(200).set({
       'Content-Type': 'application/json'
     }).send(JSON.stringify(markdown));

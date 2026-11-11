@@ -1,9 +1,8 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import type { GrayMatterFile } from 'gray-matter';
 import { getItemFromTag } from '@server/utils.ts';
-import type { Item } from '@server/types.ts';
-import { POSTS_PER_PAGE, type TagsData } from '@shared/common.ts';
+import type { MarkdownPost } from '@server/types.ts';
+import { POSTS_PER_PAGE, type Item, type ContentList, type TagsData } from '@shared/common.ts';
 
 export async function generatePostJSON({
   postName,
@@ -11,7 +10,7 @@ export async function generatePostJSON({
   outputDirectory,
 }: {
   postName: string;
-  markdown: GrayMatterFile<string>;
+  markdown: MarkdownPost;
   outputDirectory: string;
 }) {
   const destination = path.join(outputDirectory, 'api', 'posts', postName);
@@ -31,7 +30,7 @@ export async function generateRecentPostLists({
   for (let offset = 0; offset < contentList.length; offset += POSTS_PER_PAGE) {
     const destination = path.join(outputDirectory, 'api', 'recent');
     const page = offset / POSTS_PER_PAGE + 1;
-    const content = {
+    const content: ContentList = {
       len: contentList.length,
       data: contentList.slice(offset, offset + POSTS_PER_PAGE),
     };

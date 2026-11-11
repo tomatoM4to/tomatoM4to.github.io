@@ -1,7 +1,7 @@
 import { useHead } from "@src/hooks/useHead";
 import { useEffect, useState } from "react";
-import { makeURL, SITE_NAME, POSTS_PER_PAGE, type TagsData } from "@shared/common";
-import { type ContentList, ItemList, Item } from "@src/components/Item";
+import { makeURL, SITE_NAME, POSTS_PER_PAGE, type TagsData, type ContentList } from "@shared/common";
+import { ItemList, Item } from "@src/components/Item";
 import { Link, useSearchParams } from "react-router";
 import { Pagination } from "@src/components/Pagination";
 import { Badge } from "@src/ui/badge";

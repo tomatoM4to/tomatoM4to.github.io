@@ -1,5 +1,3 @@
-import { type GrayMatterFile } from 'gray-matter';
-
 export const SITE_DOMAIN = 'https://tomatom4to.github.io';
 export const SITE_NAME = "tomatoM4to Tech Log";
 export const DEFAULT_DESC = '웹, 시스템 아키텍처, 그리고 컴퓨터 과학(CS) 원리를 깊이 있게 탐구합니다.';
@@ -9,8 +7,30 @@ export const POSTS_PER_PAGE = 5;
 
 export type TagsData = Record<string, number>;
 
+export type PostMetadata = {
+  title: string;
+  description: string;
+  date: string;
+  keywords: string;
+  image?: string;
+};
+
+export type PostData = {
+  content: string;
+  data: PostMetadata;
+};
+
+export type Item = PostMetadata & {
+  id: string;
+};
+
+export type ContentList = {
+  len: number;
+  data: Item[];
+};
+
 export type InitialData = {
-  post?: GrayMatterFile<string>;
+  post?: PostData;
   tags: TagsData;
 };
 

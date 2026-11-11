@@ -1,8 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { useHead } from '@src/hooks/useHead';
-import { ItemType, Item, ItemList, type ContentList } from "@src/components/Item";
+import { Item, ItemList } from "@src/components/Item";
 import { Pagination } from "@src/components/Pagination";
-import { SITE_NAME, SITE_DOMAIN, POSTS_PER_PAGE } from "@shared/common";
+import { SITE_NAME, SITE_DOMAIN, POSTS_PER_PAGE, type Item as ItemType, type ContentList } from "@shared/common";
 import { useSearchParams } from "react-router";
 import { Skeleton } from "@src/ui/skeleton";
 import { Button } from "@src/ui/button";

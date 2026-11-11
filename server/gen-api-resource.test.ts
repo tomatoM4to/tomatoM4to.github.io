@@ -5,7 +5,8 @@ import path from 'node:path';
 import { afterEach, beforeEach, test } from 'node:test';
 import matter from 'gray-matter';
 import { generatePostJSON, generateRecentPostLists, generateTagLists } from './gen-api-resource.ts';
-import type { Item } from './types.ts';
+import type { Item } from '@shared/common.ts';
+import type { MarkdownPost } from './types.ts';
 
 let outputDirectory: string;
 const contentList: Item[] = ['z-new', 'a-second', 'third', 'fourth', 'fifth', 'sixth'].map(id => ({
@@ -14,8 +15,18 @@ const contentList: Item[] = ['z-new', 'a-second', 'third', 'fourth', 'fifth', 's
   description: '요약',
   date: '2026-11-09',
   keywords: 'Network',
-  image: '',
 }));
+
+function createMarkdown(content = '본문'): MarkdownPost {
+  return Object.assign(matter(content), {
+    data: {
+      title: '따옴표 "제목"',
+      description: '테스트 요약',
+      date: '2026-11-09',
+      keywords: '',
+    },
+  });
+}
 
 beforeEach(async () => {
   outputDirectory = await mkdtemp(path.join(tmpdir(), 'blog-api-test-'));
@@ -26,13 +37,13 @@ afterEach(async () => {
 });
 
 test('글 ID 경로에 메타데이터와 본문을 저장하고 원본 Buffer는 제외한다', async () => {
-  const markdown = matter('---\ntitle: "따옴표 \\"제목\\""\ndate: "2026-11-09"\n---\n<script>example()</script> $&\n');
+  const markdown = createMarkdown('<script>example()</script> $&\n');
   await generatePostJSON({ postName: '한글 글', markdown, outputDirectory });
 
   const result: unknown = JSON.parse(await readFile(path.join(outputDirectory, 'api', 'posts', '한글 글', 'index.json'), 'utf8'));
   assert.deepEqual(result, {
     content: '<script>example()</script> $&\n',
-    data: { title: '따옴표 "제목"', date: '2026-11-09' },
+    data: { title: '따옴표 "제목"', description: '테스트 요약', date: '2026-11-09', keywords: '' },
     isEmpty: false,
     excerpt: '',
   });
@@ -85,7 +96,7 @@ test('태그 전체 이름으로 선택한 글을 순서대로 저장한다', as
 test('파일 저장 실패를 호출자에게 전달한다', async () => {
   await writeFile(path.join(outputDirectory, 'api'), 'directory 대신 파일');
 
-  await assert.rejects(generatePostJSON({ postName: 'blocked', markdown: matter('본문'), outputDirectory }), /EEXIST|ENOTDIR/);
+  await assert.rejects(generatePostJSON({ postName: 'blocked', markdown: createMarkdown(), outputDirectory }), /EEXIST|ENOTDIR/);
   await assert.rejects(generateRecentPostLists({ contentList, outputDirectory }), /EEXIST|ENOTDIR/);
   await assert.rejects(generateTagLists({ contentList, tags: { Network: 6 }, outputDirectory }), /EEXIST|ENOTDIR/);
 });
@@ -94,7 +105,7 @@ test('글 ID와 태그의 URL 특수문자를 JSON 파일명에 그대로 보존
   const id = '한글 C# & 100%20';
   const tags = { 'C++': 1, 'C#': 1, 'R&D': 1, '한글 태그': 1, '100%': 1 };
   const posts = [{ ...contentList[0], id, keywords: Object.keys(tags).join(',') }];
-  await generatePostJSON({ postName: id, markdown: matter('본문'), outputDirectory });
+  await generatePostJSON({ postName: id, markdown: createMarkdown(), outputDirectory });
   await generateTagLists({ contentList: posts, tags, outputDirectory });
   assert.equal(JSON.parse(await readFile(path.join(outputDirectory, 'api', 'posts', id, 'index.json'), 'utf8')).content, '본문');
   for (const tag of Object.keys(tags)) {

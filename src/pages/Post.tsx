@@ -1,9 +1,8 @@
 import { useNetworkMount } from "@src/hooks/useMount";
 import { useEffect, useState, lazy, Suspense } from "react";
 import { useLocation } from "react-router";
-import { type GrayMatterFile } from "gray-matter";
 import { updateHead } from "@src/hooks/useHead";
-import { encodePostId, makeURL } from "@shared/common";
+import { encodePostId, makeURL, type PostData, type PostMetadata } from "@shared/common";
 import { Badge } from "@src/ui/badge";
 import { Button } from "@src/ui/button";
 import { Card, CardContent } from "@src/ui/card";
@@ -14,14 +13,7 @@ const LazyMarkdown = lazy(() => import("@src/components/LazyMarkdown"));
 const LazyGiscus = lazy(() => import("@src/components/LazyGiscus"));
 const POST_REQUEST_TIMEOUT_MS = 10_000;
 
-type PostMeta = {
-  title: string;
-  date: string;
-  description: string;
-  keywords: string;
-}
-
-export default function Post({ initialData }: { initialData: GrayMatterFile<string> | null }) {
+export default function Post({ initialData }: { initialData: PostData | null }) {
   const post = decodeURIComponent(useLocation().pathname.slice('/posts/'.length));
   const { networkMountRef } = useNetworkMount();
   const [error, setError] = useState<'request' | 'timeout' | null>(null);
@@ -32,7 +24,7 @@ export default function Post({ initialData }: { initialData: GrayMatterFile<stri
     }
     return null;
   });
-  const [meta, setMeta] = useState<PostMeta>(() => {
+  const [meta, setMeta] = useState<PostMetadata>(() => {
     if (!networkMountRef.current && initialData) {
       return {
         title: initialData.data?.title || '',
@@ -63,7 +55,7 @@ export default function Post({ initialData }: { initialData: GrayMatterFile<stri
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const result: GrayMatterFile<string> = await response.json();
+        const result: PostData = await response.json();
         if (signal.aborted) return;
         setContent(result.content);
         setMeta({

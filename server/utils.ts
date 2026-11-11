@@ -2,9 +2,8 @@ import fs from "node:fs/promises";
 import fsSync from "node:fs";
 import path from 'node:path';
 import matter, { type GrayMatterFile } from "gray-matter";
-import { type InitialData } from "@shared/common.ts";
-import { type Item, type ContentList } from "@server/types.ts";
-export type { Item, ContentList, Render } from "@server/types.ts";
+import { type InitialData, type Item, type ContentList, type TagsData } from "@shared/common.ts";
+import { type MarkdownPost } from "@server/types.ts";
 
 const PROJECT_ROOT = process.cwd();
 const POSTS_DIR = path.join(PROJECT_ROOT, 'content', 'posts');
@@ -33,8 +32,7 @@ function addPostPath(postMap: Map<string, string>, postName: string, filePath: s
   postMap.set(postName, filePath);
 }
 
-export async function readPost(filePath: string): Promise<GrayMatterFile<string>> {
-  const markdown = matter(await fs.readFile(filePath, 'utf8'));
+function validatePost(markdown: GrayMatterFile<string>, filePath: string): asserts markdown is MarkdownPost {
   const metadata: Record<string, unknown> = markdown.data;
 
   for (const field of REQUIRED_META_FIELDS) {
@@ -60,7 +58,11 @@ export async function readPost(filePath: string): Promise<GrayMatterFile<string>
   if (metadata.image !== undefined && typeof metadata.image !== 'string') {
     throw new Error(`Invalid image in ${filePath}: expected a string`);
   }
+}
 
+export async function readPost(filePath: string): Promise<MarkdownPost> {
+  const markdown = matter(await fs.readFile(filePath, 'utf8'));
+  validatePost(markdown, filePath);
   return markdown;
 }
 
@@ -143,7 +145,7 @@ export async function createInitialData(url: string): Promise<InitialData> {
 }
 
 
-export async function getMarkdown(name: string): Promise<GrayMatterFile<string>> {
+export async function getMarkdown(name: string): Promise<MarkdownPost> {
   return readPost(await resolvePostPath(name));
 }
 
@@ -189,14 +191,14 @@ export async function getSortedContentList(): Promise<Item[]> {
     });
   }
   newContentList.sort((a, b) => {
-    const dateA = new Date(a.date as string).getTime();
-    const dateB = new Date(b.date as string).getTime();
+    const dateA = new Date(a.date).getTime();
+    const dateB = new Date(b.date).getTime();
     return dateB - dateA;
   });
   return newContentList;
 }
 
-export async function getTags(): Promise<Record<string, number>> {
+export async function getTags(): Promise<TagsData> {
   const postMap = await getAllPostPaths();
   const tagCount = new Map<string, number>();
 

@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { after, beforeEach, describe, test } from 'node:test';
 import { runInNewContext } from 'node:vm';
-import type { Item } from './types.ts';
+import type { Item } from '@shared/common.ts';
 
 const originalDirectory = process.cwd();
 const projectDirectory = await mkdtemp(path.join(tmpdir(), 'blog-utils-test-'));
@@ -140,6 +140,14 @@ describe('콘텐츠 로딩', () => {
       { id: 'a-old', ...metadata, date: '2025-12-31', image: undefined },
     ]);
   });
+
+  for (const image of [null, 42, ['/img/cover.webp']]) {
+    test(`image가 문자열이 아닌 ${JSON.stringify(image)}이면 거부한다`, async () => {
+      await writePost('2026/invalid-image', { ...metadata, image });
+
+      await assert.rejects(() => getMarkdown('invalid-image'), /Invalid image/);
+    });
+  }
 
   test('글이 없으면 목록과 태그 집계가 비어 있다', async () => {
     assert.deepEqual(await getSortedContentList(), []);

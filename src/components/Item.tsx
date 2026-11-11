@@ -1,23 +1,9 @@
 import { Link } from "react-router";
-import { encodePostId } from "@shared/common";
+import { encodePostId, type Item as ItemType } from "@shared/common";
 import { ReactNode } from "react";
 import { Badge } from "@src/ui/badge";
 import { Calendar } from "lucide-react";
 import { Skeleton } from "@src/ui/skeleton";
-
-export type ItemType = {
-  id: string,
-  title: string,
-  description: string,
-  date: string,
-  image: string,
-  keywords: string,
-}
-
-export type ContentList = {
-  len: number,
-  data: ItemType[]
-}
 
 export function Item({post, loading}: {post?: ItemType, loading?: boolean}) {
   if (loading) {

@@ -1,9 +1,7 @@
 import { useHead } from "@src/hooks/useHead";
-import { SITE_NAME, makeURL, POSTS_PER_PAGE } from "@shared/common";
+import { SITE_NAME, makeURL, POSTS_PER_PAGE, type Item as ItemType, type ContentList } from "@shared/common";
 import { useEffect, useMemo, useState } from "react";
 import {
-  type ItemType,
-  type ContentList,
   Item,
   ItemList
 } from "@src/components/Item";

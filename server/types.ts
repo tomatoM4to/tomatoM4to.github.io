@@ -1,18 +1,7 @@
-import type { InitialData } from "@shared/common.ts";
+import type { GrayMatterFile } from 'gray-matter';
+import type { InitialData, PostData } from "@shared/common.ts";
 
-export type Item = {
-  id: string
-  title: string,
-  description: string,
-  date: string,
-  image: string,
-  keywords: string,
-}
-
-export type ContentList = {
-  len: number,
-  data: Item[]
-}
+export type MarkdownPost = Omit<GrayMatterFile<string>, 'data'> & PostData;
 
 export type Render = ({
   url,
