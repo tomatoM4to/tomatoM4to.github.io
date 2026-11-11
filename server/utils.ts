@@ -168,11 +168,11 @@ export function createHTML({
   body: string,
   initialData: string // JSON
 }) {
-  const safeData = initialData.replace(/</g, '\\u003c');
+  const safeData = JSON.stringify(initialData).replace(/</g, '\\u003c');
   return template.replace(/<!--app-(?:head|html|window)-->/g, marker => {
     if (marker === '<!--app-head-->') return head ?? '';
     if (marker === '<!--app-html-->') return body ?? '';
-    return `<script>window.__INITIAL_DATA__ = ${safeData}</script>`;
+    return `<script>window.__INITIAL_DATA__ = JSON.parse(${safeData})</script>`;
   });
 }
 

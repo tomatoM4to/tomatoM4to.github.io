@@ -275,13 +275,21 @@ test('콘텐츠 이름은 Windows 금지 문자·예약 이름·끝 공백 및 �
 describe('HTML 생성', () => {
   const template = '<head><!--app-head--></head><main><!--app-html--></main><!--app-window-->';
 
+  function restoreData(html: string): unknown {
+    const script = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
+    assert.ok(script);
+    return runInNewContext(`${script}; JSON.stringify(window.__INITIAL_DATA__)`, { window: {} });
+  }
+
   test('템플릿의 본문, 메타 태그, 초기 데이터를 삽입한다', () => {
-    assert.equal(createHTML({
+    const html = createHTML({
       template,
       head: '<title>제목</title>',
       body: '<p>본문</p>',
       initialData: '{"tags":{}}',
-    }), '<head><title>제목</title></head><main><p>본문</p></main><script>window.__INITIAL_DATA__ = {"tags":{}}</script>');
+    });
+    assert.ok(html.startsWith('<head><title>제목</title></head><main><p>본문</p></main>'));
+    assert.equal(restoreData(html), '{"tags":{}}');
   });
 
   for (const field of ['head', 'body', 'initialData'] as const) {
@@ -290,9 +298,20 @@ describe('HTML 생성', () => {
       const input = { template, head: '', body: '', initialData: '{}' };
       input[field] = field === 'initialData' ? JSON.stringify({ content: tokens }) : tokens;
 
-      assert.equal(createHTML(input), `<head>${input.head}</head><main>${input.body}</main><script>window.__INITIAL_DATA__ = ${input.initialData}</script>`);
+      const html = createHTML(input);
+      assert.ok(html.startsWith(`<head>${input.head}</head><main>${input.body}</main>`));
+      assert.equal(restoreData(html), input.initialData);
     });
   }
+
+  test('객체 속성 이름과 문자열 이스케이프를 초기 데이터 복원 뒤에도 보존한다', () => {
+    const data = {
+      tags: Object.fromEntries([['__proto__', 1], ['constructor', 2]]),
+      content: '줄바꿈\n따옴표 " 역슬래시 \\ <끝>',
+    };
+    const html = createHTML({ template, head: '', body: '', initialData: JSON.stringify(data) });
+    assert.equal(restoreData(html), JSON.stringify(data));
+  });
 
   test('삽입한 HTML과 초기 데이터 안의 템플릿 표식을 다시 치환하지 않는다', () => {
     const head = '<title><!--app-html--></title>';

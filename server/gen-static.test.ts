@@ -3,6 +3,7 @@ import { mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, test } from 'node:test';
+import { runInNewContext } from 'node:vm';
 import { generateStaticPages } from './gen-static.ts';
 import type { InitialData } from '@shared/common.ts';
 
@@ -42,16 +43,18 @@ test('경로별 초기 데이터로 페이지를 생성하고 원본 템플릿�
     { url: 'posts/space-post', initialData: { tags: { 'posts/space-post': 1 } } },
   ]);
   assert.equal(await readFile(path.join(outputDirectory, 'template.html'), 'utf8'), template);
-  assert.equal(await readFile(path.join(outputDirectory, 'license.html'), 'utf8'),
-    '<head><title>license</title></head><main><p>license</p></main><script>window.__INITIAL_DATA__ = {"tags":{"license":1}}</script>');
   assert.deepEqual((await readdir(outputDirectory)).sort(), ['index.html', 'license.html', 'posts', 'search.html', 'tags.html', 'template.html']);
   assert.deepEqual((await readdir(path.join(outputDirectory, 'posts'))).sort(), ['C# & C++.html', 'space%20post.html', 'space-post.html', '한글 글.html']);
   assert.match(await readFile(path.join(outputDirectory, 'posts', 'space%20post.html'), 'utf8'), /<p>posts\/space%2520post<\/p>/);
   assert.match(await readFile(path.join(outputDirectory, 'posts', 'space-post.html'), 'utf8'), /<p>posts\/space-post<\/p>/);
-  assert.equal(await readFile(path.join(outputDirectory, 'index.html'), 'utf8'),
-    '<head><title>home</title></head><main><p></p></main><script>window.__INITIAL_DATA__ = {"tags":{"home":1}}</script>');
-  assert.equal(await readFile(path.join(outputDirectory, 'posts', '한글 글.html'), 'utf8'),
-    '<head><title>posts/%ED%95%9C%EA%B8%80%20%EA%B8%80</title></head><main><p>posts/%ED%95%9C%EA%B8%80%20%EA%B8%80</p></main><script>window.__INITIAL_DATA__ = {"tags":{"posts/한글 글":1}}</script>');
+  for (const { url, initialData } of rendered) {
+    const route = decodeURIComponent(url);
+    const html = await readFile(path.join(outputDirectory, route ? `${route}.html` : 'index.html'), 'utf8');
+    assert.ok(html.startsWith(`<head><title>${url || 'home'}</title></head><main><p>${url}</p></main>`));
+    const script = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
+    assert.ok(script);
+    assert.equal(runInNewContext(`${script}; JSON.stringify(window.__INITIAL_DATA__)`, { window: {} }), JSON.stringify(initialData));
+  }
 });
 
 test('콘텐츠 로딩 실패를 호출자에게 전달한다', async () => {

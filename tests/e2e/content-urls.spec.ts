@@ -7,7 +7,7 @@ test.beforeEach(async () => {
 
 test('태그 링크·직접 접속·새로고침이 특수문자를 보존해 정적 JSON을 요청한다', async ({ page }) => {
   await page.goto('/tags', { waitUntil: 'domcontentloaded' });
-  for (const tag of ['C++', 'C#', 'R&D', '한글 태그', '100%', '$&', '$$', '$`', "$'"]) {
+  for (const tag of ['C++', 'C#', 'R&D', '한글 태그', '100%', '__proto__', '$&', '$$', '$`', "$'"]) {
     const link = page.getByRole('link', { name: `${tag} (1)`, exact: true });
     const href = await link.getAttribute('href');
     expect(new URL(href!, 'http://localhost').searchParams.get('tag')).toBe(tag);
