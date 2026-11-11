@@ -1,5 +1,6 @@
 # Project Overview
-- Markdown으로 작성한 글을 제공하는 개인 블로그.
+- Markdown으로 작성한 글을 제공하는 개인 블로그. 실제 사용과 유지보수에 필요한 수준을 기준으로 설계와 변경을 판단한다.
+- 개발·유지보수 편의를 우선하며, 구현을 단순하게 유지하기 위한 추가 요청·대기 등의 비용은 트레이드오프로 수용한다.
 - Express 서버는 개발 및 SSR 실행을 담당한다. 실제 GitHub Pages 배포물은 빌드 시 생성한 정적 HTML·JSON·에셋이다.
 - SSR과 SSG는 렌더러를 공유하지만 실행 시점과 데이터 제공 방식이 달라 동작이 완전히 동일하지는 않다.
 - `Rethinking Web Caching: An Optimization for the Latency-Constrained Internet` 논문을 기반으로 클라이언트에서 캐시 최적화를 수행한다.
