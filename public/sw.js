@@ -148,6 +148,12 @@ self.addEventListener('fetch', (event) => {
 
   event.respondWith(
     (async () => {
+      let cache;
+      try {
+        cache = await caches.open(CACHE_NAME);
+      } catch {
+        return fetch(event.request, { cache: 'no-cache' });
+      }
       /**
        * 1. 내비게이션 및 HTML 전략: 네트워크 우선 (Network-First)
        * 최신 ETag 맵과 메타 태그를 가져오기 위해 항상 네트워크에서 HTML을 먼저 가져옵니다.
@@ -156,13 +162,11 @@ self.addEventListener('fetch', (event) => {
       if (event.request.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname === '/' || url.pathname.startsWith('/posts/')) {
         try {
           const networkResponse = await fetch(event.request, { cache: 'no-cache' });
-          const cache = await caches.open(CACHE_NAME);
           if (networkResponse.ok) {
             event.waitUntil(cache.put(event.request, networkResponse.clone()));
           }
           return networkResponse;
         } catch (err) {
-          const cache = await caches.open(CACHE_NAME);
           const cached = await cache.match(event.request);
           if (cached) return cached;
           throw err;
@@ -173,8 +177,12 @@ self.addEventListener('fetch', (event) => {
        * 2. 에셋 및 API 전략: ETag 매핑 (0-RTT 검증)
        * 미리 계산된 ETag 맵을 사용하여 캐시된 버전이 여전히 유효한지 확인합니다.
        */
-      const cache = await caches.open(CACHE_NAME);
-      const cachedResponse = await cache.match(event.request);
+      let cachedResponse;
+      try {
+        cachedResponse = await cache.match(event.request);
+      } catch {
+        return fetch(event.request, { cache: 'no-cache' });
+      }
 
       const etagMap = await getEtagMap(event.clientId);
       let pathname = url.pathname;

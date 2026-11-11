@@ -93,3 +93,24 @@ test('맵 저장 실패 응답을 받으면 즉시 API 캐시를 우회한다', 
   await expect(page.locator('section h3')).toHaveText(POSTS_A);
   expect(await page.evaluate(() => (performance.getEntriesByName('app:cache-sync')[0] as PerformanceMeasure).detail.status)).toBe('bypass');
 });
+
+for (const failure of ['open', 'match'] as const) {
+  test(`SW 캐시 ${failure} 실패가 정상 네트워크 응답을 막지 않는다`, async ({ page, context }) => {
+    await page.goto('/license');
+    await expect(page.getByRole('button', { name: /Switch to (light|dark) mode/ })).toBeVisible();
+    const worker = context.serviceWorkers()[0];
+    expect(worker).toBeTruthy();
+    await worker.evaluate(async method => {
+      if (method === 'open') {
+        caches.open = async () => { throw new Error('test: cache storage unavailable'); };
+      } else {
+        const cache = await caches.open('tomato-etag-cache-v3');
+        Object.getPrototypeOf(cache).match = async () => { throw new Error('test: cache lookup unavailable'); };
+      }
+    }, failure);
+    await page.goto('/');
+    await expect(page.locator('section h3')).toHaveText(POSTS_A);
+    await expect(page.getByRole('alert')).toHaveCount(0);
+    expect(await page.evaluate(async path => (await fetch(path)).ok, RECENT_PATH)).toBe(true);
+  });
+}
