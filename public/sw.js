@@ -17,6 +17,7 @@ const CACHE_NAME = 'tomato-etag-cache-v3';
 const ETAG_MAP_CACHE_KEY = '/__etag_map__';
 const ETAG_MAP_CACHE_PREFIX = `${ETAG_MAP_CACHE_KEY}/`;
 const CACHE_BYPASS_PARAM = '__sw_bypass';
+const MAP_PROTOCOL_VERSION = 1;
 
 /**
  * 서비스 워커 설치(Install) 이벤트
@@ -71,7 +72,7 @@ self.addEventListener('message', (event) => {
       const cache = await caches.open(CACHE_NAME);
       await cache.put(`${ETAG_MAP_CACHE_PREFIX}${clientId}`, new Response(JSON.stringify(etagMap)));
       // 메시지 수신이 아니라 저장 완료를 확인한 뒤 클라이언트의 hydration을 허용한다.
-      port?.postMessage({ type: 'ETAG_MAP_READY' });
+      port?.postMessage({ type: 'ETAG_MAP_READY', protocolVersion: MAP_PROTOCOL_VERSION });
     } catch (error) {
       console.error('Failed to save ETag map', error);
       port?.postMessage({ type: 'ETAG_MAP_ERROR' });
