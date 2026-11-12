@@ -1,7 +1,6 @@
 import { Link } from "react-router";
 import { encodePostId, type Item as ItemType } from "@shared/common";
 import { ReactNode } from "react";
-import { Badge } from "@src/ui/badge";
 import { Calendar } from "lucide-react";
 import { Skeleton } from "@src/ui/skeleton";
 
@@ -49,9 +48,9 @@ export function Item({post, loading}: {post?: ItemType, loading?: boolean}) {
           </div>
           <div className="flex gap-2 flex-wrap">
             {post.keywords.split(',').map((tag) => (
-              <Badge key={tag.trim()} variant="secondary" className="text-sm px-2.5 py-0.5 font-normal rounded-md transition-transform duration-200 group-hover:scale-105">
+              <span key={tag.trim()} className="text-sm font-normal text-muted-foreground whitespace-nowrap">
                 {tag.trim()}
-              </Badge>
+              </span>
             ))}
           </div>
         </div>

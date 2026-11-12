@@ -3,7 +3,6 @@ import { useEffect, useState, lazy, Suspense } from "react";
 import { useLocation } from "react-router";
 import { updateHead } from "@src/hooks/useHead";
 import { encodePostId, makeURL, type PostData, type PostMetadata } from "@shared/common";
-import { Badge } from "@src/ui/badge";
 import { Button } from "@src/ui/button";
 import { Card, CardContent } from "@src/ui/card";
 import { Calendar } from "lucide-react";
@@ -127,13 +126,12 @@ export default function Post({ initialData }: { initialData: PostData | null }) 
               {meta.keywords && (
                 <div className="flex gap-2 flex-wrap">
                   {meta.keywords.split(',').map((tag) => (
-                    <Badge
+                    <span
                       key={tag.trim()}
-                      variant="secondary"
-                      className="inline-flex text-sm px-2.5 py-0.5 font-normal rounded-md transition-transform duration-200 hover:scale-105 cursor-default"
+                      className="text-sm font-normal text-muted-foreground whitespace-nowrap"
                     >
                       {tag.trim()}
-                    </Badge>
+                    </span>
                   ))}
                 </div>
               )}

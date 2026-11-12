@@ -2,7 +2,7 @@
 @layer components {
   .markdown {
     color: var(--foreground);
-    line-height: 1.8;
+    line-height: 1.6;
     font-size: 1.1rem;
     word-break: keep-all;
     overflow-wrap: break-word;

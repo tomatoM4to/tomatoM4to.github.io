@@ -116,14 +116,14 @@ export default function Tag({ initialTags, initialTag }: TagProps) {
           <Badge
             key={tagName}
             variant={tag === tagName ? "default" : "outline"}
-            className={`text-sm px-3 py-1 cursor-pointer transition-all duration-200 hover:scale-105 ${
+            className={`text-sm px-3 py-1 cursor-pointer ${
               tag === tagName
                 ? "!bg-foreground !text-background hover:!bg-foreground/90"
                 : "hover:!bg-foreground hover:!text-background"
             }`}
             asChild
           >
-            <Link to={`?${new URLSearchParams({ tag: tagName })}`}>
+            <Link to={`?${new URLSearchParams({ tag: tagName })}`} aria-current={tag === tagName ? "true" : undefined}>
               {tagName} ({count})
             </Link>
           </Badge>
