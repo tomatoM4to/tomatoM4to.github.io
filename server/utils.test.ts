@@ -76,6 +76,12 @@ describe('글 경로 탐색', () => {
       assert.equal((await getPaths()).size, 0);
     });
 
+    test(`${name}: 정적 HTML 주소와 충돌하는 글 ID를 거부한다`, async () => {
+      await writePost('2026/probe');
+      await writePost('2026/probe.html');
+      await assert.rejects(async () => { await getPaths(); }, /post ID must not end with \.html/);
+    });
+
     test(`${name}: 생성 파일명 한도를 넘는 ID를 원본 경로와 함께 거부한다`, async () => {
       const id = 'a'.repeat(251);
       await writePost(`2026/${id}`);
@@ -255,6 +261,14 @@ describe('태그', () => {
     assert.deepEqual(await getItemFromTag(items, 'Script'), { len: 0, data: [] });
     assert.equal(items.length, 3);
   });
+});
+
+test('HTML 접미사는 글 ID에서만 대소문자 구분 없이 거부한다', () => {
+  for (const name of ['probe.html', 'probe.HTML', 'probe.HtMl']) {
+    assert.throws(() => validateContentName(name, 'post ID', 'source/index.md'), /post ID must not end with \.html/);
+    assert.doesNotThrow(() => validateContentName(name, 'tag', 'source/index.md'));
+  }
+  assert.doesNotThrow(() => validateContentName('probe.html-notes', 'post ID', 'source/index.md'));
 });
 
 test('콘텐츠 이름은 Windows 금지 문자·예약 이름·끝 공백 및 생성 파일명 길이를 검사한다', () => {

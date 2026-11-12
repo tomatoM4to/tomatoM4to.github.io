@@ -2,6 +2,7 @@
 빠른 개발용 SSR의 렌더러를 빌드 시점에 재사용해 HTML을 만들고, 클라이언트 요청에 사용할 JSON을 에셋으로 생성한다. 요청마다 렌더링하는 SSR 환경과 동작이 완전히 같지는 않으며, 최종 서비스는 Express 없이 GitHub Pages에서 정적 HTML·JSON·에셋으로 제공한다.
 
 # Checkpoints
+- 글 ID는 대소문자와 무관하게 `.html`로 끝날 수 없다. `probe`와 `probe.html`을 함께 허용하면 [정적 서버의 파일 우선 탐색](../nginx/default.conf.template)에서 `/posts/probe.html`이 다른 글의 HTML을 반환하므로, [공통 이름 검증](../server/utils.ts)에서 거부한다. 태그에는 이 제한을 적용하지 않는다.
 - [생성 모듈](../server/gen-static.ts)은 import 시 콘텐츠나 빌드 산출물을 읽지 않는다. [HTML 실행 진입점](../server/build-static.ts)과 [JSON 실행 진입점](../server/build-api.ts)이 실제 입력을 준비하며, 생성 함수는 전달받은 데이터·렌더러·출력 경로만 사용한다. 빌드 경로를 고정하거나 실행을 import에 결합하지 않아야 [격리된 생성기 테스트](testing.md#서버-유닛-테스트)를 유지할 수 있다.
 - [HTML 생성 대상](../server/gen-static.ts)은 `/`, `/search`, `/tags`, `/license`, `/posts/<글 ID>`다. 루트는 `index.html`, 나머지는 `<경로>.html`로 저장한다. Footer 등에서 노출하는 페이지는 정적 HTML도 제공해 직접 접속과 새로고침을 지원해야 한다.
 - 글 ID는 연도를 제외한 폴더명이다. HTML·JSON·ETag 키는 원문을 유지하고 URL 경계에서만 인코딩한다. 파일명을 자동 치환하면 서로 다른 ID가 같은 산출물을 덮어쓸 수 있으므로 [생성기 테스트](../server/gen-static.test.ts)에서 `%20` 리터럴과 하이픈 이름의 독립성을 유지한다.

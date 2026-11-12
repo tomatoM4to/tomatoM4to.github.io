@@ -16,6 +16,7 @@ const MAX_FILENAME_BYTES = 255;
 export function validateContentName(name: string, field: 'post ID' | 'tag', filePath: string) {
   let reason = '';
   if (!name) reason = 'expected a non-empty filename';
+  else if (field === 'post ID' && /\.html$/i.test(name)) reason = 'post ID must not end with .html';
   else if (INVALID_FILENAME_CHARACTERS.test(name)) reason = 'contains a forbidden filename character';
   else if (/[. ]$/.test(name)) reason = 'filename must not end with a dot or space';
   else if (RESERVED_FILENAME.test(name)) reason = 'reserved Windows filename';
