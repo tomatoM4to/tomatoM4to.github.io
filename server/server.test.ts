@@ -100,7 +100,20 @@ test('태그 집계는 HTML 초기 스크립트 실행 뒤에도 객체 속성 �
   const script = html.match(/<script>(window\.__INITIAL_DATA__ = [\s\S]*?)<\/script>/)?.[1];
   assert.ok(script);
   assert.equal(runInNewContext(`${script}; JSON.stringify(window.__INITIAL_DATA__.tags)`, { window: {} }), '{"all-tags":1,"__proto__":1}');
+  assert.equal(runInNewContext(`${script}; window.__INITIAL_DATA__.selectedTag`, { window: {} }), 'all-tags');
   assert.ok(html.replace(/<!--[\s\S]*?-->/g, '').includes('all-tags 태그가 포함된 글'));
+});
+
+test('SSR 태그 선택은 쿼리를 한 번 해석해 HTML과 초기 데이터에 동일하게 전달한다', async () => {
+  for (const tag of ['all-tags', 'C++', 'C#', 'R&D', '한글 태그', '100%20', '__proto__']) {
+    const response = await fetch(`${baseURL}/tags?${new URLSearchParams({ tag, page: '2' })}`);
+    assert.equal(response.status, 200);
+    const html = await response.text();
+    const script = html.match(/<script>(window\.__INITIAL_DATA__ = [\s\S]*?)<\/script>/)?.[1];
+    assert.ok(script);
+    assert.equal(runInNewContext(`${script}; window.__INITIAL_DATA__.selectedTag`, { window: {} }), tag);
+    assert.ok(html.replace(/<!--[\s\S]*?-->/g, '').includes(`${tag.replace(/&/g, '&amp;')} 태그가 포함된 글`));
+  }
 });
 
 test('글의 쿼리는 콘텐츠 조회와 canonical에서 제외하고 원문 ID는 한 번만 디코딩한다', async () => {

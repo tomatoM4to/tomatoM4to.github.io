@@ -32,6 +32,7 @@ export type ContentList = {
 export type InitialData = {
   post?: PostData;
   tags: TagsData;
+  selectedTag?: string | null;
 };
 
 export function encodePostId(id: string): string {

@@ -22,7 +22,7 @@ export default function App({ initialData }: { initialData: InitialData }) {
             <Route path="/" element={<Home />} />
             <Route path="/posts/:post" element={<Post initialData={initialData.post ?? null} />} />
             <Route path='/search' element={<Search />} />
-            <Route path='/tags' element={<Tag initialTags={initialData.tags} />} />
+            <Route path='/tags' element={<Tag initialTags={initialData.tags} initialTag={initialData.selectedTag ?? null} />} />
             <Route path='/license' element={
               <Suspense fallback={<></>}>
                 <License />

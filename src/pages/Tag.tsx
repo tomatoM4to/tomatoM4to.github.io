@@ -1,4 +1,5 @@
 import { useHead } from "@src/hooks/useHead";
+import { useMount } from "@src/hooks/useMount";
 import { useEffect, useState } from "react";
 import { makeURL, SITE_NAME, POSTS_PER_PAGE, type TagsData, type ContentList } from "@shared/common";
 import { ItemList, Item } from "@src/components/Item";
@@ -12,6 +13,7 @@ const LIST_REQUEST_TIMEOUT_MS = 10_000;
 
 type TagProps = {
   initialTags: TagsData;
+  initialTag: string | null;
 };
 
 const CS_TAGS = new Set([
@@ -39,9 +41,10 @@ type TagEntry = [tagName: string, count: number];
 
 const sortTagEntry = ([a]: TagEntry, [b]: TagEntry) => a.localeCompare(b, 'ko');
 
-export default function Tag({ initialTags }: TagProps) {
+export default function Tag({ initialTags, initialTag }: TagProps) {
   const [searchParams] = useSearchParams();
-  const tag = searchParams.get('tag');
+  const { isMount } = useMount();
+  const tag = isMount ? searchParams.get('tag') : initialTag;
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
   const [contentList, setContentList] = useState<ContentList | null>(null);
   const [totalPage, setTotalPage] = useState<number>(1);

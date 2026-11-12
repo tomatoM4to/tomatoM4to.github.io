@@ -123,10 +123,10 @@ describe('콘텐츠 로딩', () => {
     assert.equal(result.post?.content, '# 테스트 본문\n');
   });
 
-  test('목록 화면의 초기 데이터에는 태그 집계만 포함한다', async () => {
+  test('태그 화면의 초기 데이터는 선택 없음과 태그 집계를 포함한다', async () => {
     await writePost('2026/selected');
 
-    assert.deepEqual(await createInitialData('tags'), { tags: { Network: 1, JavaScript: 1 } });
+    assert.deepEqual(await createInitialData('tags'), { tags: { Network: 1, JavaScript: 1 }, selectedTag: null });
   });
 
   test('posts 부분 문자열이 있는 다른 경로를 글 상세로 판별하지 않는다', async () => {

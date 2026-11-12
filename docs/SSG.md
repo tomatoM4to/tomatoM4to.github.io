@@ -13,7 +13,7 @@
 - 전체 태그 집계는 HTML에 주입된 `initialData.tags`를 사용한다. 태그별 API의 이름 공간에는 집계용 예약 경로를 두지 않는다. `all-tags`도 일반 태그이며 [SSR 통합 테스트](../server/server.test.ts)에서 동일한 글 목록 계약을 검증한다.
 - 빌드는 클라이언트·서버 번들 → HTML → JSON → [ETag 맵 주입](ETag-Map.md) 순서다. 일부 단계만 실행하면 최신 배포 산출물이 완성되지 않는다. [배포 워크플로](../.github/workflows/deploy.yml)는 `npm run build` 후 `dist/`를 업로드한다.
 - `npm run start:ssg`는 산출물의 로컬 확인용이다. 서버별 URL 해석이 다를 수 있으므로 확장자 없는 직접 접근과 새로고침은 GitHub Pages에서도 확인해야 한다. SPA 내부 이동 성공만으로 해당 HTML 파일의 존재를 판단할 수 없다.
-- 태그 HTML은 선택 쿼리 없이 생성된다. `/tags?tag=...` 직접 접속에서는 초기 HTML과 클라이언트의 선택 상태가 달라 React의 hydration 복구 경고가 발생할 수 있다. 초기 HTML에는 태그 목록이 표시되며, 선택한 태그의 글 목록은 hydration 복구 후 JSON을 조회해 표시한다. 직접 접속·새로고침 후 조회가 동작하는 현재 상태를 수용한 제약이며, hydration 불일치 자체는 수정 대상에 포함하지 않는다. 검증 범위는 [테스트 문서](testing.md#재현-조건과-판정)를 따르며, 요청 쿼리로 렌더링하는 [Express SSR](SSR.md)과 구분해야 한다.
+- 태그의 정적 HTML은 선택 쿼리 없이 `/tags.html` 하나만 생성한다. 초기 데이터의 `selectedTag`는 `null`이며, [태그 화면](../src/pages/Tag.tsx)은 첫 클라이언트 렌더도 같은 선택 상태로 유지한 뒤 마운트 후 URL의 태그를 적용한다. `/tags?tag=...` 직접 접속·새로고침은 hydration 복구 없이 동작해야 한다. 선택한 글 목록은 기존 JSON으로 조회하며, 요청 시점의 선택 태그를 초기 데이터에 담는 [Express SSR](SSR.md)과 데이터 제공 시점만 구분한다.
 
 # Diagrams
 ## 정적 산출물 생성과 배포 후 사용

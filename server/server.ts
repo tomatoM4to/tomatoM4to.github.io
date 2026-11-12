@@ -149,6 +149,9 @@ app.use('*all', async (req, res) => {
     }
 
     const initialData = await createInitialData(contentPath);
+    if (contentPath === 'tags') {
+      initialData.selectedTag = new URLSearchParams(url.slice(pathname.length)).get('tag');
+    }
 
     let template: string;
     /** @type {import('../src/entry-server.tsx').render} */

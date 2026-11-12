@@ -14,6 +14,7 @@
 - 태그는 쿼리 값과 API 경로의 인코딩 규칙을 구분한다. 글 ID는 원래 pathname에서 한 번 디코딩해 사용한다. 라우터의 매개변수는 리터럴 `%2F`까지 `/`로 바꿀 수 있으므로 [URL 회귀 테스트](../tests/e2e/content-urls.spec.ts)에서 원문 ID·상세 API·canonical의 일치를 확인한다.
 - 글 링크는 기존 한글·공백·`&`·쉼표의 pathname 표기를 유지한다. [Giscus의 pathname 매핑](https://github.com/giscus/giscus/blob/main/client.ts)은 URL 표기를 댓글 검색어로 사용하므로 불필요한 추가 인코딩으로 기존 댓글 연결이 달라지지 않도록 한다. `#`와 `%`는 URL 경계를 보존하도록 이스케이프한다.
 - [Mount Context](../src/context/Mount.tsx)는 초기 렌더링과 이후 탐색을 구분한다. 글 상세는 처음에는 주입 데이터를 사용하고, 이후에는 API를 요청한다. 메타 태그도 초기 HTML 생성과 클라이언트 갱신 경로가 나뉜다.
+- 태그 화면의 첫 렌더는 HTML과 동일한 `initialData.selectedTag`를 사용한다. Express는 쿼리의 선택 태그를 전달하므로 원본 HTML의 선택 표시를 유지하고, 마운트 후에는 URL을 기준으로 탐색한다. SSG의 쿼리 없는 초기 HTML과도 같은 계약으로 hydration을 유지하며, [SSR 통합 테스트](../server/server.test.ts)에서 쿼리 해석과 초기 데이터·본문 선택의 일치를 검증한다.
 - 초기 메타 태그에 들어가는 제목과 설명은 HTML이 아닌 텍스트다. [메타 생성 함수](../server/meta.ts)를 React 렌더링과 분리해 [태그·속성 경계 보존 테스트](../tests/e2e/metadata.spec.ts)를 직접 적용한다.
 - [HTML 삽입](../server/utils.ts)은 원본 템플릿의 삽입 지점만 처리해야 한다. 본문 속 같은 표식과 치환 토큰은 원문으로 보존하고, 초기 JSON은 스크립트 경계를 닫지 않으면서 동일한 데이터로 복원되어야 한다. `__proto__` 같은 태그도 데이터 키이므로 JavaScript 객체 리터럴의 특수 속성 의미를 적용해서는 안 된다. [초기 데이터 회귀 테스트](../server/utils.test.ts)와 [SSR 통합 테스트](../server/server.test.ts)가 복원 경계를 검증한다.
 - 페이지 이동이나 화면 이탈 뒤에는 이전 요청이 본문·메타데이터·로딩 상태를 갱신할 수 없다. 네트워크 취소 이후에도 JSON 처리 결과가 도착할 수 있으므로 [요청 수명 회귀 테스트](../tests/e2e/request-failures.spec.ts)의 두 경계를 함께 유지한다.

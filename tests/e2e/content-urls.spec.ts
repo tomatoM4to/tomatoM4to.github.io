@@ -1,11 +1,23 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import { selectRelease } from '../support/static-site';
+
+function collectHydrationErrors(page: Page) {
+  const errors: string[] = [];
+  page.on('console', message => {
+    if (/hydrat|server.rendered|Minified React error #(418|419|421|422|423|424|425)\b/i.test(message.text())) {
+      errors.push(message.text());
+    }
+  });
+  page.on('pageerror', error => errors.push(error.message));
+  return errors;
+}
 
 test.beforeEach(async () => {
   await selectRelease('a');
 });
 
 test('태그 링크·직접 접속·새로고침이 특수문자를 보존해 정적 JSON을 요청한다', async ({ page }) => {
+  const hydrationErrors = collectHydrationErrors(page);
   await page.goto('/tags', { waitUntil: 'domcontentloaded' });
   for (const tag of ['C++', 'C#', 'R&D', '한글 태그', '100%', 'all-tags', '__proto__', '$&', '$$', '$`', "$'"]) {
     const link = page.getByRole('link', { name: `${tag} (1)`, exact: true });
@@ -20,6 +32,36 @@ test('태그 링크·직접 접속·새로고침이 특수문자를 보존해 �
     expect(reloaded?.status()).toBe(200);
     await expect(page.locator('h3')).toHaveText(['cache-existing']);
   }
+  expect(hydrationErrors).toEqual([]);
+});
+
+test('정적 태그 쿼리는 초기 HTML과 일치하게 hydration하고 URL의 선택과 페이지를 적용한다', async ({ page }) => {
+  const hydrationErrors = collectHydrationErrors(page);
+  const posts = Array.from({ length: 6 }, (_, index) => ({
+    id: `query-post-${index}`, title: `선택 페이지 글 ${index}`, description: '', date: '2026-11-11', keywords: 'C++',
+  }));
+  await page.route(url => url.pathname === '/api/tags/C%2B%2B.json', route => route.fulfill({
+    json: { len: posts.length, data: posts },
+  }));
+  const url = `/tags?${new URLSearchParams({ tag: 'C++', page: '2' })}`;
+  await page.goto(url, { waitUntil: 'domcontentloaded' });
+  expect(await page.evaluate(() => window.__INITIAL_DATA__.selectedTag)).toBeNull();
+  await expect(page.getByRole('heading', { name: 'C++ 태그가 포함된 글', exact: true })).toBeVisible();
+  await expect(page.locator('h3')).toHaveText(['선택 페이지 글 5']);
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await expect(page.locator('h3')).toHaveText(['선택 페이지 글 5']);
+
+  await page.getByRole('link', { name: 'Cache (1)', exact: true }).click();
+  await expect(page.locator('h3')).toHaveText(['cache-existing']);
+  await page.getByRole('link', { name: '태그', exact: true }).click();
+  await expect(page.locator('h2')).toHaveCount(0);
+  await expect(page.locator('h3')).toHaveCount(0);
+  await page.goBack();
+  await expect(page.locator('h3')).toHaveText(['cache-existing']);
+  await page.goBack();
+  await expect(page).toHaveURL(url);
+  await expect(page.locator('h3')).toHaveText(['선택 페이지 글 5']);
+  expect(hydrationErrors).toEqual([]);
 });
 
 test('글 링크와 상세 API·canonical은 원래 ID를 한 번 인코딩한다', async ({ page }) => {
