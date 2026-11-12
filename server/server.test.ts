@@ -134,3 +134,10 @@ test('존재하지 않거나 올바른 정수가 아닌 최근 글 페이지를 
     assert.equal(response.status, 404, page);
   }
 });
+
+test('허용되지 않는 글 주소는 콘텐츠 로딩 전에 404로 처리한다', async () => {
+  for (const pathname of ['/posts/probe/extra', '/posts/probe%2Fextra', '/posts/probe%5Cextra', '/posts/probe.html', '/posts/CON', '/posts/end.', '/posts/%00']) {
+    const response = await fetch(`${baseURL}${pathname}`);
+    assert.equal(response.status, 404, pathname);
+  }
+});

@@ -3,6 +3,8 @@
 
 # Checkpoints
 
+- 글 주소의 ID는 콘텐츠 로딩 전에 [공통 이름 정책](../server/utils.ts)으로 검사하며, 하위 경로·금지 이름은 404로 처리한다. URL 입력 오류와 실제 콘텐츠의 검증 실패를 구분해, 콘텐츠 오류가 404로 숨겨지지 않도록 한다. [HTTP 계약 테스트](../server/server.test.ts)가 이 경계를 검증한다.
+
 - [공통 렌더러](../src/entry-server.tsx)는 `renderToPipeableStream`의 결과를 문자열로 모아 반환한다. Express의 HTTP 응답에 직접 스트리밍하지 않는다.
 - [초기 데이터](../server/utils.ts)는 모든 페이지의 태그 집계와 글 상세의 `post`를 포함한다. 홈 목록·검색 데이터·선택한 태그의 글 목록은 브라우저에서 JSON을 요청하므로 전체 화면이 서버에서 완성되지는 않는다.
 - 콘텐츠 조회·Vite 템플릿 변환·메타데이터와 canonical URL은 쿼리를 제외한 경로를 기준으로 한다. 태그 선택과 페이지 번호를 유지하기 위해 React Router에는 쿼리를 포함한 URL을 전달한다.

@@ -10,7 +10,8 @@ import {
   createTemplate,
   createHTML,
   getSortedContentList,
-  getItemFromTag
+  getItemFromTag,
+  validateContentName
 } from '@server/utils.ts';
 import { POSTS_PER_PAGE, type Item, type ContentList } from '@shared/common.ts';
 import type { Render } from '@server/types.ts';
@@ -134,9 +135,17 @@ app.use('*all', async (req, res) => {
     const url = req.originalUrl.replace(base, '')
     const pathname = url.split('?', 1)[0]
     const contentPath = decodeURIComponent(pathname);
-    if (!PAGE_ROUTES.has(contentPath) && !(contentPath.startsWith('posts/') && contentPath.length > 'posts/'.length)) {
-      res.sendStatus(404);
-      return;
+    if (!PAGE_ROUTES.has(contentPath)) {
+      if (!contentPath.startsWith('posts/')) {
+        res.sendStatus(404);
+        return;
+      }
+      try {
+        validateContentName(contentPath.slice('posts/'.length), 'post ID', req.originalUrl);
+      } catch {
+        res.sendStatus(404);
+        return;
+      }
     }
 
     const initialData = await createInitialData(contentPath);
