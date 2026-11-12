@@ -1,19 +1,14 @@
 # Overview
-빠른 개발용 SSR의 렌더러를 빌드 시점에 재사용해 HTML을 만들고, 클라이언트 요청에 사용할 JSON을 에셋으로 생성한다. 요청마다 렌더링하는 SSR 환경과 동작이 완전히 같지는 않으며, 최종 서비스는 Express 없이 GitHub Pages에서 정적 HTML·JSON·에셋으로 제공한다.
+공통 SSR 렌더러를 빌드 시점에 재사용해 HTML을 만들고, 클라이언트 요청에 사용할 JSON을 에셋으로 생성한다.
 
 # Checkpoints
-- 글 ID는 대소문자와 무관하게 `.html`로 끝날 수 없다. `probe`와 `probe.html`을 함께 허용하면 [정적 서버의 파일 우선 탐색](../nginx/default.conf.template)에서 `/posts/probe.html`이 다른 글의 HTML을 반환하므로, [공통 이름 검증](../server/utils.ts)에서 거부한다. 태그에는 이 제한을 적용하지 않는다.
-- [생성 모듈](../server/gen-static.ts)은 import 시 콘텐츠나 빌드 산출물을 읽지 않는다. [HTML 실행 진입점](../server/build-static.ts)과 [JSON 실행 진입점](../server/build-api.ts)이 실제 입력을 준비하며, 생성 함수는 전달받은 데이터·렌더러·출력 경로만 사용한다. 빌드 경로를 고정하거나 실행을 import에 결합하지 않아야 [격리된 생성기 테스트](testing.md#서버-유닛-테스트)를 유지할 수 있다.
-- [HTML 생성 대상](../server/gen-static.ts)은 `/`, `/search`, `/tags`, `/license`, `/posts/<글 ID>`다. 루트는 `index.html`, 나머지는 `<경로>.html`로 저장한다. Footer 등에서 노출하는 페이지는 정적 HTML도 제공해 직접 접속과 새로고침을 지원해야 한다.
-- 글 ID는 연도를 제외한 폴더명이다. HTML·JSON·ETag 키는 원문을 유지하고 URL 경계에서만 인코딩한다. 파일명을 자동 치환하면 서로 다른 ID가 같은 산출물을 덮어쓸 수 있으므로 [생성기 테스트](../server/gen-static.test.ts)에서 `%20` 리터럴과 하이픈 이름의 독립성을 유지한다.
-- 글 ID·태그는 Windows 금지 문자·예약 이름·끝 공백/마침표를 거부한다. 생성 파일명은 확장자를 포함해 UTF-8 255바이트로 제한한다. 한글·공백·`+ # & %`는 허용하며, 태그의 쉼표는 front matter 구분자다. 이는 [Windows 이름 규칙](https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file)과 [Linux 파일명 제약](https://man7.org/linux/man-pages/man7/pathname.7.html)을 바탕으로 정한 배포 정책이며, 전체 경로 길이나 파일시스템별 유니코드 정규화까지 보장하지 않는다.
-- 중복 글 ID와 잘못된 메타데이터는 자동 보정하거나 덮어쓰지 않고 빌드를 실패시킨다. [공통 콘텐츠 로더](../server/utils.ts)의 문자열 필드·실제 날짜 검증을 HTML·상세 JSON·목록·태그 집계에서 동일하게 적용해야 한다. 날짜는 `YYYY-MM-DD` 문자열이며 `image`는 생략할 수 있다.
-- HTML 초기 데이터와 JSON 응답은 [공유 데이터 계약](../shared/common.ts)을 사용한다. Markdown 파서의 반환 타입을 브라우저 계약으로 사용하지 않으며, [콘텐츠 로더](../server/utils.ts)의 런타임 검증을 통과한 메타데이터만 해당 타입으로 취급한다. `image`의 선택 필드는 향후 확장을 위한 것으로 현재 대표 이미지 지원을 뜻하지 않는다.
-- [정적 API 생성기](../server/gen-api-resource.ts)는 글 상세, 페이지별 최근 글, 태그별 글 목록 JSON을 만든다. 목록 계약은 `{ len, data }`이며, 최근 글은 페이지 단위로 생성하고 태그별 목록은 브라우저에서 페이지를 나눈다. 글이 없어도 홈·검색의 첫 요청은 빈 성공 응답이어야 한다. [빈 목록 생성 테스트](../server/gen-api-resource.test.ts)가 이를 검증한다.
-- 전체 태그 집계는 HTML에 주입된 `initialData.tags`를 사용한다. 태그별 API의 이름 공간에는 집계용 예약 경로를 두지 않는다. `all-tags`도 일반 태그이며 [SSR 통합 테스트](../server/server.test.ts)에서 동일한 글 목록 계약을 검증한다.
-- 빌드는 클라이언트·서버 번들 → HTML → JSON → [ETag 맵 주입](ETag-Map.md) 순서다. 일부 단계만 실행하면 최신 배포 산출물이 완성되지 않는다. [배포 워크플로](../.github/workflows/deploy.yml)는 `npm run build` 후 `dist/`를 업로드한다.
-- `npm run start:ssg`는 산출물의 로컬 확인용이다. 서버별 URL 해석이 다를 수 있으므로 확장자 없는 직접 접근과 새로고침은 GitHub Pages에서도 확인해야 한다. SPA 내부 이동 성공만으로 해당 HTML 파일의 존재를 판단할 수 없다.
-- 태그의 정적 HTML은 선택 쿼리 없이 `/tags.html` 하나만 생성한다. 초기 데이터의 `selectedTag`는 `null`이며, [태그 화면](../src/pages/Tag.tsx)은 첫 클라이언트 렌더도 같은 선택 상태로 유지한 뒤 마운트 후 URL의 태그를 적용한다. `/tags?tag=...` 직접 접속·새로고침은 hydration 복구 없이 동작해야 한다. 선택한 글 목록은 기존 JSON으로 조회하며, 요청 시점의 선택 태그를 초기 데이터에 담는 [Express SSR](SSR.md)과 데이터 제공 시점만 구분한다.
+
+SSR과의 초기 데이터 차이는 [설계 정책](design-decisions.md#설계-전제와-정책), 빌드·JSON 비용은 [트레이드오프](design-decisions.md#수용한-트레이드오프), 콘텐츠 이름과 메타데이터의 허용 범위는 [알려진 제약](design-decisions.md#지원-범위와-알려진-제약)을 따른다. 로컬 서빙의 보장 범위는 [검증 범위](design-decisions.md#검증-범위와-해석)에서 관리한다.
+
+- 생성 모듈의 import는 콘텐츠나 산출물 읽기를 시작하지 않는다. 실행 진입점이 입력을 준비하고 생성 함수는 전달받은 데이터·렌더러·출력 경로를 사용해야 임시 입력으로 격리 검증할 수 있다. [HTML 생성](../server/gen-static.ts) · [JSON 생성](../server/gen-api-resource.ts) · [생성기 테스트](testing.md#서버-유닛-테스트)
+- 새 페이지를 링크로 노출하면 정적 HTML 생성 대상에도 포함해야 한다. 라우터만 추가해 SPA 탐색이 성공해도 직접 접속에 필요한 파일은 생기지 않는다. [HTML 생성 대상](../server/gen-static.ts) · [정적 라우팅 테스트](../tests/e2e/static-site.spec.ts)
+- 초기 HTML과 JSON 응답은 [공유 데이터 계약](../shared/common.ts)을 사용한다. Markdown 파서의 반환 타입을 브라우저 계약으로 사용하지 않으며, [콘텐츠 로더](../server/utils.ts)의 런타임 검증을 통과한 메타데이터만 해당 타입으로 취급한다.
+- 목록의 `{ len, data }` 계약에서 글이 없어도 홈·검색의 첫 요청은 빈 성공 응답이어야 한다. 전체 태그 집계는 `initialData.tags`로 전달하므로 태그별 API에 집계용 예약 경로를 두지 않는다. `all-tags`도 일반 태그다. [빈 목록 생성 테스트](../server/gen-api-resource.test.ts) · [태그 API 테스트](../server/server.test.ts)
 
 # Diagrams
 ## 정적 산출물 생성과 배포 후 사용
