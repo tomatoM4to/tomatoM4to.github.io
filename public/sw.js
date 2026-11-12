@@ -11,7 +11,8 @@
  */
 
 /** @type {string} 캐시 스토리지 이름 - 이전 캐시를 삭제하려면 버전을 올리세요. */
-const CACHE_NAME = 'tomato-etag-cache-v3';
+const CACHE_NAME_PREFIX = 'tomato-etag-cache-';
+const CACHE_NAME = `${CACHE_NAME_PREFIX}v3`;
 
 /** @type {string} 캐시 내에 ETag 맵을 저장하기 위해 사용하는 내부 키 */
 const ETAG_MAP_CACHE_KEY = '/__etag_map__';
@@ -37,7 +38,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
+          if (cacheName.startsWith(CACHE_NAME_PREFIX) && cacheName !== CACHE_NAME) {
             console.log('[SW] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }

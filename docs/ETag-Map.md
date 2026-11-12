@@ -2,6 +2,7 @@
 [Rethinking Web Caching: An Optimization for the Latency-Constrained Internet](https://conferences.sigcomm.org/hotnets/2024/papers/hotnets24-124.pdf) (HotNets 2024)의 검증 토큰 선전달 아이디어를 정적 배포에 적용한다. 빌드에서 계산한 버전 맵을 HTML로 전달해 리소스별 재검증 왕복을 줄이며, HTML 내비게이션은 네트워크를 우선한다.
 
 # Checkpoints
+- Cache Storage는 출처 전체에서 공유되므로 활성화 시 `tomato-etag-cache-`로 시작하는 블로그의 이전 캐시만 정리한다. 다른 앱의 캐시는 삭제하지 않는다. [활성화 회귀 테스트](../server/service-worker.test.ts)로 이 경계를 보호한다.
 - 캐시 판단의 기준은 HTML에 포함된 빌드 시점의 버전 맵이며, 새 배포의 맵은 HTML을 다시 받을 때 반영한다. 글과 리소스가 배포 단위로 갱신되는 정적 블로그의 특성에 맞춘 정책이며, 실시간 데이터 변경에는 별도의 최신성 정책이 필요하다. 적용 전제는 [README](../README.md#overview)에 기록한다.
 - 이 맵은 HTTP 서버의 `ETag` 응답 헤더가 아닌 자체 버전 정보다. [생성기](../scripts/inject-etag-map.js)는 JSON·HTML·MD를 MD5로 계산하고, 글 HTML은 원본 Markdown 해시를 사용한다. 나머지 에셋은 전체 파일 읽기와 해시 계산 비용을 줄이기 위해 `파일명-크기`를 사용한다. 이는 변경 감지 정확도와 빌드 비용 사이의 의도적인 트레이드오프이며, 같은 이름·크기의 내용 변경을 구분하지 못하는 제약을 수용한다. 이 제약은 현재 정책에서 미해결 결함으로 취급하지 않으며, [배포 갱신 테스트](testing.md#배포와-캐시-격리)도 해당 정책을 전제로 한다.
 - 키는 디코딩된 URL 경로다. `/index.html`은 `/`, 다른 HTML은 확장자를 뺀 경로로 등록하며, `server/`와 `template.html`은 맵에서 제외한다. [Service Worker](../public/sw.js)도 조회 전에 `pathname`을 디코딩한다.
