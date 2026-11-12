@@ -149,8 +149,33 @@ test('존재하지 않거나 올바른 정수가 아닌 최근 글 페이지를 
 });
 
 test('허용되지 않는 글 주소는 콘텐츠 로딩 전에 404로 처리한다', async () => {
-  for (const pathname of ['/posts/probe/extra', '/posts/probe%2Fextra', '/posts/probe%5Cextra', '/posts/probe.html', '/posts/CON', '/posts/end.', '/posts/%00']) {
-    const response = await fetch(`${baseURL}${pathname}`);
-    assert.equal(response.status, 404, pathname);
+  for (const name of ['probe/extra', 'probe%2Fextra', 'probe%5Cextra', 'probe.html', 'CON', 'NUL', 'end.', '%00']) {
+    for (const pathname of [`/posts/${name}`, `/api/posts/${name}/index.json`]) {
+      const response = await fetch(`${baseURL}${pathname}`);
+      assert.equal(response.status, 404, pathname);
+    }
+  }
+});
+
+test('글 상세 API는 원문 ID를 한 번 디코딩해 정상 콘텐츠를 반환한다', async () => {
+  const response = await fetch(`${baseURL}/api/posts/${encodeURIComponent(postId)}/index.json`);
+  assert.equal(response.status, 200);
+  const result = await response.json();
+  assert.partialDeepStrictEqual(result, {
+    data: { title: 'SSR 테스트 제목' },
+    content: 'SSR 테스트 본문',
+  });
+});
+
+test('글 상세 API는 콘텐츠 메타데이터 검증 실패를 404로 숨기지 않는다', async () => {
+  const destination = path.join(directory, 'content', 'posts', '2026', 'invalid-metadata');
+  await mkdir(destination, { recursive: true });
+  try {
+    await writeFile(path.join(destination, 'index.md'), '---\ndescription: "요약"\ndate: "2026-11-11"\nkeywords: ""\n---\n제목이 없는 글');
+    const response = await fetch(`${baseURL}/api/posts/invalid-metadata/index.json`);
+    assert.equal(response.status, 500);
+    assert.match(await response.text(), /Invalid title/);
+  } finally {
+    await rm(destination, { recursive: true, force: true });
   }
 });

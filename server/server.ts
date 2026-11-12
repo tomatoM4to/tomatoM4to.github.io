@@ -32,6 +32,12 @@ const httpServer = createHttpServer(app);
 app.get('/api/posts/:postname/index.json', async (req, res) => {
   try {
     const { postname } = req.params;
+    try {
+      validateContentName(postname, 'post ID', req.originalUrl);
+    } catch {
+      res.sendStatus(404);
+      return;
+    }
     const markdown = await getMarkdown(postname);
     res.status(200).set({
       'Content-Type': 'application/json'
