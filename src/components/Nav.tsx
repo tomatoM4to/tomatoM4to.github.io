@@ -41,13 +41,13 @@ export default function Nav() {
       <Logo />
       <div className='flex gap-1 items-center'>
         <Button variant="ghost" size="sm" asChild>
-          <Link to='/tags' className="flex items-center gap-2">
+          <Link to='/tags' aria-label="태그" className="flex items-center gap-2">
             <Tag className="h-4 w-4" />
             <span className="hidden sm:inline">태그</span>
           </Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link to='/search' className="flex items-center gap-2">
+          <Link to='/search' aria-label="검색" className="flex items-center gap-2">
             <Search className="h-4 w-4" />
             <span className="hidden sm:inline">검색</span>
           </Link>
