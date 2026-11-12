@@ -62,6 +62,30 @@ test('정적 라우팅·캐시 헤더·조건부 요청·404', async ({ request 
   }
 });
 
+test('페이지네이션의 비활성 이전·다음은 주소와 키보드 포커스를 갖지 않는다', async ({ page }) => {
+  await page.route(/\/api\/recent\/[12]\.json$/, route => route.fulfill({
+    json: { len: 6, data: [{ id: 'cache-existing', title: '키보드 탐색', description: '', date: '2026-11-11', keywords: '' }] },
+  }));
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const pagination = page.getByRole('navigation', { name: 'pagination' });
+  const previous = pagination.getByRole('link', { name: 'Go to previous page' });
+  const next = pagination.getByRole('link', { name: 'Go to next page' });
+  await expect(previous).toHaveAttribute('aria-disabled', 'true');
+  await expect(previous).not.toHaveAttribute('href');
+  await pagination.getByRole('link', { name: '1', exact: true }).focus();
+  await page.keyboard.press('Shift+Tab');
+  await expect(page.locator('section a[href="/posts/cache-existing"]')).toBeFocused();
+
+  await next.focus();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL('/?page=2');
+  await expect(next).toHaveAttribute('aria-disabled', 'true');
+  await expect(next).not.toHaveAttribute('href');
+  await pagination.getByRole('link', { name: '2', exact: true }).focus();
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('link', { name: 'GitHub', exact: true })).toBeFocused();
+});
+
 test('라이선스는 정적 본문·직접 접속·새로고침·내부 이동을 지원한다', async ({ page, request }) => {
   const staticResponse = await request.get('/license');
   expect(staticResponse.status()).toBe(200);

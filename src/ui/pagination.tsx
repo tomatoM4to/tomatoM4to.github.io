@@ -51,19 +51,32 @@ function PaginationLink({
   to,
   ...props
 }: PaginationLinkProps) {
+  const linkClassName = cn(
+    buttonVariants({ variant: isActive ? "outline" : "ghost", size }),
+    className
+  )
+
+  if (props["aria-disabled"] === true || props["aria-disabled"] === "true") {
+    return (
+      <span
+        role="link"
+        aria-disabled="true"
+        aria-label={props["aria-label"]}
+        data-slot="pagination-link"
+        className={linkClassName}
+      >
+        {props.children}
+      </span>
+    )
+  }
+
   return (
     <Link
       to={to}
       aria-current={isActive ? "page" : undefined}
       data-slot="pagination-link"
       data-active={isActive}
-      className={cn(
-        buttonVariants({
-          variant: isActive ? "outline" : "ghost",
-          size,
-        }),
-        className
-      )}
+      className={linkClassName}
       {...props}
     />
   )

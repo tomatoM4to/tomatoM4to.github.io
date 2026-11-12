@@ -55,6 +55,8 @@ docker compose -f compose.test.yaml run --build --rm test npm run test:performan
 
 ## 테스트 범위
 
+[정적 페이지 E2E](../tests/e2e/static-site.spec.ts)는 페이지네이션 경계의 비활성 이전·다음에 이동 주소가 없고 Tab 탐색에서 제외되는지, 활성 다음 링크는 Enter로 이동하는지 확인한다.
+
 [Playwright 설정](../tests/playwright.config.ts)의 프로젝트별로 실행 대상을 구분한다. 새 테스트는 해당 디렉터리에 `*.spec.ts`로 추가한다.
 
 | 위치 | 검증 대상 |
